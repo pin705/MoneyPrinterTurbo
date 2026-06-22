@@ -27,6 +27,13 @@ export interface TaskQueryData {
   cross_post_results?: Record<string, unknown>[];
 }
 
+export interface TaskListData {
+  tasks: TaskQueryData[];
+  total: number;
+  page: number;
+  page_size: number;
+}
+
 export interface ScriptData {
   video_script: string;
 }

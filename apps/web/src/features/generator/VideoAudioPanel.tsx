@@ -17,6 +17,7 @@ import {
   type VideoTransitionMode,
 } from "@mpt/shared";
 
+import { Combobox } from "@/components/common/Combobox";
 import { Field, Section } from "@/components/common/Field";
 import { OptSelect } from "@/components/common/OptSelect";
 import {
@@ -135,11 +136,12 @@ export function VideoAudioPanel() {
           htmlFor="voice"
           hint={t("Edge TTS voice. Match the language of your script.")}
         >
-          <OptSelect
+          <Combobox
             id="voice"
             value={params.voice_name || "en-US-JennyNeural-Female"}
             onValueChange={(v) => setParam("voice_name", v)}
             options={COMMON_VOICES.map((o) => ({ value: o.value, label: t(o.labelKey) }))}
+            searchPlaceholder={t("Search voice…")}
           />
         </Field>
         <div className="grid grid-cols-2 gap-3">

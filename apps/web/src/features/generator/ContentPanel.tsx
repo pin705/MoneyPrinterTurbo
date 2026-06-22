@@ -5,8 +5,8 @@ import { toast } from "sonner";
 import { ApiError } from "@mpt/api-client";
 import { SCRIPT_LANGUAGES } from "@mpt/shared";
 
+import { Combobox } from "@/components/common/Combobox";
 import { Field, Section } from "@/components/common/Field";
-import { OptSelect } from "@/components/common/OptSelect";
 import {
   Accordion,
   AccordionContent,
@@ -81,7 +81,7 @@ export function ContentPanel() {
       </Field>
 
       <Field label={t("Script Language")} htmlFor="lang">
-        <OptSelect
+        <Combobox
           id="lang"
           value={params.video_language || AUTO_LANG}
           onValueChange={(v) =>
@@ -91,6 +91,7 @@ export function ContentPanel() {
             value: o.value || AUTO_LANG,
             label: t(o.labelKey),
           }))}
+          searchPlaceholder={t("Search…")}
         />
       </Field>
 

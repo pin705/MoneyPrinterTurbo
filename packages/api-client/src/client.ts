@@ -8,6 +8,7 @@ import {
   type GenerateTermsInput,
   type ScriptData,
   type SocialMetadataData,
+  type TaskListData,
   type TaskQueryData,
   type TaskResponseData,
   type TermsData,
@@ -72,6 +73,13 @@ export class MptClient {
       method: "POST",
       body: JSON.stringify(params),
     });
+  }
+
+  /** GET /tasks — paginated list of all tasks (the user's video library). */
+  listTasks(page = 1, pageSize = 12): Promise<TaskListData> {
+    return this.request<TaskListData>(
+      `/tasks?page=${page}&page_size=${pageSize}`,
+    );
   }
 
   /** GET /tasks/{id} — poll task status. */

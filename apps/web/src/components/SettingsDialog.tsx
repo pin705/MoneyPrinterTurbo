@@ -6,8 +6,8 @@ import { toast } from "sonner";
 import { ApiError } from "@mpt/api-client";
 import { LLM_PROVIDERS, PROVIDER_DEFAULTS } from "@mpt/shared";
 
+import { Combobox } from "@/components/common/Combobox";
 import { Field } from "@/components/common/Field";
-import { OptSelect } from "@/components/common/OptSelect";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -115,7 +115,7 @@ export function SettingsDialog() {
             <>
               <TabsContent value="ai" className="flex flex-col gap-4 pt-2">
                 <Field label={t("LLM provider")} htmlFor="prov">
-                  <OptSelect
+                  <Combobox
                     id="prov"
                     value={provider}
                     onValueChange={(v) => set("llm_provider", v)}
@@ -123,6 +123,7 @@ export function SettingsDialog() {
                       value: o.value,
                       label: o.labelKey,
                     }))}
+                    searchPlaceholder={t("Search provider…")}
                   />
                 </Field>
                 <Field label={t("API key")} htmlFor="key">

@@ -126,4 +126,31 @@ export const vi: Record<string, string> = {
   "Save failed": "Lưu thất bại",
   "Render runs locally. Managed accounts & a credit system are on the roadmap.":
     "Render chạy local. Tài khoản quản lý & hệ thống credit đang trong lộ trình.",
+
+  // Navigation + library
+  Create: "Tạo video",
+  Library: "Thư viện",
+  "Create a video": "Tạo video",
+  "Topic in, finished short video out — rendered on your machine.":
+    "Nhập chủ đề, nhận video ngắn hoàn chỉnh — render trên máy bạn.",
+  "Your generated videos": "Video bạn đã tạo",
+  Refresh: "Làm mới",
+  "New video": "Video mới",
+  "Loading…": "Đang tải…",
+  "No videos yet": "Chưa có video nào",
+  "Create your first video to see it here.":
+    "Tạo video đầu tiên để thấy ở đây.",
+  Complete: "Hoàn thành",
+  Failed: "Thất bại",
+  Processing: "Đang xử lý",
+  Delete: "Xoá",
+  "Video deleted": "Đã xoá video",
+  "Delete failed": "Xoá thất bại",
+  Previous: "Trước",
+  Next: "Sau",
+  Page: "Trang",
+  videos: "video",
+  "Search…": "Tìm…",
+  "Search voice…": "Tìm giọng…",
+  "Search provider…": "Tìm nhà cung cấp…",
 };
