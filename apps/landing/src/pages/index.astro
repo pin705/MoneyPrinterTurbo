@@ -2,19 +2,37 @@
 const REPO = "https://github.com/pin705/MoneyPrinterTurbo";
 const RELEASE = `${REPO}/releases/latest`;
 
-const downloads = [
-  { os: "mac", label: "macOS", sub: "Apple Silicon · Intel", href: RELEASE },
-  { os: "windows", label: "Windows", sub: "10 / 11 · 64-bit", href: RELEASE },
-  { os: "linux", label: "Linux", sub: "AppImage · .deb", href: RELEASE },
-];
-
 const features = [
-  { icon: "✍️", title: "AI script & keywords", body: "Type a topic — get a narration script and stock-footage search terms in seconds." },
-  { icon: "🎬", title: "Renders on your machine", body: "ffmpeg + MoviePy run locally. No render queues, no per-video server fees." },
-  { icon: "🗣️", title: "Lifelike voiceover", body: "Dozens of Edge TTS voices across 15+ languages, with adjustable rate & volume." },
-  { icon: "💬", title: "Styled subtitles", body: "Fonts, colors, outline, position and translucent backgrounds — fully tunable." },
-  { icon: "🎵", title: "Stock + music", body: "Pexels, Pixabay & Coverr footage plus background music, royalty-free." },
-  { icon: "🚀", title: "Auto-updates", body: "The app updates itself when a new version ships. Always on the latest." },
+  {
+    icon: "script",
+    title: "AI script & keywords",
+    body: "Type a topic — get a narration script and stock-footage search terms in seconds.",
+  },
+  {
+    icon: "render",
+    title: "Renders on your machine",
+    body: "ffmpeg + MoviePy run locally. No render queues, no per-video server fees.",
+  },
+  {
+    icon: "voice",
+    title: "Lifelike voiceover",
+    body: "Dozens of Edge TTS voices across 15+ languages, with adjustable rate & volume.",
+  },
+  {
+    icon: "subtitle",
+    title: "Styled subtitles",
+    body: "Fonts, colors, outline, position and translucent backgrounds — fully tunable.",
+  },
+  {
+    icon: "media",
+    title: "Stock + music",
+    body: "Pexels, Pixabay & Coverr footage plus background music, royalty-free.",
+  },
+  {
+    icon: "update",
+    title: "Auto-updates",
+    body: "The app updates itself when a new version ships. Always on the latest.",
+  },
 ];
 
 const steps = [
@@ -23,12 +41,19 @@ const steps = [
   { n: 3, t: "Generate", d: "Renders locally on your machine." },
   { n: 4, t: "Publish", d: "Download or auto-post to TikTok / Shorts." },
 ];
+
+const downloads = [
+  { os: "mac", label: "macOS", sub: "Apple Silicon · Intel", href: RELEASE },
+  { os: "windows", label: "Windows", sub: "10 / 11 · 64-bit", href: RELEASE },
+  { os: "linux", label: "Linux", sub: "AppImage · .deb", href: RELEASE },
+];
 ---
 
 <html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>Vidova — AI short videos, rendered on your machine</title>
     <meta
       name="description"
@@ -36,7 +61,12 @@ const steps = [
     />
     <meta name="robots" content="index,follow" />
     <link rel="canonical" href="https://moneyprinter.studio/" />
-    <!-- Open Graph / social -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
     <meta property="og:type" content="website" />
     <meta property="og:title" content="Vidova — AI short videos, rendered on your machine" />
     <meta
@@ -52,42 +82,157 @@ const steps = [
     />
   </head>
   <body>
+    <!-- Navigation -->
     <header class="nav">
       <div class="wrap nav-inner">
         <a class="brand" href="/">
-          <span class="logo">✦</span> Vid<b>ova</b>
+          <svg class="logo-icon" width="28" height="28" viewBox="0 0 28 28" fill="none">
+            <rect width="28" height="28" rx="8" fill="url(#logo-grad)" />
+            <path d="M8 14L12 10L16 14L20 10" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M8 18L12 14L16 18L20 14" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.5"/>
+            <defs>
+              <linearGradient id="logo-grad" x1="0" y1="0" x2="28" y2="28">
+                <stop stop-color="#10B981" />
+                <stop offset="1" stop-color="#059669" />
+              </linearGradient>
+            </defs>
+          </svg>
+          <span class="brand-text">Vid<span class="brand-accent">ova</span></span>
         </a>
-        <nav>
+        <nav class="nav-links">
           <a href="#features">Features</a>
           <a href="#how">How it works</a>
           <a href="#pricing">Pricing</a>
-          <a class="btn btn-sm" href="#download">Download</a>
+          <a class="btn btn-sm" href={RELEASE}>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M8 2V10M8 10L5 7M8 10L11 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M2 12V13C2 13.5523 2.44772 14 3 14H13C13.5523 14 14 13.5523 14 13V12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Download
+          </a>
         </nav>
       </div>
     </header>
 
     <main>
+      <!-- Hero Section -->
       <section class="hero wrap">
-        <span class="pill">Free desktop app · renders locally</span>
-        <h1>Turn a <span class="grad">topic</span> into a short video.</h1>
+        <div class="hero-badge">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+            <circle cx="8" cy="8" r="3" fill="#10B981"/>
+            <circle cx="8" cy="8" r="6" stroke="#10B981" stroke-width="1" opacity="0.3"/>
+          </svg>
+          Free desktop app · renders locally
+        </div>
+        <h1>
+          Turn a <span class="gradient-text">topic</span> into a<br />short video.
+        </h1>
         <p class="lead">
           Vidova writes the script, finds the footage, voices it,
           adds subtitles and renders a ready-to-post video — right on your
           machine. You only pay a few credits for the AI text.
         </p>
         <div class="cta">
-          <a class="btn btn-lg" id="primary-dl" href={RELEASE}>Download free</a>
-          <a class="btn btn-lg btn-ghost" href={REPO}>View source</a>
+          <a class="btn btn-lg btn-primary" href={RELEASE}>
+            <svg width="18" height="18" viewBox="0 0 16 16" fill="none">
+              <path d="M8 2V10M8 10L5 7M8 10L11 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M2 12V13C2 13.5523 2.44772 14 3 14H13C13.5523 14 14 13.5523 14 13V12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Download free
+          </a>
+          <a class="btn btn-lg btn-outline" href={REPO}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+            </svg>
+            View source
+          </a>
         </div>
         <p class="microcopy" id="os-note">Available for macOS, Windows & Linux</p>
       </section>
 
+      <!-- Social Proof -->
+      <section class="social-proof wrap">
+        <div class="proof-grid">
+          <div class="proof-item">
+            <span class="proof-number">15+</span>
+            <span class="proof-label">Languages</span>
+          </div>
+          <div class="proof-divider"></div>
+          <div class="proof-item">
+            <span class="proof-number">100%</span>
+            <span class="proof-label">Local rendering</span>
+          </div>
+          <div class="proof-divider"></div>
+          <div class="proof-item">
+            <span class="proof-number">Free</span>
+            <span class="proof-label">Core features</span>
+          </div>
+          <div class="proof-divider"></div>
+          <div class="proof-item">
+            <span class="proof-number">4.9</span>
+            <span class="proof-label">GitHub stars</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Features Section -->
       <section id="features" class="wrap section">
-        <h2>Everything you need to ship Shorts</h2>
-        <div class="grid">
+        <div class="section-header">
+          <span class="section-badge">Features</span>
+          <h2>Everything you need to ship Shorts</h2>
+          <p class="section-desc">
+            From script to publish — one tool does it all. No subscriptions, no per-video fees.
+          </p>
+        </div>
+        <div class="features-grid">
           {features.map((f) => (
-            <article class="card">
-              <div class="ic">{f.icon}</div>
+            <article class="feature-card">
+              <div class="feature-icon">
+                {f.icon === "script" && (
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                    <line x1="16" y1="13" x2="8" y2="13"/>
+                    <line x1="16" y1="17" x2="8" y2="17"/>
+                    <polyline points="10 9 9 9 8 9"/>
+                  </svg>
+                )}
+                {f.icon === "render" && (
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+                    <line x1="8" y1="21" x2="16" y2="21"/>
+                    <line x1="12" y1="17" x2="12" y2="21"/>
+                  </svg>
+                )}
+                {f.icon === "voice" && (
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+                    <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                    <line x1="12" y1="19" x2="12" y2="23"/>
+                    <line x1="8" y1="23" x2="16" y2="23"/>
+                  </svg>
+                )}
+                {f.icon === "subtitle" && (
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="2" y="4" width="20" height="16" rx="2"/>
+                    <path d="M6 8h4"/>
+                    <path d="M14 8h4"/>
+                    <path d="M6 12h12"/>
+                    <path d="M6 16h8"/>
+                  </svg>
+                )}
+                {f.icon === "media" && (
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="23 7 16 12 23 17 23 7"/>
+                    <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+                  </svg>
+                )}
+                {f.icon === "update" && (
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 12a9 9 0 0 1-9 9m9-9a9 9 0 0 0-9-9m9 9H3m9 9a9 9 0 0 1-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9"/>
+                  </svg>
+                )}
+              </div>
               <h3>{f.title}</h3>
               <p>{f.body}</p>
             </article>
@@ -95,13 +240,20 @@ const steps = [
         </div>
       </section>
 
+      <!-- How it Works -->
       <section id="how" class="wrap section">
-        <h2>Four steps, one minute of setup</h2>
-        <div class="steps">
+        <div class="section-header">
+          <span class="section-badge">How it works</span>
+          <h2>Four steps, one minute of setup</h2>
+          <p class="section-desc">
+            From idea to published video in under 60 seconds.
+          </p>
+        </div>
+        <div class="steps-grid">
           {steps.map((s) => (
-            <div class="step">
-              <span class="step-n">{s.n}</span>
-              <div>
+            <div class="step-card">
+              <div class="step-number">{s.n}</div>
+              <div class="step-content">
                 <strong>{s.t}</strong>
                 <p>{s.d}</p>
               </div>
@@ -110,67 +262,198 @@ const steps = [
         </div>
       </section>
 
+      <!-- Pricing Section -->
       <section id="pricing" class="wrap section">
-        <h2>Free to render. Credits only for AI.</h2>
-        <p class="sub">
-          Rendering is free forever — it runs on your computer. Credits cover
-          the AI that writes scripts & keywords (pennies per video).
-        </p>
-        <div class="prices">
-          <article class="price">
-            <h3>Free</h3>
-            <div class="amt">$0</div>
-            <ul>
-              <li>Unlimited local rendering</li>
-              <li>Starter AI credits</li>
-              <li>All voices & subtitle styles</li>
-              <li>Or bring your own API key</li>
+        <div class="section-header">
+          <span class="section-badge">Pricing</span>
+          <h2>Free to render. Credits only for AI.</h2>
+          <p class="section-desc">
+            Rendering is free forever — it runs on your computer. Credits cover
+            the AI that writes scripts & keywords (pennies per video).
+          </p>
+        </div>
+        <div class="pricing-grid">
+          <article class="pricing-card">
+            <div class="pricing-header">
+              <h3>Free</h3>
+              <div class="pricing-amount">$0</div>
+              <p class="pricing-desc">Get started with local rendering</p>
+            </div>
+            <ul class="pricing-features">
+              <li>
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <path d="M3 8L6.5 11.5L13 4.5" stroke="#10B981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Unlimited local rendering
+              </li>
+              <li>
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <path d="M3 8L6.5 11.5L13 4.5" stroke="#10B981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Starter AI credits
+              </li>
+              <li>
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <path d="M3 8L6.5 11.5L13 4.5" stroke="#10B981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                All voices & subtitle styles
+              </li>
+              <li>
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <path d="M3 8L6.5 11.5L13 4.5" stroke="#10B981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Or bring your own API key
+              </li>
             </ul>
-            <a class="btn" href="#download">Get the app</a>
+            <a class="btn btn-full btn-outline" href={RELEASE}>Get the app</a>
           </article>
-          <article class="price featured">
-            <span class="tag">Best value</span>
-            <h3>Credit top-up</h3>
-            <div class="amt">from $5</div>
-            <ul>
-              <li>Managed DeepSeek — no key setup</li>
-              <li>~1 credit per video script</li>
-              <li>Credits never expire</li>
-              <li>Top up whenever you want</li>
+          <article class="pricing-card pricing-featured">
+            <div class="pricing-tag">Best value</div>
+            <div class="pricing-header">
+              <h3>Credit top-up</h3>
+              <div class="pricing-amount">from $5</div>
+              <p class="pricing-desc">For users who create regularly</p>
+            </div>
+            <ul class="pricing-features">
+              <li>
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <path d="M3 8L6.5 11.5L13 4.5" stroke="#10B981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Managed DeepSeek — no key setup
+              </li>
+              <li>
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <path d="M3 8L6.5 11.5L13 4.5" stroke="#10B981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                ~1 credit per video script
+              </li>
+              <li>
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <path d="M3 8L6.5 11.5L13 4.5" stroke="#10B981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Credits never expire
+              </li>
+              <li>
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <path d="M3 8L6.5 11.5L13 4.5" stroke="#10B981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Top up whenever you want
+              </li>
             </ul>
-            <a class="btn" href="#download">Start free, top up later</a>
+            <a class="btn btn-full btn-primary" href={RELEASE}>Start free, top up later</a>
           </article>
         </div>
       </section>
 
-      <section id="download" class="wrap section">
-        <h2>Download Vidova</h2>
-        <p class="sub">Free. Auto-updates. Your videos never leave your machine.</p>
-        <div class="dl-grid">
+      <!-- Download Section -->
+      <section id="download" class="wrap section download-section">
+        <div class="section-header">
+          <span class="section-badge">Download</span>
+          <h2>Download Vidova</h2>
+          <p class="section-desc">
+            Free. Auto-updates. Your videos never leave your machine.
+          </p>
+        </div>
+        <div class="download-grid">
           {downloads.map((d) => (
-            <a class="dl" data-os={d.os} href={d.href}>
+            <a class="download-card" data-os={d.os} href={d.href}>
+              {d.os === "mac" && (
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2z"/>
+                  <path d="M8 17s1.5-2 4-2 4 2 4 2"/>
+                  <circle cx="9" cy="10" r="1" fill="currentColor"/>
+                  <circle cx="15" cy="10" r="1" fill="currentColor"/>
+                </svg>
+              )}
+              {d.os === "windows" && (
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="2" y="2" width="9" height="9" rx="1"/>
+                  <rect x="13" y="2" width="9" height="9" rx="1"/>
+                  <rect x="2" y="13" width="9" height="9" rx="1"/>
+                  <rect x="13" y="13" width="9" height="9" rx="1"/>
+                </svg>
+              )}
+              {d.os === "linux" && (
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2z"/>
+                  <path d="M7 14.5c0 0 2.5 3 5 3s5-3 5-3"/>
+                  <circle cx="9" cy="10" r="1.5" fill="currentColor"/>
+                  <circle cx="15" cy="10" r="1.5" fill="currentColor"/>
+                </svg>
+              )}
               <strong>{d.label}</strong>
               <span>{d.sub}</span>
             </a>
           ))}
         </div>
       </section>
+
+      <!-- CTA Section -->
+      <section class="wrap section cta-section">
+        <div class="cta-box">
+          <h2>Ready to create?</h2>
+          <p>Download Vidova and start making videos in minutes.</p>
+          <a class="btn btn-lg btn-primary" href={RELEASE}>
+            <svg width="18" height="18" viewBox="0 0 16 16" fill="none">
+              <path d="M8 2V10M8 10L5 7M8 10L11 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M2 12V13C2 13.5523 2.44772 14 3 14H13C13.5523 14 14 13.5523 14 13V12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Download Vidova — it's free
+          </a>
+        </div>
+      </section>
     </main>
 
-    <footer class="wrap">
-      <span>© Vidova</span>
-      <a href="/terms">Terms</a>
-      <a href="/privacy">Privacy</a>
-      <a href="/refund">Refund</a>
-      <a href={REPO}>GitHub</a>
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="wrap footer-inner">
+        <div class="footer-brand">
+          <a class="brand" href="/">
+            <svg class="logo-icon" width="24" height="24" viewBox="0 0 28 28" fill="none">
+              <rect width="28" height="28" rx="8" fill="url(#logo-grad-footer)" />
+              <path d="M8 14L12 10L16 14L20 10" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M8 18L12 14L16 18L20 14" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.5"/>
+              <defs>
+                <linearGradient id="logo-grad-footer" x1="0" y1="0" x2="28" y2="28">
+                  <stop stop-color="#10B981" />
+                  <stop offset="1" stop-color="#059669" />
+                </linearGradient>
+              </defs>
+            </svg>
+            <span class="brand-text">Vid<span class="brand-accent">ova</span></span>
+          </a>
+          <p class="footer-tagline">AI short videos, rendered on your machine.</p>
+        </div>
+        <div class="footer-links">
+          <div class="footer-col">
+            <h4>Product</h4>
+            <a href="#features">Features</a>
+            <a href="#pricing">Pricing</a>
+            <a href={RELEASE}>Download</a>
+          </div>
+          <div class="footer-col">
+            <h4>Legal</h4>
+            <a href="/terms">Terms</a>
+            <a href="/privacy">Privacy</a>
+            <a href="/refund">Refund</a>
+          </div>
+          <div class="footer-col">
+            <h4>Community</h4>
+            <a href={REPO}>GitHub</a>
+          </div>
+        </div>
+      </div>
+      <div class="wrap footer-bottom">
+        <span>&copy; {new Date().getFullYear()} Vidova. All rights reserved.</span>
+      </div>
     </footer>
 
-    <script is:inline>
+    <script is:global>
       // Highlight the visitor's OS and point the hero button at it.
       const p = navigator.platform.toLowerCase() + " " + navigator.userAgent.toLowerCase();
       const os = p.includes("mac") ? "mac" : p.includes("win") ? "windows" : p.includes("linux") ? "linux" : null;
       if (os) {
-        document.querySelectorAll(`.dl[data-os="${os}"]`).forEach((el) => el.classList.add("dl-active"));
+        document.querySelectorAll(`.download-card[data-os="${os}"]`).forEach((el) => el.classList.add("download-active"));
         const note = document.getElementById("os-note");
         const name = os === "mac" ? "macOS" : os === "windows" ? "Windows" : "Linux";
         if (note) note.textContent = `Detected ${name} · also on the other platforms`;
@@ -179,89 +462,599 @@ const steps = [
 
     <style is:global>
       :root {
-        --bg: #14151a;
-        --bg2: #191b22;
-        --fg: #f2f3f5;
-        --muted: #a3a7b3;
-        --line: #ffffff18;
-        --acc: #2fd27a;
-        --acc2: #27c0e8;
+        --bg: #09090b;
+        --bg-elevated: #18181b;
+        --bg-card: #1c1c20;
+        --fg: #fafafa;
+        --fg-muted: #a1a1aa;
+        --fg-subtle: #71717a;
+        --border: #27272a;
+        --border-light: #3f3f46;
+        --accent: #10b981;
+        --accent-dim: #10b98120;
+        --accent-hover: #34d399;
+        --gradient-start: #10b981;
+        --gradient-end: #06b6d4;
+        --radius-sm: 8px;
+        --radius-md: 12px;
+        --radius-lg: 16px;
+        --radius-xl: 24px;
+        --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
       }
-      * { box-sizing: border-box; margin: 0; }
+
+      * { box-sizing: border-box; margin: 0; padding: 0; }
       html { scroll-behavior: smooth; }
+
       body {
         background: var(--bg);
         color: var(--fg);
-        font: 16px/1.6 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+        font-family: var(--font);
+        font-size: 16px;
+        line-height: 1.6;
         -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
       }
-      .wrap { width: min(1120px, 92vw); margin: 0 auto; }
+
       a { color: inherit; text-decoration: none; }
 
-      .nav { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px);
-        background: #14151acc; border-bottom: 1px solid var(--line); }
-      .nav-inner { display: flex; align-items: center; justify-content: space-between; height: 60px; }
-      .brand { font-weight: 600; display: flex; align-items: center; gap: 8px; }
-      .brand b { color: var(--acc); font-weight: 700; }
-      .logo { color: var(--acc); }
-      nav a { color: var(--muted); margin-left: 22px; font-size: 14px; }
-      nav a:hover { color: var(--fg); }
+      .wrap { width: min(1200px, 90vw); margin: 0 auto; }
 
-      .btn { display: inline-block; background: var(--acc); color: #06231a; font-weight: 600;
-        padding: 10px 18px; border-radius: 10px; transition: transform .12s, filter .12s; }
-      .btn:hover { filter: brightness(1.07); transform: translateY(-1px); }
-      .btn-sm { padding: 7px 14px; font-size: 14px; }
-      .btn-lg { padding: 14px 26px; font-size: 17px; }
-      .btn-ghost { background: transparent; color: var(--fg); border: 1px solid var(--line); }
+      /* Navigation */
+      .nav {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        backdrop-filter: blur(16px) saturate(180%);
+        background: #09090bcc;
+        border-bottom: 1px solid var(--border);
+      }
 
-      .hero { text-align: center; padding: 92px 0 70px; }
-      .pill { display: inline-block; font-size: 13px; color: var(--acc);
-        border: 1px solid #2fd27a44; background: #2fd27a14; padding: 5px 14px; border-radius: 999px; }
-      .hero h1 { font-size: clamp(34px, 6vw, 62px); line-height: 1.05; letter-spacing: -.02em; margin: 22px 0; }
-      .grad { background: linear-gradient(90deg, var(--acc), var(--acc2)); -webkit-background-clip: text;
-        background-clip: text; color: transparent; }
-      .lead { color: var(--muted); font-size: clamp(16px, 2.2vw, 20px); max-width: 660px; margin: 0 auto; }
-      .cta { display: flex; gap: 14px; justify-content: center; margin: 32px 0 12px; flex-wrap: wrap; }
-      .microcopy { color: var(--muted); font-size: 13px; }
+      .nav-inner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 64px;
+      }
 
-      .section { padding: 64px 0; border-top: 1px solid var(--line); }
-      .section h2 { font-size: clamp(24px, 4vw, 36px); letter-spacing: -.02em; text-align: center; }
-      .sub { color: var(--muted); text-align: center; max-width: 620px; margin: 12px auto 0; }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
 
-      .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px; margin-top: 40px; }
-      .card { background: var(--bg2); border: 1px solid var(--line); border-radius: 16px; padding: 24px; }
-      .card .ic { font-size: 26px; }
-      .card h3 { margin: 12px 0 6px; font-size: 18px; }
-      .card p { color: var(--muted); font-size: 15px; }
+      .brand-text {
+        font-size: 18px;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+      }
 
-      .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px; margin-top: 40px; }
-      .step { display: flex; gap: 14px; align-items: flex-start; }
-      .step-n { flex: none; width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center;
-        background: #2fd27a1c; color: var(--acc); font-weight: 700; }
-      .step p { color: var(--muted); font-size: 14px; }
+      .brand-accent {
+        color: var(--accent);
+      }
 
-      .prices { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px; max-width: 760px; margin: 40px auto 0; }
-      .price { position: relative; background: var(--bg2); border: 1px solid var(--line); border-radius: 18px; padding: 28px; }
-      .price.featured { border-color: #2fd27a66; box-shadow: 0 0 0 1px #2fd27a33, 0 20px 60px #2fd27a14; }
-      .price h3 { font-size: 18px; color: var(--muted); }
-      .price .amt { font-size: 40px; font-weight: 700; margin: 6px 0 16px; }
-      .price ul { list-style: none; padding: 0; margin: 0 0 22px; }
-      .price li { padding: 7px 0 7px 24px; position: relative; color: #d6d9e0; font-size: 15px; }
-      .price li::before { content: "✓"; color: var(--acc); position: absolute; left: 0; }
-      .tag { position: absolute; top: -11px; right: 20px; background: var(--acc); color: #06231a;
-        font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: 999px; }
+      .nav-links {
+        display: flex;
+        align-items: center;
+        gap: 32px;
+      }
 
-      .dl-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; max-width: 760px; margin: 36px auto 0; }
-      .dl { background: var(--bg2); border: 1px solid var(--line); border-radius: 14px; padding: 22px; text-align: center;
-        display: flex; flex-direction: column; gap: 4px; transition: border-color .15s, transform .12s; }
-      .dl:hover { transform: translateY(-2px); border-color: #ffffff33; }
-      .dl strong { font-size: 17px; }
-      .dl span { color: var(--muted); font-size: 13px; }
-      .dl-active { border-color: var(--acc); box-shadow: 0 0 0 1px #2fd27a55; }
+      .nav-links a:not(.btn) {
+        color: var(--fg-muted);
+        font-size: 14px;
+        font-weight: 500;
+        transition: color 0.15s ease;
+      }
 
-      footer { display: flex; justify-content: space-between; padding: 30px 0; color: var(--muted);
-        border-top: 1px solid var(--line); font-size: 14px; }
-      footer a:hover { color: var(--fg); }
+      .nav-links a:not(.btn):hover {
+        color: var(--fg);
+      }
+
+      /* Buttons */
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 600;
+        font-size: 14px;
+        padding: 10px 18px;
+        border-radius: var(--radius-sm);
+        transition: all 0.15s ease;
+        cursor: pointer;
+        border: none;
+        white-space: nowrap;
+      }
+
+      .btn-sm {
+        padding: 8px 14px;
+        font-size: 13px;
+      }
+
+      .btn-lg {
+        padding: 14px 24px;
+        font-size: 16px;
+      }
+
+      .btn-primary {
+        background: var(--accent);
+        color: #022c22;
+      }
+
+      .btn-primary:hover {
+        background: var(--accent-hover);
+        transform: translateY(-1px);
+      }
+
+      .btn-outline {
+        background: transparent;
+        color: var(--fg);
+        border: 1px solid var(--border-light);
+      }
+
+      .btn-outline:hover {
+        background: var(--bg-elevated);
+        border-color: var(--fg-subtle);
+      }
+
+      .btn-full {
+        width: 100%;
+        justify-content: center;
+      }
+
+      /* Hero */
+      .hero {
+        text-align: center;
+        padding: 100px 0 80px;
+      }
+
+      .hero-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--accent);
+        background: var(--accent-dim);
+        border: 1px solid #10b98130;
+        padding: 6px 16px;
+        border-radius: 999px;
+        margin-bottom: 28px;
+      }
+
+      .hero h1 {
+        font-size: clamp(40px, 7vw, 72px);
+        font-weight: 700;
+        line-height: 1.05;
+        letter-spacing: -0.03em;
+        margin-bottom: 24px;
+      }
+
+      .gradient-text {
+        background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+
+      .lead {
+        color: var(--fg-muted);
+        font-size: clamp(16px, 2vw, 20px);
+        max-width: 600px;
+        margin: 0 auto;
+        line-height: 1.7;
+      }
+
+      .cta {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        margin: 36px 0 16px;
+        flex-wrap: wrap;
+      }
+
+      .microcopy {
+        color: var(--fg-subtle);
+        font-size: 13px;
+      }
+
+      /* Social Proof */
+      .social-proof {
+        padding: 40px 0 60px;
+      }
+
+      .proof-grid {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 40px;
+        flex-wrap: wrap;
+      }
+
+      .proof-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+      }
+
+      .proof-number {
+        font-size: 28px;
+        font-weight: 700;
+        color: var(--fg);
+        letter-spacing: -0.02em;
+      }
+
+      .proof-label {
+        font-size: 13px;
+        color: var(--fg-subtle);
+      }
+
+      .proof-divider {
+        width: 1px;
+        height: 40px;
+        background: var(--border);
+      }
+
+      /* Section */
+      .section {
+        padding: 80px 0;
+      }
+
+      .section-header {
+        text-align: center;
+        max-width: 600px;
+        margin: 0 auto 48px;
+      }
+
+      .section-badge {
+        display: inline-block;
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--accent);
+        margin-bottom: 12px;
+      }
+
+      .section-header h2 {
+        font-size: clamp(28px, 4vw, 40px);
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        line-height: 1.2;
+        margin-bottom: 12px;
+      }
+
+      .section-desc {
+        color: var(--fg-muted);
+        font-size: 16px;
+      }
+
+      /* Features Grid */
+      .features-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+      }
+
+      .feature-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 28px;
+        transition: all 0.2s ease;
+      }
+
+      .feature-card:hover {
+        border-color: var(--border-light);
+        transform: translateY(-2px);
+      }
+
+      .feature-icon {
+        width: 48px;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--accent-dim);
+        border-radius: var(--radius-md);
+        color: var(--accent);
+        margin-bottom: 16px;
+      }
+
+      .feature-card h3 {
+        font-size: 17px;
+        font-weight: 600;
+        margin-bottom: 8px;
+        letter-spacing: -0.01em;
+      }
+
+      .feature-card p {
+        color: var(--fg-muted);
+        font-size: 14px;
+        line-height: 1.6;
+      }
+
+      /* Steps */
+      .steps-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+      }
+
+      .step-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 24px;
+        transition: all 0.2s ease;
+      }
+
+      .step-card:hover {
+        border-color: var(--border-light);
+      }
+
+      .step-number {
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--accent-dim);
+        color: var(--accent);
+        font-weight: 700;
+        font-size: 14px;
+        border-radius: var(--radius-sm);
+        margin-bottom: 16px;
+      }
+
+      .step-content strong {
+        display: block;
+        font-size: 15px;
+        font-weight: 600;
+        margin-bottom: 4px;
+      }
+
+      .step-content p {
+        color: var(--fg-muted);
+        font-size: 13px;
+      }
+
+      /* Pricing */
+      .pricing-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+        max-width: 800px;
+        margin: 0 auto;
+      }
+
+      .pricing-card {
+        position: relative;
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-xl);
+        padding: 32px;
+        transition: all 0.2s ease;
+      }
+
+      .pricing-card:hover {
+        border-color: var(--border-light);
+      }
+
+      .pricing-featured {
+        border-color: #10b98150;
+        box-shadow: 0 0 0 1px #10b98120, 0 24px 64px -16px #10b98115;
+      }
+
+      .pricing-tag {
+        position: absolute;
+        top: -12px;
+        right: 24px;
+        background: var(--accent);
+        color: #022c22;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        padding: 4px 12px;
+        border-radius: 999px;
+      }
+
+      .pricing-header h3 {
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--fg-muted);
+        margin-bottom: 8px;
+      }
+
+      .pricing-amount {
+        font-size: 48px;
+        font-weight: 700;
+        letter-spacing: -0.03em;
+        margin-bottom: 4px;
+      }
+
+      .pricing-desc {
+        color: var(--fg-subtle);
+        font-size: 14px;
+        margin-bottom: 24px;
+      }
+
+      .pricing-features {
+        list-style: none;
+        margin: 0 0 24px;
+      }
+
+      .pricing-features li {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 0;
+        font-size: 14px;
+        color: var(--fg-muted);
+      }
+
+      /* Downloads */
+      .download-section {
+        text-align: center;
+      }
+
+      .download-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+        max-width: 700px;
+        margin: 0 auto;
+      }
+
+      .download-card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 28px 24px;
+        transition: all 0.2s ease;
+        cursor: pointer;
+      }
+
+      .download-card:hover {
+        border-color: var(--border-light);
+        transform: translateY(-2px);
+      }
+
+      .download-card strong {
+        font-size: 16px;
+        font-weight: 600;
+      }
+
+      .download-card span {
+        color: var(--fg-subtle);
+        font-size: 13px;
+      }
+
+      .download-active {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 1px #10b98140;
+      }
+
+      /* CTA Section */
+      .cta-section {
+        padding-bottom: 120px;
+      }
+
+      .cta-box {
+        text-align: center;
+        background: linear-gradient(180deg, var(--bg-elevated) 0%, var(--bg-card) 100%);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-xl);
+        padding: 64px 40px;
+      }
+
+      .cta-box h2 {
+        font-size: clamp(28px, 4vw, 36px);
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        margin-bottom: 12px;
+      }
+
+      .cta-box p {
+        color: var(--fg-muted);
+        font-size: 16px;
+        margin-bottom: 28px;
+      }
+
+      /* Footer */
+      .footer {
+        border-top: 1px solid var(--border);
+        padding: 48px 0 24px;
+      }
+
+      .footer-inner {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr 1fr;
+        gap: 48px;
+        margin-bottom: 40px;
+      }
+
+      .footer-tagline {
+        color: var(--fg-subtle);
+        font-size: 14px;
+        margin-top: 12px;
+      }
+
+      .footer-col h4 {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--fg-muted);
+        margin-bottom: 16px;
+      }
+
+      .footer-col a {
+        display: block;
+        font-size: 14px;
+        color: var(--fg-subtle);
+        padding: 4px 0;
+        transition: color 0.15s ease;
+      }
+
+      .footer-col a:hover {
+        color: var(--fg);
+      }
+
+      .footer-bottom {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 24px;
+        border-top: 1px solid var(--border);
+        font-size: 13px;
+        color: var(--fg-subtle);
+      }
+
+      /* Responsive */
+      @media (max-width: 1024px) {
+        .features-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .steps-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+
+      @media (max-width: 768px) {
+        .nav-links a:not(.btn) {
+          display: none;
+        }
+        .hero {
+          padding: 80px 0 60px;
+        }
+        .features-grid {
+          grid-template-columns: 1fr;
+        }
+        .steps-grid {
+          grid-template-columns: 1fr;
+        }
+        .pricing-grid {
+          grid-template-columns: 1fr;
+          max-width: 400px;
+        }
+        .download-grid {
+          grid-template-columns: 1fr;
+          max-width: 300px;
+        }
+        .footer-inner {
+          grid-template-columns: 1fr;
+          gap: 32px;
+        }
+        .proof-divider {
+          display: none;
+        }
+        .proof-grid {
+          gap: 24px;
+        }
+      }
     </style>
   </body>
 </html>

@@ -43,7 +43,7 @@ export function BillingPage() {
     queryFn: async () => {
       const o = await cloud.getOrder(checkout!.order_code);
       if (o.status === "paid") {
-        toast.success(t("Payment received — credits added 🎉"));
+        toast.success(t("Payment received — credits added"));
         setCheckout(null);
         qc.invalidateQueries({ queryKey: ["me"] });
         qc.invalidateQueries({ queryKey: ["invoices"] });
@@ -68,24 +68,24 @@ export function BillingPage() {
   return (
     <div className="flex min-h-full flex-col">
       <PageHeader title={t("Billing")} subtitle={t("Plans and credit top-ups")} />
-      <main className="mx-auto w-full max-w-5xl flex-1 px-6 py-6">
+      <main className="mx-auto w-full max-w-5xl flex-1 px-6 py-8">
         {/* Billing cycle toggle */}
-        <div className="mb-6 flex justify-center">
-          <div className="bg-muted inline-flex rounded-lg p-0.5">
+        <div className="mb-8 flex justify-center">
+          <div className="bg-zinc-800/50 inline-flex rounded-xl p-1">
             {(["monthly", "yearly"] as Cycle[]).map((c) => (
               <button
                 key={c}
                 onClick={() => setCycle(c)}
                 className={
-                  "rounded-md px-4 py-1.5 text-sm font-medium transition-colors " +
+                  "rounded-lg px-5 py-2 text-sm font-medium transition-all duration-200 " +
                   (cycle === c
-                    ? "bg-background shadow-sm"
-                    : "text-muted-foreground")
+                    ? "bg-zinc-700 text-zinc-100 shadow-sm"
+                    : "text-zinc-500 hover:text-zinc-300")
                 }
               >
                 {c === "monthly" ? t("Monthly") : t("Yearly")}
                 {c === "yearly" ? (
-                  <span className="text-primary ml-1 text-xs">{t("-17%")}</span>
+                  <span className="text-emerald-400 ml-1.5 text-xs font-semibold">{t("-17%")}</span>
                 ) : null}
               </button>
             ))}
@@ -93,7 +93,7 @@ export function BillingPage() {
         </div>
 
         {plans.isLoading ? (
-          <div className="text-muted-foreground flex items-center gap-2 py-16 text-sm">
+          <div className="text-zinc-500 flex items-center gap-2 py-16 text-sm">
             <Loader2 className="size-4 animate-spin" /> {t("Loading…")}
           </div>
         ) : plans.data ? (
@@ -117,23 +117,24 @@ export function BillingPage() {
               ))}
             </div>
 
-            <h2 className="mt-10 mb-3 text-sm font-semibold">
+            <h2 className="mt-12 mb-4 text-sm font-semibold text-zinc-300 uppercase tracking-wider">
               {t("Credit top-ups")}
             </h2>
             <div className="grid gap-4 sm:grid-cols-3">
               {plans.data.credit_packs.map((pack) => (
                 <div
                   key={pack.id}
-                  className="bg-card flex flex-col gap-3 rounded-xl border p-5"
+                  className="bg-zinc-900/50 flex flex-col gap-3 rounded-2xl border border-zinc-800/50 p-6 transition-all duration-200 hover:border-zinc-700/50"
                 >
-                  <div className="text-muted-foreground flex items-center gap-2 text-xs font-medium">
+                  <div className="text-zinc-500 flex items-center gap-2 text-xs font-medium uppercase tracking-wider">
                     <Coins className="size-4" /> {pack.credits} {t("credits")}
                   </div>
-                  <div className="text-2xl font-semibold">{vnd(pack.price_vnd)}</div>
+                  <div className="text-3xl font-bold text-zinc-100">{vnd(pack.price_vnd)}</div>
                   <Button
                     variant="outline"
                     size="sm"
                     disabled={buy.isPending}
+                    className="mt-2 border-zinc-700 hover:bg-zinc-800 text-zinc-300"
                     onClick={() =>
                       buy.mutate({ kind: "pack", target_id: pack.id })
                     }
@@ -146,17 +147,17 @@ export function BillingPage() {
 
             {invoices.data && invoices.data.invoices.length > 0 ? (
               <>
-                <h2 className="mt-10 mb-3 text-sm font-semibold">{t("Invoices")}</h2>
-                <div className="bg-card overflow-hidden rounded-xl border">
+                <h2 className="mt-12 mb-4 text-sm font-semibold text-zinc-300 uppercase tracking-wider">{t("Invoices")}</h2>
+                <div className="bg-zinc-900/50 overflow-hidden rounded-2xl border border-zinc-800/50">
                   {invoices.data.invoices.map((inv) => (
                     <div
                       key={inv.order_code}
-                      className="flex items-center justify-between border-b px-4 py-3 text-sm last:border-0"
+                      className="flex items-center justify-between border-b border-zinc-800/50 px-5 py-4 text-sm last:border-0"
                     >
-                      <span className="font-mono text-xs">{inv.order_code}</span>
-                      <span className="capitalize">{inv.target_id}</span>
-                      <span className="tabular-nums">{vnd(inv.amount_vnd)}</span>
-                      <span className="text-muted-foreground text-xs">
+                      <span className="font-mono text-xs text-zinc-500">{inv.order_code}</span>
+                      <span className="capitalize text-zinc-300">{inv.target_id}</span>
+                      <span className="tabular-nums font-medium text-zinc-200">{vnd(inv.amount_vnd)}</span>
+                      <span className="text-zinc-500 text-xs">
                         {inv.paid_at
                           ? new Date(inv.paid_at).toLocaleDateString()
                           : ""}
@@ -168,8 +169,8 @@ export function BillingPage() {
             ) : null}
           </>
         ) : (
-          <p className="text-muted-foreground py-16 text-center text-sm">
-            {t("Couldn’t load plans. Is the cloud backend running?")}
+          <p className="text-zinc-500 py-16 text-center text-sm">
+            {t("Couldn't load plans. Is the cloud backend running?")}
           </p>
         )}
       </main>
@@ -200,29 +201,31 @@ function PlanCard({
   return (
     <div
       className={
-        "bg-card relative flex flex-col gap-4 rounded-xl border p-6 " +
-        (featured ? "border-primary ring-primary/20 ring-1" : "")
+        "bg-zinc-900/50 relative flex flex-col gap-4 rounded-2xl border p-6 transition-all duration-200 " +
+        (featured
+          ? "border-emerald-500/50 shadow-lg shadow-emerald-500/10"
+          : "border-zinc-800/50 hover:border-zinc-700/50")
       }
     >
       {featured ? (
-        <Badge className="absolute -top-2 right-4">{t("Popular")}</Badge>
+        <Badge className="absolute -top-3 right-6 bg-emerald-500 text-black border-0 font-semibold">{t("Popular")}</Badge>
       ) : null}
       <div>
-        <h3 className="text-base font-semibold">{plan.name}</h3>
-        <div className="mt-1 flex items-baseline gap-1">
-          <span className="text-2xl font-semibold">{vnd(price)}</span>
+        <h3 className="text-base font-semibold text-zinc-200">{plan.name}</h3>
+        <div className="mt-2 flex items-baseline gap-1">
+          <span className="text-3xl font-bold text-zinc-100">{vnd(price)}</span>
           {!isFree ? (
-            <span className="text-muted-foreground text-sm">
+            <span className="text-zinc-500 text-sm">
               /{cycle === "yearly" ? t("yr") : t("mo")}
             </span>
           ) : null}
         </div>
-        <p className="text-muted-foreground mt-1 text-xs">
+        <p className="text-zinc-500 mt-1 text-xs">
           {plan.monthly_credits} {t("credits/mo")}
         </p>
       </div>
 
-      <ul className="flex flex-col gap-1.5 text-sm">
+      <ul className="flex flex-col gap-2 text-sm">
         <Feat ok={!plan.entitlements.watermark} label={t("No watermark")} />
         <Feat ok label={`${t("Up to")} ${plan.entitlements.max_resolution}`} />
         <Feat ok label={`${t("Batch")} ${plan.entitlements.max_batch}`} />
@@ -230,19 +233,23 @@ function PlanCard({
         <Feat ok={plan.entitlements.api} label={t("API access")} />
       </ul>
 
-      <div className="mt-auto">
+      <div className="mt-auto pt-2">
         {current ? (
-          <Button variant="outline" className="w-full" disabled>
+          <Button variant="outline" className="w-full border-zinc-700 text-zinc-400" disabled>
             {t("Current plan")}
           </Button>
         ) : isFree ? (
-          <Button variant="ghost" className="w-full" disabled>
+          <Button variant="ghost" className="w-full text-zinc-500" disabled>
             {t("Free forever")}
           </Button>
         ) : (
           <Button
-            className="w-full"
-            variant={featured ? "default" : "outline"}
+            className={
+              "w-full font-semibold " +
+              (featured
+                ? "bg-emerald-500 hover:bg-emerald-400 text-black"
+                : "bg-zinc-800 hover:bg-zinc-700 text-zinc-100")
+            }
             disabled={pending}
             onClick={onChoose}
           >
@@ -256,9 +263,9 @@ function PlanCard({
 
 function Feat({ ok, label }: { ok: boolean; label: string }) {
   return (
-    <li className={ok ? "flex items-center gap-2" : "text-muted-foreground/40 flex items-center gap-2"}>
-      <Check className={ok ? "text-primary size-4" : "size-4"} />
-      {label}
+    <li className={ok ? "flex items-center gap-2.5" : "text-zinc-600 flex items-center gap-2.5"}>
+      <Check className={ok ? "text-emerald-400 size-4" : "size-4 text-zinc-700"} />
+      <span className={ok ? "text-zinc-300" : "text-zinc-600"}>{label}</span>
     </li>
   );
 }
@@ -273,35 +280,35 @@ function PaymentDialog({
   const { t } = useTranslation();
   return (
     <Dialog open={!!checkout} onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="max-w-sm">
+      <DialogContent className="max-w-sm bg-zinc-900 border-zinc-800">
         <DialogHeader>
-          <DialogTitle>{t("Scan to pay with SePay")}</DialogTitle>
-          <DialogDescription>
+          <DialogTitle className="text-zinc-100">{t("Scan to pay with SePay")}</DialogTitle>
+          <DialogDescription className="text-zinc-500">
             {t("Transfer the exact amount — your account updates automatically.")}
           </DialogDescription>
         </DialogHeader>
         {checkout ? (
-          <div className="flex flex-col items-center gap-3">
+          <div className="flex flex-col items-center gap-4">
             {checkout.qr_url ? (
               <img
                 src={checkout.qr_url}
                 alt="SePay QR"
-                className="size-56 rounded-lg border"
+                className="size-56 rounded-xl border border-zinc-800"
               />
             ) : (
-              <p className="text-muted-foreground text-center text-xs">
+              <p className="text-zinc-500 text-center text-xs">
                 {t("Set SEPAY_ACCOUNT/SEPAY_BANK to render the QR.")}
               </p>
             )}
-            <div className="w-full rounded-lg border p-3 text-sm">
+            <div className="w-full rounded-xl border border-zinc-800 bg-zinc-800/50 p-4 text-sm">
               <Row label={t("Amount")} value={vnd(checkout.amount_vnd)} />
               <Row label={t("Content")} value={checkout.transfer_content} mono />
               {checkout.account ? (
                 <Row label={t("Account")} value={`${checkout.account} · ${checkout.bank}`} />
               ) : null}
             </div>
-            <div className="text-muted-foreground flex items-center gap-2 text-xs">
-              <Loader2 className="size-3.5 animate-spin" />
+            <div className="text-zinc-500 flex items-center gap-2 text-xs">
+              <Loader2 className="size-3.5 animate-spin text-emerald-400" />
               {t("Waiting for payment…")}
             </div>
           </div>
@@ -313,9 +320,9 @@ function PaymentDialog({
 
 function Row({ label, value, mono }: { label: string; value: string; mono?: boolean }) {
   return (
-    <div className="flex items-center justify-between gap-2 py-0.5">
-      <span className="text-muted-foreground text-xs">{label}</span>
-      <span className={mono ? "font-mono text-xs" : "text-sm font-medium"}>{value}</span>
+    <div className="flex items-center justify-between gap-2 py-1.5">
+      <span className="text-zinc-500 text-xs">{label}</span>
+      <span className={mono ? "font-mono text-xs text-zinc-300" : "text-sm font-medium text-zinc-200"}>{value}</span>
     </div>
   );
 }

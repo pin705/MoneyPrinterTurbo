@@ -69,25 +69,25 @@ export function GeneratorWizard() {
   ][step];
 
   return (
-    <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col px-6 py-6">
-      <div className="mb-6">
+    <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col px-6 py-8">
+      <div className="mb-8">
         <Stepper steps={steps} current={step} onStepClick={setStep} />
       </div>
 
       <div className="flex-1">{body}</div>
 
       {(isRunning || failed) && (
-        <div className="mt-6 flex flex-col gap-1.5">
+        <div className="mt-6 flex flex-col gap-2">
           <div className="flex items-center justify-between text-xs">
-            <span className="text-muted-foreground flex items-center gap-1.5">
+            <span className="text-zinc-500 flex items-center gap-1.5">
               {failed ? (
                 <>
-                  <TriangleAlert className="text-destructive size-3.5" />
+                  <TriangleAlert className="text-red-400 size-3.5" />
                   {t("Generation failed — check backend logs")}
                 </>
               ) : (
                 <>
-                  <Loader2 className="size-3.5 animate-spin" />
+                  <Loader2 className="size-3.5 animate-spin text-emerald-400" />
                   {progress < 10
                     ? t("Generating script…")
                     : progress < 40
@@ -98,17 +98,18 @@ export function GeneratorWizard() {
                 </>
               )}
             </span>
-            <span className="tabular-nums">{progress}%</span>
+            <span className="tabular-nums font-medium text-zinc-300">{progress}%</span>
           </div>
-          {!failed && <Progress value={progress} />}
+          {!failed && <Progress value={progress} className="bg-zinc-800 [&>div]:bg-emerald-500" />}
         </div>
       )}
 
-      <div className="mt-6 flex items-center justify-between gap-3 border-t pt-4">
+      <div className="mt-8 flex items-center justify-between gap-3 border-t border-zinc-800/50 pt-6">
         <Button
           variant="ghost"
           onClick={() => setStep((s) => Math.max(0, s - 1))}
           disabled={step === 0 || isRunning}
+          className="text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50"
         >
           <ArrowLeft /> {t("Back")}
         </Button>
@@ -117,11 +118,12 @@ export function GeneratorWizard() {
           <Button
             onClick={() => setStep((s) => Math.min(last, s + 1))}
             disabled={step === 0 && !hasContent}
+            className="bg-zinc-800 hover:bg-zinc-700 text-zinc-100"
           >
             {t("Next")} <ArrowRight />
           </Button>
         ) : (
-          <Button onClick={onGenerate} disabled={isRunning} className="min-w-44">
+          <Button onClick={onGenerate} disabled={isRunning} className="min-w-44 bg-emerald-500 hover:bg-emerald-400 text-black font-semibold">
             {isRunning ? (
               <>
                 <Loader2 className="animate-spin" /> {t("Generating…")}
@@ -136,10 +138,10 @@ export function GeneratorWizard() {
       </div>
 
       <Dialog open={resultsOpen} onOpenChange={setResultsOpen}>
-        <DialogContent className="max-w-3xl">
+        <DialogContent className="max-w-3xl bg-zinc-900 border-zinc-800">
           <DialogHeader>
-            <DialogTitle>{t("Your video is ready 🎬")}</DialogTitle>
-            <DialogDescription>
+            <DialogTitle className="text-zinc-100">{t("Your video is ready")}</DialogTitle>
+            <DialogDescription className="text-zinc-500">
               {videos.length} video{videos.length > 1 ? "s" : ""} ·{" "}
               {t("Preview and download below.")}
             </DialogDescription>
@@ -148,13 +150,13 @@ export function GeneratorWizard() {
             {videos.map((v, i) => {
               const url = api.fileUrl(v);
               return (
-                <div key={i} className="flex flex-col gap-2">
+                <div key={i} className="flex flex-col gap-3">
                   <video
                     src={url}
                     controls
-                    className="bg-muted aspect-[9/16] w-full rounded-lg object-contain"
+                    className="bg-zinc-800 aspect-[9/16] w-full rounded-xl object-contain"
                   />
-                  <Button asChild variant="secondary" size="sm">
+                  <Button asChild variant="secondary" size="sm" className="bg-zinc-800 hover:bg-zinc-700 text-zinc-200">
                     <a href={url} download>
                       <Download /> {t("Download")} #{i + 1}
                     </a>
