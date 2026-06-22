@@ -63,3 +63,32 @@ jobs:
 
       - name: Build
         run: pnpm build
+
+  e2e:
+    name: Web e2e (Playwright)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.17.1
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright browser
+        run: pnpm --filter @mpt/web exec playwright install --with-deps chromium
+
+      # The Playwright config's webServer builds + serves the production bundle.
+      - name: Run e2e smoke tests
+        run: pnpm --filter @mpt/web test:e2e

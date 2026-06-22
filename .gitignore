@@ -24,6 +24,10 @@ apps/**/dist
 packages/**/dist
 # Tauri build artifacts
 apps/desktop/src-tauri/target/
+# Playwright e2e artifacts
+apps/web/test-results/
+apps/web/playwright-report/
+apps/web/.playwright/
 # VuePress 默认临时文件目录
 /sites/docs/.vuepress/.temp
 # VuePress 默认缓存目录
