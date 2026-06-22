@@ -5,12 +5,24 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlmodel import Session
 
 from . import plans, subscriptions
+from .admin import router as admin_router
 from .auth import current_user
 from .credits import get_balance
 from .db import get_session, init_db
 from .llm_proxy import router as llm_router
 from .models import User
 from .payments import router as payments_router
+
+# Error tracking — active only when SENTRY_DSN is set and sentry-sdk is
+# installed (kept optional so the base image stays lean).
+_SENTRY_DSN = os.getenv("SENTRY_DSN", "")
+if _SENTRY_DSN:
+    try:
+        import sentry_sdk
+
+        sentry_sdk.init(dsn=_SENTRY_DSN, traces_sample_rate=0.1)
+    except ImportError:
+        pass
 
 app = FastAPI(title="MoneyPrinter Cloud", version="0.1.0")
 
@@ -57,3 +69,4 @@ def list_plans():
 
 app.include_router(llm_router)
 app.include_router(payments_router)
+app.include_router(admin_router)

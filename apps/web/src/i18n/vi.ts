@@ -265,4 +265,17 @@ export const vi: Record<string, string> = {
   Upgrade: "Nâng cấp",
   Generate: "Tạo",
   "Queued {{n}} videos": "Đã xếp hàng {{n}} video",
+
+  // Admin
+  Admin: "Quản trị",
+  "Users, credits and revenue": "Người dùng, credit và doanh thu",
+  "Admin key": "Khoá quản trị",
+  Connect: "Kết nối",
+  "Invalid admin key or backend offline.":
+    "Khoá quản trị sai hoặc backend offline.",
+  Users: "Người dùng",
+  "Active subs": "Gói đang hoạt động",
+  "Credits out": "Credit lưu hành",
+  Revenue: "Doanh thu",
+  "Credits updated": "Đã cập nhật credit",
 };

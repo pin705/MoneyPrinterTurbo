@@ -15,7 +15,10 @@ sys.path.insert(0, str(_CLOUD_ROOT))
 
 _TMP = tempfile.TemporaryDirectory()
 os.environ["AUTH_DEV_MODE"] = "1"
+os.environ["ADMIN_API_KEY"] = "test-admin-key"
 os.environ["DATABASE_URL"] = f"sqlite:///{Path(_TMP.name) / 'test.db'}"
+
+_ADMIN = {"X-Admin-Key": "test-admin-key"}
 
 from fastapi.testclient import TestClient  # noqa: E402
 from sqlmodel import Session  # noqa: E402
@@ -216,6 +219,42 @@ class TestPayments(unittest.TestCase):
             json={"kind": "plan", "target_id": "free"},
         )
         self.assertEqual(r.status_code, 400)
+
+
+class TestAdmin(unittest.TestCase):
+    def test_admin_requires_key(self):
+        self.assertEqual(client.get("/v1/admin/users").status_code, 403)
+        self.assertEqual(
+            client.get("/v1/admin/users", headers={"X-Admin-Key": "wrong"}).status_code,
+            403,
+        )
+
+    def test_list_users_and_stats(self):
+        client.get("/v1/me", headers=_auth("admin-seen-user"))  # ensure a user exists
+        r = client.get("/v1/admin/users", headers=_ADMIN)
+        self.assertEqual(r.status_code, 200)
+        self.assertTrue(any(u["id"] == "admin-seen-user" for u in r.json()["users"]))
+
+        s = client.get("/v1/admin/stats", headers=_ADMIN).json()
+        self.assertIn("users", s)
+        self.assertGreaterEqual(s["users"], 1)
+        self.assertIn("revenue_vnd", s)
+
+    def test_adjust_credits_grant_and_deduct(self):
+        uid = "admin-adjust"
+        start = client.get("/v1/me", headers=_auth(uid)).json()["credits"]
+        client.post(
+            "/v1/admin/credits",
+            headers=_ADMIN,
+            json={"user_id": uid, "delta": 50, "reason": "promo"},
+        )
+        self.assertEqual(client.get("/v1/me", headers=_auth(uid)).json()["credits"], start + 50)
+        client.post(
+            "/v1/admin/credits",
+            headers=_ADMIN,
+            json={"user_id": uid, "delta": -20, "reason": "correction"},
+        )
+        self.assertEqual(client.get("/v1/me", headers=_auth(uid)).json()["credits"], start + 30)
 
 
 class TestRateLimit(unittest.TestCase):

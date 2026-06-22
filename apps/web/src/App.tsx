@@ -1,6 +1,7 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 
 import { Sidebar } from "@/components/Sidebar";
+import { AdminPage } from "@/features/admin/AdminPage";
 import { LoginPage } from "@/features/auth/LoginPage";
 import { RequireAuth } from "@/features/auth/RequireAuth";
 import { BatchPage } from "@/features/batch/BatchPage";
@@ -35,6 +36,15 @@ export default function App() {
             element={
               <RequireAuth>
                 <SettingsPage />
+              </RequireAuth>
+            }
+          />
+          {/* Internal admin tool — no nav link; gated by both sign-in and the admin key. */}
+          <Route
+            path="/admin"
+            element={
+              <RequireAuth>
+                <AdminPage />
               </RequireAuth>
             }
           />

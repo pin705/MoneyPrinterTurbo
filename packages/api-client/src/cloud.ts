@@ -86,6 +86,22 @@ export interface Invoice {
   paid_at: string | null;
 }
 
+export interface AdminUser {
+  id: string;
+  email: string | null;
+  credits: number;
+  plan_id: string;
+  created_at: string;
+}
+
+export interface AdminStats {
+  users: number;
+  active_subscriptions: number;
+  credits_outstanding: number;
+  paid_orders: number;
+  revenue_vnd: number;
+}
+
 export interface CloudClientOptions {
   baseUrl: string;
   /** Bearer token; omit for public endpoints (e.g. the plans catalog). */
@@ -154,5 +170,30 @@ export class CloudClient {
   /** GET /v1/payments/invoices — the user's paid orders. */
   invoices(): Promise<{ invoices: Invoice[] }> {
     return this.request<{ invoices: Invoice[] }>("/v1/payments/invoices");
+  }
+
+  // --- Admin (authenticated by a separate admin key, not the user token) ---
+
+  adminUsers(adminKey: string): Promise<{ users: AdminUser[] }> {
+    return this.request<{ users: AdminUser[] }>("/v1/admin/users", {
+      headers: { "X-Admin-Key": adminKey },
+    });
+  }
+
+  adminStats(adminKey: string): Promise<AdminStats> {
+    return this.request<AdminStats>("/v1/admin/stats", {
+      headers: { "X-Admin-Key": adminKey },
+    });
+  }
+
+  adminAdjustCredits(
+    adminKey: string,
+    body: { user_id: string; delta: number; reason: string },
+  ): Promise<{ user_id: string; balance: number }> {
+    return this.request("/v1/admin/credits", {
+      method: "POST",
+      headers: { "X-Admin-Key": adminKey },
+      body: JSON.stringify(body),
+    });
   }
 }
