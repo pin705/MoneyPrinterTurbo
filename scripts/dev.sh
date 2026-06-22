@@ -27,13 +27,25 @@ echo "▸ render backend   → http://127.0.0.1:8000   (docs: /docs)"
 pids+=($!)
 
 if [[ "$WITH_CLOUD" == "1" ]]; then
-  echo "▸ cloud backend    → http://127.0.0.1:8787   (AUTH_DEV_MODE, admin key: dev)"
-  (
-    cd apps/cloud
-    AUTH_DEV_MODE=1 ADMIN_API_KEY=dev DATABASE_URL="sqlite:///./dev.db" \
+  if [ -f apps/cloud/.env ]; then
+    # Use the operator's real config (SUPABASE_JWT_SECRET, DEEPSEEK, SePay…).
+    # uvicorn --env-file loads it BEFORE importing the app (so module-level
+    # os.getenv sees it); tests don't use --env-file, so they stay hermetic.
+    echo "▸ cloud backend    → http://127.0.0.1:8787   (env from apps/cloud/.env)"
+    (
+      cd apps/cloud
       uv run --no-project --with-requirements requirements.txt \
-      uvicorn app.main:app --port 8787
-  ) &
+        uvicorn app.main:app --port 8787 --env-file .env
+    ) &
+  else
+    echo "▸ cloud backend    → http://127.0.0.1:8787   (dev auth — no apps/cloud/.env)"
+    (
+      cd apps/cloud
+      AUTH_DEV_MODE=1 ADMIN_API_KEY=dev DATABASE_URL="sqlite:///./dev.db" \
+        uv run --no-project --with-requirements requirements.txt \
+        uvicorn app.main:app --port 8787
+    ) &
+  fi
   pids+=($!)
 fi
 

@@ -67,15 +67,13 @@ export function PreviewPane() {
             {aspect}
           </span>
         </div>
-        <div className="grid place-items-center rounded-lg bg-[radial-gradient(circle_at_30%_20%,oklch(0.3_0.04_240),transparent_60%),radial-gradient(circle_at_80%_90%,oklch(0.28_0.06_160),transparent_55%)] bg-secondary/40 p-4">
+        <div className="grid place-items-center rounded-lg border border-border bg-muted/30 p-5 [background-image:radial-gradient(var(--border)_1px,transparent_1px)] [background-size:13px_13px]">
           <div
             className={cn(
-              "relative overflow-hidden rounded-lg border border-white/10 bg-gradient-to-br from-zinc-700 via-zinc-800 to-zinc-900 shadow-lg",
+              "relative overflow-hidden rounded-lg border border-border bg-gradient-to-b from-neutral-800 to-neutral-950 shadow-md",
               frame,
             )}
           >
-            {/* faux footage shimmer */}
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(255,255,255,0.12),transparent_45%)]" />
             <div className={cn("absolute inset-0 flex justify-center px-3 text-center", align)}>
               {subEnabled && (
                 <span

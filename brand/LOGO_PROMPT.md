@@ -4,9 +4,10 @@
 rendered locally. Personality: precise, fast, quiet-premium — a developer-tool
 aesthetic in the spirit of Cursor / Linear / Vercel.
 
-**Mark concept:** stacked **chevrons** that read as motion / video frames and as
-a forward-leaning **"V"**. Matches `brand/favicon.svg` and the in-app + landing
-mark.
+**Mark concept:** two **downward chevrons** (the lower one fading from white to
+grey) — reads as motion / video frames / "download → rendered locally", and as a
+**"V"**. Source: `brand/app-icon.svg` (1024); favicon: `brand/favicon.svg`.
+Desktop icon set generated via `pnpm --filter @mpt/desktop exec tauri icon ../../brand/app-icon.svg`.
 
 **Colors: MONOCHROME.** No color accent. Near-black tile `#161618`–`#27272a`
 with a white `#FAFAFA` mark, OR the inverse (white tile, near-black mark). Must

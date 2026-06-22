@@ -1,4 +1,6 @@
 import type { ReactNode } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { ApiError } from "@mpt/api-client";
 import {
   AlertCircle,
   BadgeCheck,
@@ -15,6 +17,7 @@ import { PageHeader } from "@/components/common/PageHeader";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useMe } from "@/lib/useCloud";
+import { useAuth } from "@/store/auth";
 
 function StatCard({
   icon,
@@ -39,7 +42,17 @@ function StatCard({
 export function DashboardPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const qc = useQueryClient();
+  const signOut = useAuth((s) => s.signOut);
   const me = useMe();
+  const authErr =
+    me.error instanceof ApiError &&
+    (me.error.status === 401 || me.error.status === 403);
+  const reauth = () => {
+    signOut();
+    qc.clear();
+    navigate("/login");
+  };
 
   return (
     <div className="flex min-h-full flex-col">
@@ -63,13 +76,31 @@ export function DashboardPage() {
             <div className="bg-destructive/10 text-destructive rounded-2xl p-4">
               <AlertCircle className="size-8" />
             </div>
-            <p className="text-sm font-medium text-foreground">{t("Couldn't reach the cloud backend")}</p>
-            <p className="text-muted-foreground max-w-md text-sm">
-              {t("Start the cloud service or check VITE_CLOUD_BASE_URL.")}
-            </p>
-            <Button variant="outline" size="sm" onClick={() => me.refetch()}>
-              {t("Retry")}
-            </Button>
+            {authErr ? (
+              <>
+                <p className="text-sm font-medium text-foreground">
+                  {t("Session not authorized")}
+                </p>
+                <p className="text-muted-foreground max-w-md text-sm">
+                  {t("Your session is invalid, or the cloud's SUPABASE_JWT_SECRET doesn't match your Supabase project. Sign in again or fix the secret.")}
+                </p>
+                <Button variant="outline" size="sm" onClick={reauth}>
+                  {t("Sign in again")}
+                </Button>
+              </>
+            ) : (
+              <>
+                <p className="text-sm font-medium text-foreground">
+                  {t("Couldn't reach the cloud backend")}
+                </p>
+                <p className="text-muted-foreground max-w-md text-sm">
+                  {t("Start the cloud service or check VITE_CLOUD_BASE_URL.")}
+                </p>
+                <Button variant="outline" size="sm" onClick={() => me.refetch()}>
+                  {t("Retry")}
+                </Button>
+              </>
+            )}
           </div>
         ) : me.data ? (
           <div className="flex flex-col gap-6">

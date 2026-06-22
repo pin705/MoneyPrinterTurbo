@@ -212,6 +212,10 @@ export const vi: Record<string, string> = {
   "Start the cloud service or check VITE_CLOUD_BASE_URL.":
     "Khởi động dịch vụ cloud hoặc kiểm tra VITE_CLOUD_BASE_URL.",
   Retry: "Thử lại",
+  "Session not authorized": "Phiên không được xác thực",
+  "Your session is invalid, or the cloud's SUPABASE_JWT_SECRET doesn't match your Supabase project. Sign in again or fix the secret.":
+    "Phiên không hợp lệ, hoặc SUPABASE_JWT_SECRET của cloud không khớp project Supabase. Đăng nhập lại hoặc sửa secret.",
+  "Sign in again": "Đăng nhập lại",
   "Credit balance": "Số dư credit",
   "Buy more": "Mua thêm",
   "Current plan": "Gói hiện tại",

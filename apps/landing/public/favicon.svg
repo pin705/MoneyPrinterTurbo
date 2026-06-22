@@ -1,12 +1,12 @@
 <svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Vidova">
   <defs>
-    <linearGradient id="vidova-g" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#27272a"/>
-      <stop offset="1" stop-color="#161618"/>
+    <linearGradient id="vidova-lower" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fafafa"/>
+      <stop offset="1" stop-color="#9b9ba3"/>
     </linearGradient>
   </defs>
-  <rect width="64" height="64" rx="16" fill="url(#vidova-g)"/>
-  <!-- Monochrome stacked chevrons (motion / video frames). White on a near-black tile. -->
-  <path d="M18 32 L27 23 L37 32 L46 23" stroke="#fafafa" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-  <path d="M18 42 L27 33 L37 42 L46 33" stroke="#fafafa" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" fill="none" opacity="0.5"/>
+  <rect width="64" height="64" rx="15" fill="#161618"/>
+  <!-- Two downward chevrons (the Vidova mark). Lower one fades to grey. -->
+  <path d="M16 22 L32 37 L48 22" stroke="#fafafa" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M16 33 L32 48 L48 33" stroke="url(#vidova-lower)" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>

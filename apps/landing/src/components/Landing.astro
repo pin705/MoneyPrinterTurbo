@@ -67,8 +67,8 @@ const featureIcons: Record<string, string> = {
         <a class="brand" href={home} aria-label="Vidova">
           <span class="logo-icon" aria-hidden="true">
             <svg width="18" height="18" viewBox="0 0 28 28" fill="none">
-              <path d="M8 13L12.5 9L17 13L21 9" stroke="#09090b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M8 18.5L12.5 14.5L17 18.5L21 14.5" stroke="#09090b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" opacity="0.55"/>
+              <path d="M7 10 L14 16 L21 10" stroke="#09090b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M7 15 L14 21 L21 15" stroke="#09090b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" opacity="0.55"/>
             </svg>
           </span>
           <span class="brand-text">Vid<span class="brand-accent">ova</span></span>
@@ -320,8 +320,8 @@ const featureIcons: Record<string, string> = {
           <a class="brand" href={home}>
             <span class="logo-icon" aria-hidden="true">
               <svg width="16" height="16" viewBox="0 0 28 28" fill="none">
-                <path d="M8 13L12.5 9L17 13L21 9" stroke="#09090b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M8 18.5L12.5 14.5L17 18.5L21 14.5" stroke="#09090b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" opacity="0.55"/>
+                <path d="M7 10 L14 16 L21 10" stroke="#09090b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15 L14 21 L21 15" stroke="#09090b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" opacity="0.55"/>
               </svg>
             </span>
             <span class="brand-text">Vid<span class="brand-accent">ova</span></span>
@@ -334,12 +334,6 @@ const featureIcons: Record<string, string> = {
             <a href="#features">{t.footer.links.features}</a>
             <a href="#pricing">{t.footer.links.pricing}</a>
             <a href={RELEASE}>{t.footer.links.download}</a>
-          </div>
-          <div class="footer-col">
-            <h4>{t.footer.legal}</h4>
-            <a href="/terms">{t.footer.links.terms}</a>
-            <a href="/privacy">{t.footer.links.privacy}</a>
-            <a href="/refund">{t.footer.links.refund}</a>
           </div>
           <div class="footer-col">
             <h4>{t.footer.community}</h4>
@@ -626,7 +620,7 @@ const featureIcons: Record<string, string> = {
       .footer { border-top: 1px solid var(--line); padding-block: 52px 28px; margin-top: 40px; }
       .footer-inner { display: grid; grid-template-columns: 1.4fr 2fr; gap: 40px; }
       .footer-tag { color: var(--fg-3); font-size: 14px; margin-top: 14px; max-width: 260px; }
-      .footer-cols { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+      .footer-cols { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
       .footer-col h4 { font-size: 12px; font-weight: 600; color: var(--fg-2); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 14px; }
       .footer-col a { display: block; font-size: 14px; color: var(--fg-3); padding: 4px 0; transition: color 0.15s ease; }
       .footer-col a:hover { color: var(--fg); }

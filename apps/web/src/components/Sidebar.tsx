@@ -75,8 +75,8 @@ export function Sidebar() {
         <div className="flex items-center gap-2.5">
           <div className="bg-primary text-primary-foreground grid size-7 shrink-0 place-items-center rounded-lg">
             <svg width="16" height="16" viewBox="0 0 28 28" fill="none" aria-hidden>
-              <path d="M8 13L12.5 9L17 13L21 9" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
-              <path d="M8 18.5L12.5 14.5L17 18.5L21 14.5" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" opacity="0.5" />
+              <path d="M7 10 L14 16 L21 10" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M7 15 L14 21 L21 15" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" opacity="0.5" />
             </svg>
           </div>
           {!collapsed && (
