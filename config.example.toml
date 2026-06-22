@@ -289,9 +289,17 @@ endpoint = ""
 material_directory = ""
 
 # Used for state management of the task.
+# Backend precedence: Redis > SQLite > Memory (in-process, lost on restart).
+#
+# enable_sqlite: durable task state in a single storage/tasks.db file (stdlib
+# sqlite3, no extra dependency). RECOMMENDED for the desktop app and any single
+# instance — task history then survives restarts. Leave false to keep the
+# legacy in-memory behavior.
+enable_sqlite = false
+
 # Redis is expected to be private to this app. Do not expose it to untrusted
 # writers, because task state is deserialized for compatibility with existing
-# records.
+# records. Use Redis when running multiple backend instances.
 enable_redis = false
 redis_host = "localhost"
 redis_port = 6379

@@ -1,4 +1,5 @@
 import sys
+import tempfile
 import threading
 import unittest
 from pathlib import Path
@@ -6,7 +7,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from app.models import const
-from app.services.state import MemoryState, RedisState
+from app.services.state import DbState, MemoryState, RedisState
 
 
 class _FakeRedis:
@@ -117,6 +118,94 @@ class TestRedisState(unittest.TestCase):
             [task["task_id"] for task in second_page],
             [f"task:{i}" for i in range(10, 18)],
         )
+
+
+class TestDbState(unittest.TestCase):
+    def setUp(self):
+        self._dir = tempfile.TemporaryDirectory()
+        self.db_path = str(Path(self._dir.name) / "tasks.db")
+
+    def tearDown(self):
+        self._dir.cleanup()
+
+    def test_get_task_and_get_all_tasks_return_isolated_snapshots(self):
+        state = DbState(db_path=self.db_path)
+        state.update_task(
+            "task-1",
+            state=const.TASK_STATE_PROCESSING,
+            progress=25,
+            videos=["first.mp4"],
+        )
+
+        task = state.get_task("task-1")
+        task["videos"].append("mutated.mp4")
+
+        tasks, total = state.get_all_tasks(page=1, page_size=10)
+        tasks[0]["videos"].append("mutated-again.mp4")
+
+        self.assertEqual(total, 1)
+        self.assertEqual(state.get_task("task-1")["videos"], ["first.mp4"])
+
+    def test_state_is_durable_across_instances(self):
+        state = DbState(db_path=self.db_path)
+        state.update_task(
+            "task-1",
+            state=const.TASK_STATE_COMPLETE,
+            progress=100,
+            videos=["final-1.mp4"],
+        )
+
+        # A fresh instance against the same file simulates a process restart.
+        reopened = DbState(db_path=self.db_path)
+        task = reopened.get_task("task-1")
+        self.assertIsNotNone(task)
+        self.assertEqual(task["state"], const.TASK_STATE_COMPLETE)
+        self.assertEqual(task["progress"], 100)
+        self.assertEqual(task["videos"], ["final-1.mp4"])
+
+    def test_update_task_replaces_the_whole_record(self):
+        # Matches MemoryState: an update overwrites the record, it does not merge.
+        state = DbState(db_path=self.db_path)
+        state.update_task("task-1", state=const.TASK_STATE_PROCESSING, progress=40, terms=["a"])
+        state.update_task("task-1", state=const.TASK_STATE_FAILED)
+
+        task = state.get_task("task-1")
+        self.assertEqual(task["state"], const.TASK_STATE_FAILED)
+        self.assertEqual(task["progress"], 0)
+        self.assertNotIn("terms", task)
+
+    def test_get_all_tasks_paginates_in_insertion_order(self):
+        state = DbState(db_path=self.db_path)
+        for i in range(18):
+            state.update_task(f"task-{i}", state=const.TASK_STATE_PROCESSING, progress=i)
+
+        first_page, first_total = state.get_all_tasks(page=1, page_size=10)
+        second_page, second_total = state.get_all_tasks(page=2, page_size=10)
+
+        self.assertEqual(first_total, 18)
+        self.assertEqual(second_total, 18)
+        self.assertEqual(len(first_page), 10)
+        self.assertEqual(len(second_page), 8)
+        self.assertEqual(
+            [task["task_id"] for task in first_page],
+            [f"task-{i}" for i in range(10)],
+        )
+
+    def test_delete_task(self):
+        state = DbState(db_path=self.db_path)
+        state.update_task("task-1", state=const.TASK_STATE_PROCESSING)
+        state.delete_task("task-1")
+        self.assertIsNone(state.get_task("task-1"))
+        _, total = state.get_all_tasks(page=1, page_size=10)
+        self.assertEqual(total, 0)
+
+    def test_progress_is_clamped_to_100(self):
+        # Mirrors MemoryState: progress above 100 is clamped; lower bound is not.
+        state = DbState(db_path=self.db_path)
+        state.update_task("task-1", state=const.TASK_STATE_PROCESSING, progress=150)
+        self.assertEqual(state.get_task("task-1")["progress"], 100)
+        state.update_task("task-2", state=const.TASK_STATE_PROCESSING, progress=-5)
+        self.assertEqual(state.get_task("task-2")["progress"], -5)
 
 
 if __name__ == "__main__":
