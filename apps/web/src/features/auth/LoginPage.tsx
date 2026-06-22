@@ -23,16 +23,16 @@ export function LoginPage() {
 
   return (
     <div className="flex min-h-full items-center justify-center px-6 py-16">
-      <div className="bg-zinc-900/50 w-full max-w-sm rounded-2xl border border-zinc-800/50 p-8 shadow-2xl shadow-zinc-900/50">
+      <div className="bg-card w-full max-w-sm rounded-2xl border border-border p-8 shadow-xl">
         <div className="mb-8 flex flex-col items-center gap-3 text-center">
-          <div className="bg-emerald-500/10 text-emerald-400 grid size-12 place-items-center rounded-2xl">
+          <div className="bg-primary/10 text-primary grid size-12 place-items-center rounded-2xl">
             <Sparkles className="size-6" />
           </div>
           <div>
-            <h1 className="text-lg font-semibold tracking-tight text-zinc-100">
+            <h1 className="text-lg font-semibold tracking-tight text-foreground">
               {t("Sign in to Vidova")}
             </h1>
-            <p className="text-zinc-500 text-sm mt-1">
+            <p className="text-muted-foreground text-sm mt-1">
               {t("Sync credits and manage your subscription.")}
             </p>
           </div>
@@ -47,15 +47,14 @@ export function LoginPage() {
               placeholder="you@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="bg-zinc-800/50 border-zinc-700/50 text-zinc-100 placeholder:text-zinc-600 focus:border-emerald-500/50 focus:ring-emerald-500/20"
             />
           </Field>
-          <Button type="submit" className="w-full bg-emerald-500 hover:bg-emerald-400 text-black font-semibold" disabled={!email.trim()}>
+          <Button type="submit" className="w-full bg-primary text-primary-foreground font-semibold" disabled={!email.trim()}>
             {t("Continue")}
           </Button>
         </form>
 
-        <p className="text-zinc-600 mt-6 text-center text-xs">
+        <p className="text-muted-foreground mt-6 text-center text-xs">
           {t("Dev sign-in — Google/email auth wires in with Supabase.")}
         </p>
       </div>

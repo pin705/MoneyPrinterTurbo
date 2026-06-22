@@ -126,9 +126,9 @@ export function VideoAudioPanel() {
           </Field>
         </div>
 
-        <Accordion type="single" collapsible className="rounded-lg border px-3">
+        <Accordion type="single" collapsible className="rounded-xl border border-zinc-800/50 px-3">
           <AccordionItem value="adv">
-            <AccordionTrigger className="text-xs">
+            <AccordionTrigger className="text-xs text-zinc-400">
               <span className="flex items-center gap-2">
                 <Settings2 className="size-3.5" />{" "}
                 {t("Advanced video settings")}
@@ -136,7 +136,7 @@ export function VideoAudioPanel() {
             </AccordionTrigger>
             <AccordionContent className="flex flex-col gap-4">
               <div className="flex items-center justify-between">
-                <Label htmlFor="match" className="text-xs">
+                <Label htmlFor="match" className="text-xs text-zinc-400">
                   {t("Match materials to script order")}
                 </Label>
                 <Switch

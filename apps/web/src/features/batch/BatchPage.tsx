@@ -70,11 +70,11 @@ export function BatchPage() {
         }
       />
 
-      <main className="mx-auto w-full max-w-3xl flex-1 px-6 py-6">
-        <div className="bg-card flex flex-col gap-3 rounded-xl border p-5">
-          <div className="flex items-center gap-2 text-sm font-medium">
-            <Layers className="size-4" /> {t("Topics")}
-            <span className="text-muted-foreground ml-auto text-xs tabular-nums">
+      <main className="mx-auto w-full max-w-3xl flex-1 px-6 py-8">
+        <div className="bg-zinc-900/50 flex flex-col gap-4 rounded-2xl border border-zinc-800/50 p-6">
+          <div className="flex items-center gap-2 text-sm font-medium text-zinc-300">
+            <Layers className="size-4 text-emerald-400" /> {t("Topics")}
+            <span className="text-zinc-500 ml-auto text-xs tabular-nums">
               {subjects.length} / {maxBatch}
             </span>
           </div>
@@ -83,24 +83,25 @@ export function BatchPage() {
             placeholder={t("One topic per line…")}
             value={raw}
             onChange={(e) => setRaw(e.target.value)}
+            className="bg-zinc-800/50 border-zinc-700/50 text-zinc-100 placeholder:text-zinc-600 focus:border-emerald-500/50 focus:ring-emerald-500/20"
           />
-          <p className="text-muted-foreground text-xs">
+          <p className="text-zinc-500 text-xs">
             {t("Shared look comes from the Create tab. Each line becomes one video.")}
           </p>
 
           {overLimit ? (
-            <div className="bg-muted/50 flex items-center justify-between rounded-lg border p-3 text-sm">
-              <span>
+            <div className="bg-zinc-800/50 flex items-center justify-between rounded-xl border border-zinc-700/50 p-4 text-sm">
+              <span className="text-zinc-300">
                 {t("Your plan allows {{n}} per batch.", { n: maxBatch })}
               </span>
-              <Button size="sm" variant="outline" onClick={() => navigate("/billing")}>
+              <Button size="sm" variant="outline" onClick={() => navigate("/billing")} className="border-zinc-700 hover:bg-zinc-800 text-zinc-300">
                 {t("Upgrade")}
               </Button>
             </div>
           ) : null}
 
           <Button
-            className="self-start"
+            className="self-start bg-emerald-500 hover:bg-emerald-400 text-black font-semibold"
             disabled={subjects.length === 0 || run.isPending}
             onClick={() => run.mutate()}
           >
@@ -114,16 +115,16 @@ export function BatchPage() {
             {progress.data.map((task, i) => (
               <div
                 key={taskIds[i]}
-                className="bg-card flex items-center gap-3 rounded-lg border px-4 py-3"
+                className="bg-zinc-900/50 flex items-center gap-3 rounded-xl border border-zinc-800/50 px-5 py-4"
               >
                 <ItemIcon state={task.state} />
-                <span className="flex-1 truncate text-sm">
+                <span className="flex-1 truncate text-sm text-zinc-300">
                   {task.script?.slice(0, 60) || `${t("Video")} ${i + 1}`}
                 </span>
                 {task.state === TaskState.PROCESSING ? (
-                  <Progress value={task.progress ?? 0} className="w-32" />
+                  <Progress value={task.progress ?? 0} className="w-32 bg-zinc-800 [&>div]:bg-emerald-500" />
                 ) : (
-                  <span className="text-muted-foreground text-xs tabular-nums">
+                  <span className="text-zinc-500 text-xs tabular-nums">
                     {task.state === TaskState.COMPLETE ? "100%" : t("Failed")}
                   </span>
                 )}
@@ -138,8 +139,8 @@ export function BatchPage() {
 
 function ItemIcon({ state }: { state?: number }) {
   if (state === TaskState.COMPLETE)
-    return <CheckCircle2 className="text-primary size-4 shrink-0" />;
+    return <CheckCircle2 className="text-emerald-400 size-4 shrink-0" />;
   if (state === TaskState.FAILED)
-    return <XCircle className="text-destructive size-4 shrink-0" />;
-  return <Loader2 className="text-muted-foreground size-4 shrink-0 animate-spin" />;
+    return <XCircle className="text-red-400 size-4 shrink-0" />;
+  return <Loader2 className="text-zinc-500 size-4 shrink-0 animate-spin" />;
 }

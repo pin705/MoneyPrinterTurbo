@@ -25,18 +25,18 @@ export function Stepper({ steps, current, onStepClick }: StepperProps) {
                 "flex items-center gap-2.5 whitespace-nowrap text-sm font-medium transition-all duration-200",
                 clickable && "cursor-pointer",
                 active
-                  ? "text-zinc-100"
+                  ? "text-foreground"
                   : done
-                    ? "text-zinc-300"
-                    : "text-zinc-600",
+                    ? "text-foreground/80"
+                    : "text-muted-foreground",
               )}
             >
               <span
                 className={cn(
                   "grid size-7 shrink-0 place-items-center rounded-full text-xs font-semibold transition-all duration-200",
-                  active && "bg-emerald-500 text-black",
-                  done && "bg-emerald-500/20 text-emerald-400",
-                  !active && !done && "bg-zinc-800 text-zinc-500 border border-zinc-700",
+                  active && "bg-primary text-primary-foreground",
+                  done && "bg-primary/20 text-primary",
+                  !active && !done && "bg-muted text-muted-foreground border border-border",
                 )}
               >
                 {done ? <Check className="size-3.5" /> : i + 1}
@@ -47,7 +47,7 @@ export function Stepper({ steps, current, onStepClick }: StepperProps) {
               <span
                 className={cn(
                   "h-px flex-1 transition-colors duration-200",
-                  i < current ? "bg-emerald-500" : "bg-zinc-800",
+                  i < current ? "bg-primary" : "bg-border",
                 )}
               />
             )}

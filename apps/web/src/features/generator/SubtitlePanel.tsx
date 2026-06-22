@@ -29,12 +29,12 @@ function ColorField({
           type="color"
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="border-input size-9 shrink-0 cursor-pointer rounded-md border bg-transparent p-1"
+          className="border-zinc-700 size-9 shrink-0 cursor-pointer rounded-lg border bg-zinc-800/50 p-1"
         />
         <Input
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="font-mono uppercase"
+          className="font-mono uppercase bg-zinc-800/50 border-zinc-700/50 text-zinc-100 focus:border-emerald-500/50 focus:ring-emerald-500/20"
         />
       </div>
     </Field>
@@ -56,7 +56,7 @@ export function SubtitlePanel() {
   return (
     <Section icon={<Captions />} title={t("Subtitles")}>
       <div className="flex items-center justify-between">
-        <Label htmlFor="subEnabled" className="text-xs">
+        <Label htmlFor="subEnabled" className="text-xs text-zinc-400">
           {t("Enable subtitles")}
         </Label>
         <Switch
@@ -81,6 +81,7 @@ export function SubtitlePanel() {
             placeholder="STHeitiMedium.ttc"
             value={params.font_name ?? ""}
             onChange={(e) => setParam("font_name", e.target.value)}
+            className="bg-zinc-800/50 border-zinc-700/50 text-zinc-100 placeholder:text-zinc-600 focus:border-emerald-500/50 focus:ring-emerald-500/20"
           />
         </Field>
 
@@ -104,6 +105,7 @@ export function SubtitlePanel() {
                 max={100}
                 value={params.custom_position ?? 70}
                 onChange={(e) => setParam("custom_position", Number(e.target.value))}
+                className="bg-zinc-800/50 border-zinc-700/50 text-zinc-100 focus:border-emerald-500/50 focus:ring-emerald-500/20"
               />
             </Field>
           ) : (
@@ -147,7 +149,7 @@ export function SubtitlePanel() {
         </Field>
 
         <div className="flex items-center justify-between">
-          <Label htmlFor="bgEnabled" className="text-xs">
+          <Label htmlFor="bgEnabled" className="text-xs text-zinc-400">
             {t("Subtitle background")}
           </Label>
           <Switch
@@ -167,7 +169,7 @@ export function SubtitlePanel() {
               onChange={(v) => setParam("text_background_color", v)}
             />
             <div className="flex items-center justify-between">
-              <Label htmlFor="rounded" className="text-xs">
+              <Label htmlFor="rounded" className="text-xs text-zinc-400">
                 {t("Rounded translucent background")}
               </Label>
               <Switch

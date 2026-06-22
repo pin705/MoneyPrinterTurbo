@@ -10,6 +10,10 @@ jobs:
   tests:
     name: Python tests
     runs-on: ubuntu-latest
+    # The render backend lives in apps/render (pyproject + uv.lock there).
+    defaults:
+      run:
+        working-directory: apps/render
 
     steps:
       - name: Check out repository

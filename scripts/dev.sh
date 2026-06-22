@@ -23,7 +23,7 @@ cleanup() {
 trap cleanup EXIT INT TERM
 
 echo "▸ render backend   → http://127.0.0.1:8000   (docs: /docs)"
-uv run python main.py &
+( cd apps/render && uv run python main.py ) &
 pids+=($!)
 
 if [[ "$WITH_CLOUD" == "1" ]]; then

@@ -71,7 +71,7 @@ export function BillingPage() {
       <main className="mx-auto w-full max-w-5xl flex-1 px-6 py-8">
         {/* Billing cycle toggle */}
         <div className="mb-8 flex justify-center">
-          <div className="bg-zinc-800/50 inline-flex rounded-xl p-1">
+          <div className="bg-muted inline-flex rounded-xl p-1">
             {(["monthly", "yearly"] as Cycle[]).map((c) => (
               <button
                 key={c}
@@ -79,13 +79,13 @@ export function BillingPage() {
                 className={
                   "rounded-lg px-5 py-2 text-sm font-medium transition-all duration-200 " +
                   (cycle === c
-                    ? "bg-zinc-700 text-zinc-100 shadow-sm"
-                    : "text-zinc-500 hover:text-zinc-300")
+                    ? "bg-background text-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground")
                 }
               >
                 {c === "monthly" ? t("Monthly") : t("Yearly")}
                 {c === "yearly" ? (
-                  <span className="text-emerald-400 ml-1.5 text-xs font-semibold">{t("-17%")}</span>
+                  <span className="text-primary ml-1.5 text-xs font-semibold">{t("-17%")}</span>
                 ) : null}
               </button>
             ))}
@@ -93,7 +93,7 @@ export function BillingPage() {
         </div>
 
         {plans.isLoading ? (
-          <div className="text-zinc-500 flex items-center gap-2 py-16 text-sm">
+          <div className="text-muted-foreground flex items-center gap-2 py-16 text-sm">
             <Loader2 className="size-4 animate-spin" /> {t("Loading…")}
           </div>
         ) : plans.data ? (
@@ -117,24 +117,24 @@ export function BillingPage() {
               ))}
             </div>
 
-            <h2 className="mt-12 mb-4 text-sm font-semibold text-zinc-300 uppercase tracking-wider">
+            <h2 className="mt-12 mb-4 text-sm font-semibold text-foreground uppercase tracking-wider">
               {t("Credit top-ups")}
             </h2>
             <div className="grid gap-4 sm:grid-cols-3">
               {plans.data.credit_packs.map((pack) => (
                 <div
                   key={pack.id}
-                  className="bg-zinc-900/50 flex flex-col gap-3 rounded-2xl border border-zinc-800/50 p-6 transition-all duration-200 hover:border-zinc-700/50"
+                  className="bg-card flex flex-col gap-3 rounded-2xl border border-border p-6 transition-all duration-200 hover:border-border/80"
                 >
-                  <div className="text-zinc-500 flex items-center gap-2 text-xs font-medium uppercase tracking-wider">
+                  <div className="text-muted-foreground flex items-center gap-2 text-xs font-medium uppercase tracking-wider">
                     <Coins className="size-4" /> {pack.credits} {t("credits")}
                   </div>
-                  <div className="text-3xl font-bold text-zinc-100">{vnd(pack.price_vnd)}</div>
+                  <div className="text-3xl font-bold text-foreground">{vnd(pack.price_vnd)}</div>
                   <Button
                     variant="outline"
                     size="sm"
                     disabled={buy.isPending}
-                    className="mt-2 border-zinc-700 hover:bg-zinc-800 text-zinc-300"
+                    className="mt-2"
                     onClick={() =>
                       buy.mutate({ kind: "pack", target_id: pack.id })
                     }
@@ -147,17 +147,17 @@ export function BillingPage() {
 
             {invoices.data && invoices.data.invoices.length > 0 ? (
               <>
-                <h2 className="mt-12 mb-4 text-sm font-semibold text-zinc-300 uppercase tracking-wider">{t("Invoices")}</h2>
-                <div className="bg-zinc-900/50 overflow-hidden rounded-2xl border border-zinc-800/50">
+                <h2 className="mt-12 mb-4 text-sm font-semibold text-foreground uppercase tracking-wider">{t("Invoices")}</h2>
+                <div className="bg-card overflow-hidden rounded-2xl border border-border">
                   {invoices.data.invoices.map((inv) => (
                     <div
                       key={inv.order_code}
-                      className="flex items-center justify-between border-b border-zinc-800/50 px-5 py-4 text-sm last:border-0"
+                      className="flex items-center justify-between border-b border-border px-5 py-4 text-sm last:border-0"
                     >
-                      <span className="font-mono text-xs text-zinc-500">{inv.order_code}</span>
-                      <span className="capitalize text-zinc-300">{inv.target_id}</span>
-                      <span className="tabular-nums font-medium text-zinc-200">{vnd(inv.amount_vnd)}</span>
-                      <span className="text-zinc-500 text-xs">
+                      <span className="font-mono text-xs text-muted-foreground">{inv.order_code}</span>
+                      <span className="capitalize text-foreground">{inv.target_id}</span>
+                      <span className="tabular-nums font-medium text-foreground">{vnd(inv.amount_vnd)}</span>
+                      <span className="text-muted-foreground text-xs">
                         {inv.paid_at
                           ? new Date(inv.paid_at).toLocaleDateString()
                           : ""}
@@ -169,7 +169,7 @@ export function BillingPage() {
             ) : null}
           </>
         ) : (
-          <p className="text-zinc-500 py-16 text-center text-sm">
+          <p className="text-muted-foreground py-16 text-center text-sm">
             {t("Couldn't load plans. Is the cloud backend running?")}
           </p>
         )}
@@ -201,26 +201,26 @@ function PlanCard({
   return (
     <div
       className={
-        "bg-zinc-900/50 relative flex flex-col gap-4 rounded-2xl border p-6 transition-all duration-200 " +
+        "bg-card relative flex flex-col gap-4 rounded-2xl border p-6 transition-all duration-200 " +
         (featured
-          ? "border-emerald-500/50 shadow-lg shadow-emerald-500/10"
-          : "border-zinc-800/50 hover:border-zinc-700/50")
+          ? "border-primary shadow-lg shadow-primary/10"
+          : "border-border hover:border-border/80")
       }
     >
       {featured ? (
-        <Badge className="absolute -top-3 right-6 bg-emerald-500 text-black border-0 font-semibold">{t("Popular")}</Badge>
+        <Badge className="absolute -top-3 right-6 bg-primary text-primary-foreground border-0 font-semibold">{t("Popular")}</Badge>
       ) : null}
       <div>
-        <h3 className="text-base font-semibold text-zinc-200">{plan.name}</h3>
+        <h3 className="text-base font-semibold text-foreground">{plan.name}</h3>
         <div className="mt-2 flex items-baseline gap-1">
-          <span className="text-3xl font-bold text-zinc-100">{vnd(price)}</span>
+          <span className="text-3xl font-bold text-foreground">{vnd(price)}</span>
           {!isFree ? (
-            <span className="text-zinc-500 text-sm">
+            <span className="text-muted-foreground text-sm">
               /{cycle === "yearly" ? t("yr") : t("mo")}
             </span>
           ) : null}
         </div>
-        <p className="text-zinc-500 mt-1 text-xs">
+        <p className="text-muted-foreground mt-1 text-xs">
           {plan.monthly_credits} {t("credits/mo")}
         </p>
       </div>
@@ -235,11 +235,11 @@ function PlanCard({
 
       <div className="mt-auto pt-2">
         {current ? (
-          <Button variant="outline" className="w-full border-zinc-700 text-zinc-400" disabled>
+          <Button variant="outline" className="w-full" disabled>
             {t("Current plan")}
           </Button>
         ) : isFree ? (
-          <Button variant="ghost" className="w-full text-zinc-500" disabled>
+          <Button variant="ghost" className="w-full" disabled>
             {t("Free forever")}
           </Button>
         ) : (
@@ -247,9 +247,10 @@ function PlanCard({
             className={
               "w-full font-semibold " +
               (featured
-                ? "bg-emerald-500 hover:bg-emerald-400 text-black"
-                : "bg-zinc-800 hover:bg-zinc-700 text-zinc-100")
+                ? "bg-primary text-primary-foreground"
+                : "")
             }
+            variant={featured ? "default" : "outline"}
             disabled={pending}
             onClick={onChoose}
           >
@@ -263,9 +264,9 @@ function PlanCard({
 
 function Feat({ ok, label }: { ok: boolean; label: string }) {
   return (
-    <li className={ok ? "flex items-center gap-2.5" : "text-zinc-600 flex items-center gap-2.5"}>
-      <Check className={ok ? "text-emerald-400 size-4" : "size-4 text-zinc-700"} />
-      <span className={ok ? "text-zinc-300" : "text-zinc-600"}>{label}</span>
+    <li className={ok ? "flex items-center gap-2.5" : "text-muted-foreground/50 flex items-center gap-2.5"}>
+      <Check className={ok ? "text-primary size-4" : "size-4 text-muted-foreground/30"} />
+      <span className={ok ? "text-foreground" : "text-muted-foreground/50"}>{label}</span>
     </li>
   );
 }
@@ -280,10 +281,10 @@ function PaymentDialog({
   const { t } = useTranslation();
   return (
     <Dialog open={!!checkout} onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="max-w-sm bg-zinc-900 border-zinc-800">
+      <DialogContent className="max-w-sm">
         <DialogHeader>
-          <DialogTitle className="text-zinc-100">{t("Scan to pay with SePay")}</DialogTitle>
-          <DialogDescription className="text-zinc-500">
+          <DialogTitle>{t("Scan to pay with SePay")}</DialogTitle>
+          <DialogDescription>
             {t("Transfer the exact amount — your account updates automatically.")}
           </DialogDescription>
         </DialogHeader>
@@ -293,22 +294,22 @@ function PaymentDialog({
               <img
                 src={checkout.qr_url}
                 alt="SePay QR"
-                className="size-56 rounded-xl border border-zinc-800"
+                className="size-56 rounded-xl border border-border"
               />
             ) : (
-              <p className="text-zinc-500 text-center text-xs">
+              <p className="text-muted-foreground text-center text-xs">
                 {t("Set SEPAY_ACCOUNT/SEPAY_BANK to render the QR.")}
               </p>
             )}
-            <div className="w-full rounded-xl border border-zinc-800 bg-zinc-800/50 p-4 text-sm">
+            <div className="w-full rounded-xl border border-border bg-muted/50 p-4 text-sm">
               <Row label={t("Amount")} value={vnd(checkout.amount_vnd)} />
               <Row label={t("Content")} value={checkout.transfer_content} mono />
               {checkout.account ? (
                 <Row label={t("Account")} value={`${checkout.account} · ${checkout.bank}`} />
               ) : null}
             </div>
-            <div className="text-zinc-500 flex items-center gap-2 text-xs">
-              <Loader2 className="size-3.5 animate-spin text-emerald-400" />
+            <div className="text-muted-foreground flex items-center gap-2 text-xs">
+              <Loader2 className="size-3.5 animate-spin text-primary" />
               {t("Waiting for payment…")}
             </div>
           </div>
@@ -321,8 +322,8 @@ function PaymentDialog({
 function Row({ label, value, mono }: { label: string; value: string; mono?: boolean }) {
   return (
     <div className="flex items-center justify-between gap-2 py-1.5">
-      <span className="text-zinc-500 text-xs">{label}</span>
-      <span className={mono ? "font-mono text-xs text-zinc-300" : "text-sm font-medium text-zinc-200"}>{value}</span>
+      <span className="text-muted-foreground text-xs">{label}</span>
+      <span className={mono ? "font-mono text-xs text-foreground" : "text-sm font-medium text-foreground"}>{value}</span>
     </div>
   );
 }

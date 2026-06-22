@@ -1,8 +1,8 @@
 # PyInstaller spec — bundles the FastAPI backend into a single binary that the
 # Tauri desktop app spawns as a sidecar.
 #
-# Build:  pyinstaller --clean -y packaging/mpt-backend.spec   (run from repo root)
-# Output: dist/mpt-backend   (then renamed by scripts/build-sidecar.sh)
+# Build:  pyinstaller --clean -y packaging/mpt-backend.spec   (run from apps/render)
+# Output: apps/render/dist/mpt-backend  (then renamed by scripts/build-sidecar.sh)
 #
 # NOTE: onefile keeps the sidecar a single executable (what Tauri externalBin
 # wants) but extracts to a temp dir on startup — slower for the large resource/

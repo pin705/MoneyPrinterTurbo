@@ -82,33 +82,33 @@ export function SettingsDialog() {
           <Settings />
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-xl">
+      <DialogContent className="max-w-xl bg-zinc-900 border-zinc-800">
         <DialogHeader>
-          <DialogTitle>{t("Settings")}</DialogTitle>
-          <DialogDescription>
+          <DialogTitle className="text-zinc-100">{t("Settings")}</DialogTitle>
+          <DialogDescription className="text-zinc-500">
             {t("Stored in the backend's config.toml on this machine.")}
           </DialogDescription>
         </DialogHeader>
 
         <Tabs defaultValue="ai" className="w-full">
-          <TabsList className="w-full">
-            <TabsTrigger value="ai" className="flex-1">
+          <TabsList className="w-full bg-zinc-800/50">
+            <TabsTrigger value="ai" className="flex-1 data-[state=active]:bg-zinc-700 data-[state=active]:text-zinc-100">
               {t("AI / LLM")}
             </TabsTrigger>
-            <TabsTrigger value="media" className="flex-1">
+            <TabsTrigger value="media" className="flex-1 data-[state=active]:bg-zinc-700 data-[state=active]:text-zinc-100">
               {t("Media")}
             </TabsTrigger>
-            <TabsTrigger value="conn" className="flex-1">
+            <TabsTrigger value="conn" className="flex-1 data-[state=active]:bg-zinc-700 data-[state=active]:text-zinc-100">
               {t("Connection")}
             </TabsTrigger>
           </TabsList>
 
           {configQ.isLoading && open ? (
-            <div className="text-muted-foreground flex items-center gap-2 py-8 text-sm">
-              <Loader2 className="size-4 animate-spin" /> {t("Loading config…")}
+            <div className="text-zinc-500 flex items-center gap-2 py-8 text-sm">
+              <Loader2 className="size-4 animate-spin text-emerald-400" /> {t("Loading config…")}
             </div>
           ) : configQ.isError ? (
-            <p className="text-destructive py-8 text-sm">
+            <p className="text-red-400 py-8 text-sm">
               {t("Could not reach the backend. Check the Connection tab.")}
             </p>
           ) : (
@@ -133,6 +133,7 @@ export function SettingsDialog() {
                     placeholder="sk-…"
                     value={get(`${provider}_api_key`)}
                     onChange={(e) => set(`${provider}_api_key`, e.target.value)}
+                    className="bg-zinc-800/50 border-zinc-700/50 text-zinc-100 placeholder:text-zinc-600 focus:border-emerald-500/50 focus:ring-emerald-500/20"
                   />
                 </Field>
                 <div className="grid grid-cols-2 gap-3">
@@ -144,6 +145,7 @@ export function SettingsDialog() {
                       onChange={(e) =>
                         set(`${provider}_base_url`, e.target.value)
                       }
+                      className="bg-zinc-800/50 border-zinc-700/50 text-zinc-100 placeholder:text-zinc-600 focus:border-emerald-500/50 focus:ring-emerald-500/20"
                     />
                   </Field>
                   <Field label={t("Model")} htmlFor="model">
@@ -154,6 +156,7 @@ export function SettingsDialog() {
                       onChange={(e) =>
                         set(`${provider}_model_name`, e.target.value)
                       }
+                      className="bg-zinc-800/50 border-zinc-700/50 text-zinc-100 placeholder:text-zinc-600 focus:border-emerald-500/50 focus:ring-emerald-500/20"
                     />
                   </Field>
                 </div>
@@ -166,6 +169,7 @@ export function SettingsDialog() {
                       onChange={(e) =>
                         set(`${provider}_secret_key`, e.target.value)
                       }
+                      className="bg-zinc-800/50 border-zinc-700/50 text-zinc-100 placeholder:text-zinc-600 focus:border-emerald-500/50 focus:ring-emerald-500/20"
                     />
                   </Field>
                 ) : null}
@@ -177,6 +181,7 @@ export function SettingsDialog() {
                       onChange={(e) =>
                         set(`${provider}_account_id`, e.target.value)
                       }
+                      className="bg-zinc-800/50 border-zinc-700/50 text-zinc-100 placeholder:text-zinc-600 focus:border-emerald-500/50 focus:ring-emerald-500/20"
                     />
                   </Field>
                 ) : null}
@@ -195,6 +200,7 @@ export function SettingsDialog() {
                     onChange={(e) =>
                       set("pexels_api_keys", strToList(e.target.value))
                     }
+                    className="bg-zinc-800/50 border-zinc-700/50 text-zinc-100 placeholder:text-zinc-600 focus:border-emerald-500/50 focus:ring-emerald-500/20"
                   />
                 </Field>
                 <Field label={t("Pixabay API key")} htmlFor="pixabay">
@@ -205,6 +211,7 @@ export function SettingsDialog() {
                     onChange={(e) =>
                       set("pixabay_api_keys", strToList(e.target.value))
                     }
+                    className="bg-zinc-800/50 border-zinc-700/50 text-zinc-100 placeholder:text-zinc-600 focus:border-emerald-500/50 focus:ring-emerald-500/20"
                   />
                 </Field>
                 <Field label={t("Coverr API key")} htmlFor="coverr">
@@ -215,6 +222,7 @@ export function SettingsDialog() {
                     onChange={(e) =>
                       set("coverr_api_keys", strToList(e.target.value))
                     }
+                    className="bg-zinc-800/50 border-zinc-700/50 text-zinc-100 placeholder:text-zinc-600 focus:border-emerald-500/50 focus:ring-emerald-500/20"
                   />
                 </Field>
               </TabsContent>
@@ -228,9 +236,10 @@ export function SettingsDialog() {
                 value={urlDraft}
                 onChange={(e) => setUrlDraft(e.target.value)}
                 placeholder="http://127.0.0.1:8000"
+                className="bg-zinc-800/50 border-zinc-700/50 text-zinc-100 placeholder:text-zinc-600 focus:border-emerald-500/50 focus:ring-emerald-500/20"
               />
             </Field>
-            <p className="text-muted-foreground rounded-md border border-dashed p-3 text-xs leading-relaxed">
+            <p className="text-zinc-500 rounded-xl border border-dashed border-zinc-700/50 p-4 text-xs leading-relaxed">
               {t(
                 "Render runs locally. Managed accounts & a credit system are on the roadmap.",
               )}
@@ -238,11 +247,11 @@ export function SettingsDialog() {
           </TabsContent>
         </Tabs>
 
-        <div className="flex justify-end gap-2">
-          <Button variant="ghost" onClick={() => setOpen(false)}>
+        <div className="flex justify-end gap-2 pt-2">
+          <Button variant="ghost" onClick={() => setOpen(false)} className="text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800">
             {t("Cancel")}
           </Button>
-          <Button onClick={onSave} disabled={save.isPending}>
+          <Button onClick={onSave} disabled={save.isPending} className="bg-emerald-500 hover:bg-emerald-400 text-black font-semibold">
             {save.isPending ? <Loader2 className="animate-spin" /> : null}
             {t("Save")}
           </Button>

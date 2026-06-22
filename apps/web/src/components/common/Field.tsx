@@ -24,16 +24,16 @@ export function Field({ label, htmlFor, hint, className, children }: FieldProps)
         <Label
           htmlFor={htmlFor}
           id={htmlFor ? `${htmlFor}-label` : undefined}
-          className="text-muted-foreground text-xs"
+          className="text-zinc-400 text-xs font-medium"
         >
           {label}
         </Label>
         {hint ? (
           <Tooltip>
             <TooltipTrigger asChild>
-              <Info className="text-muted-foreground/60 size-3 cursor-help" />
+              <Info className="text-zinc-600 size-3 cursor-help" />
             </TooltipTrigger>
-            <TooltipContent className="max-w-xs">{hint}</TooltipContent>
+            <TooltipContent className="max-w-xs bg-zinc-800 border-zinc-700 text-zinc-300">{hint}</TooltipContent>
           </Tooltip>
         ) : null}
       </div>
@@ -53,17 +53,17 @@ export function Section({ icon, title, className, children }: SectionProps) {
   return (
     <section
       className={cn(
-        "bg-card flex flex-col rounded-xl border shadow-sm",
+        "bg-zinc-900/50 flex flex-col rounded-2xl border border-zinc-800/50",
         className,
       )}
     >
-      <div className="flex items-center gap-2 border-b px-4 py-3">
+      <div className="flex items-center gap-2.5 border-b border-zinc-800/50 px-5 py-4">
         {icon ? (
-          <span className="text-primary [&_svg]:size-4">{icon}</span>
+          <span className="text-emerald-400 [&_svg]:size-4">{icon}</span>
         ) : null}
-        <h2 className="text-sm font-semibold tracking-tight">{title}</h2>
+        <h2 className="text-sm font-semibold tracking-tight text-zinc-200">{title}</h2>
       </div>
-      <div className="flex flex-col gap-4 p-4">{children}</div>
+      <div className="flex flex-col gap-4 p-5">{children}</div>
     </section>
   );
 }

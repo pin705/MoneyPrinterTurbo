@@ -51,10 +51,10 @@ export function AdminPage() {
   return (
     <div className="flex min-h-full flex-col">
       <PageHeader title={t("Admin")} subtitle={t("Users, credits and revenue")} />
-      <main className="mx-auto w-full max-w-5xl flex-1 px-6 py-6">
-        <div className="bg-card mb-6 flex items-end gap-2 rounded-xl border p-4">
+      <main className="mx-auto w-full max-w-5xl flex-1 px-6 py-8">
+        <div className="bg-zinc-900/50 mb-6 flex items-end gap-3 rounded-2xl border border-zinc-800/50 p-5">
           <div className="flex-1">
-            <label className="text-muted-foreground mb-1 block text-xs">
+            <label className="text-zinc-500 mb-1.5 block text-xs font-medium uppercase tracking-wider">
               {t("Admin key")}
             </label>
             <Input
@@ -62,15 +62,16 @@ export function AdminPage() {
               value={key}
               placeholder="X-Admin-Key"
               onChange={(e) => setKey(e.target.value)}
+              className="bg-zinc-800/50 border-zinc-700/50 text-zinc-100 placeholder:text-zinc-600 focus:border-emerald-500/50 focus:ring-emerald-500/20"
             />
           </div>
-          <Button onClick={connect} disabled={!key.trim()}>
+          <Button onClick={connect} disabled={!key.trim()} className="bg-emerald-500 hover:bg-emerald-400 text-black font-semibold">
             <ShieldCheck /> {t("Connect")}
           </Button>
         </div>
 
         {active && stats.isError ? (
-          <p className="text-destructive text-sm">{t("Invalid admin key or backend offline.")}</p>
+          <p className="text-red-400 text-sm">{t("Invalid admin key or backend offline.")}</p>
         ) : null}
 
         {stats.data ? (
@@ -83,20 +84,21 @@ export function AdminPage() {
         ) : null}
 
         {users.data ? (
-          <div className="bg-card overflow-hidden rounded-xl border">
+          <div className="bg-zinc-900/50 overflow-hidden rounded-2xl border border-zinc-800/50">
             {users.data.users.map((u) => (
               <div
                 key={u.id}
-                className="flex items-center gap-3 border-b px-4 py-3 text-sm last:border-0"
+                className="flex items-center gap-3 border-b border-zinc-800/50 px-5 py-4 text-sm last:border-0"
               >
-                <span className="flex-1 truncate">{u.email ?? u.id}</span>
-                <span className="capitalize">{u.plan_id}</span>
-                <span className="w-20 text-right tabular-nums">{u.credits}</span>
-                <div className="flex gap-1">
+                <span className="flex-1 truncate text-zinc-300">{u.email ?? u.id}</span>
+                <span className="capitalize text-zinc-400">{u.plan_id}</span>
+                <span className="w-20 text-right tabular-nums font-medium text-zinc-200">{u.credits}</span>
+                <div className="flex gap-1.5">
                   <Button
                     size="sm"
                     variant="outline"
                     onClick={() => adjust.mutate({ user_id: u.id, delta: 50 })}
+                    className="border-zinc-700 hover:bg-emerald-500/10 text-emerald-400"
                   >
                     +50
                   </Button>
@@ -104,6 +106,7 @@ export function AdminPage() {
                     size="sm"
                     variant="outline"
                     onClick={() => adjust.mutate({ user_id: u.id, delta: -50 })}
+                    className="border-zinc-700 hover:bg-red-500/10 text-red-400"
                   >
                     −50
                   </Button>
@@ -119,9 +122,9 @@ export function AdminPage() {
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="bg-card rounded-xl border p-4">
-      <p className="text-muted-foreground text-xs">{label}</p>
-      <p className="mt-1 text-2xl font-semibold tabular-nums">{value}</p>
+    <div className="bg-zinc-900/50 rounded-2xl border border-zinc-800/50 p-5">
+      <p className="text-zinc-500 text-xs font-medium uppercase tracking-wider">{label}</p>
+      <p className="mt-2 text-3xl font-bold tabular-nums text-zinc-100">{value}</p>
     </div>
   );
 }

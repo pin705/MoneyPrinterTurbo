@@ -16,9 +16,9 @@ payments.
 ## Monorepo layout
 
 ```
-app/                 Render backend (FastAPI): LLM → footage → TTS → subtitles → ffmpeg
+apps/render/         Render backend (FastAPI): LLM → footage → TTS → subtitles → ffmpeg
 apps/web/            React 19 + Vite + Tailwind + shadcn — the studio UI (also the desktop webview)
-apps/desktop/        Tauri v2 shell (bundles the render backend as a sidecar)
+apps/desktop/        Tauri v2 shell (bundles apps/render as a sidecar)
 apps/landing/        Astro marketing site + legal pages
 apps/cloud/          FastAPI: accounts, credits, plans/subscriptions, SePay payments, admin
 packages/api-client/ Typed clients (MptClient = local render, CloudClient = accounts/billing)
@@ -31,7 +31,7 @@ docs/product/        Workflow, task breakdown, pricing/cost model, ops runbook
 ```bash
 # 1. Install JS deps + Python env
 pnpm install
-uv sync
+(cd apps/render && uv sync)
 
 # 2. Start everything (render backend + web) with one command:
 pnpm dev:all
@@ -39,8 +39,9 @@ pnpm dev:all
 #   add the cloud backend too:  pnpm dev:all --cloud   (or: scripts/dev.sh --cloud)
 ```
 
-Configure providers (Pexels/Pixabay, LLM keys) in `config.toml` (auto-created
-from `config.example.toml` on first run) or via the in-app Settings dialog.
+Configure providers (Pexels/Pixabay, LLM keys) in `apps/render/config.toml`
+(auto-created from `config.example.toml` on first run) or via the in-app
+Settings dialog.
 
 ## Business model
 
@@ -51,8 +52,8 @@ from `config.example.toml` on first run) or via the in-app Settings dialog.
 ## Tests
 
 ```bash
-uv run python -m unittest test.services.test_state test.services.test_task \
-  test.services.test_schema test.services.test_batch test.services.test_subtitle_background_settings
+(cd apps/render && uv run python -m unittest test.services.test_state test.services.test_task \
+  test.services.test_schema test.services.test_batch test.services.test_subtitle_background_settings)
 (cd apps/cloud && AUTH_DEV_MODE=1 ADMIN_API_KEY=dev uv run --no-project \
   --with-requirements requirements.txt python -m unittest discover -s tests -p "test_*.py")
 pnpm typecheck && pnpm --filter @mpt/web test:e2e

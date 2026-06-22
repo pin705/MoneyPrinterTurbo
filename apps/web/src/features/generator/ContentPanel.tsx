@@ -95,9 +95,9 @@ export function ContentPanel() {
         />
       </Field>
 
-      <Accordion type="single" collapsible className="rounded-lg border px-3">
+      <Accordion type="single" collapsible className="rounded-xl border border-zinc-800/50 px-3">
         <AccordionItem value="advanced">
-          <AccordionTrigger className="text-xs">
+          <AccordionTrigger className="text-xs text-zinc-400">
             <span className="flex items-center gap-2">
               <Settings2 className="size-3.5" /> {t("Advanced script settings")}
             </span>
@@ -124,10 +124,11 @@ export function ContentPanel() {
                 placeholder="e.g. lighter tone, fit TikTok style, suspenseful opening"
                 value={params.video_script_prompt ?? ""}
                 onChange={(e) => setParam("video_script_prompt", e.target.value)}
+                className="bg-zinc-800/50 border-zinc-700/50 text-zinc-100 placeholder:text-zinc-600 focus:border-emerald-500/50 focus:ring-emerald-500/20"
               />
             </Field>
             <div className="flex items-center justify-between">
-              <Label htmlFor="customsys" className="text-xs">
+              <Label htmlFor="customsys" className="text-xs text-zinc-400">
                 {t("Use custom system prompt")}
               </Label>
               <Switch
@@ -143,6 +144,7 @@ export function ContentPanel() {
                 rows={6}
                 value={params.custom_system_prompt ?? ""}
                 onChange={(e) => setParam("custom_system_prompt", e.target.value)}
+                className="bg-zinc-800/50 border-zinc-700/50 text-zinc-100 placeholder:text-zinc-600 focus:border-emerald-500/50 focus:ring-emerald-500/20"
               />
             ) : null}
           </AccordionContent>
@@ -152,7 +154,7 @@ export function ContentPanel() {
       <Button
         onClick={() => generate.mutate()}
         disabled={!params.video_subject.trim() || generate.isPending}
-        className="w-full"
+        className="w-full bg-emerald-500 hover:bg-emerald-400 text-black font-semibold"
       >
         <Wand2 />
         {generate.isPending
@@ -171,6 +173,7 @@ export function ContentPanel() {
           placeholder="The narration text for your video…"
           value={params.video_script ?? ""}
           onChange={(e) => setParam("video_script", e.target.value)}
+          className="bg-zinc-800/50 border-zinc-700/50 text-zinc-100 placeholder:text-zinc-600 focus:border-emerald-500/50 focus:ring-emerald-500/20"
         />
       </Field>
 
@@ -185,6 +188,7 @@ export function ContentPanel() {
           placeholder="morning routine, sunrise, productivity"
           value={termsValue}
           onChange={(e) => setParam("video_terms", e.target.value)}
+          className="bg-zinc-800/50 border-zinc-700/50 text-zinc-100 placeholder:text-zinc-600 focus:border-emerald-500/50 focus:ring-emerald-500/20"
         />
       </Field>
     </Section>
