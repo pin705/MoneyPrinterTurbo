@@ -187,7 +187,20 @@ export const vi: Record<string, string> = {
   "Sync credits and manage your subscription.":
     "Đồng bộ credit và quản lý gói đăng ký.",
   Email: "Email",
+  Password: "Mật khẩu",
   Continue: "Tiếp tục",
+  "Continue with Google": "Tiếp tục với Google",
+  or: "hoặc",
+  "Create account": "Tạo tài khoản",
+  "Create one": "Tạo tài khoản",
+  "No account?": "Chưa có tài khoản?",
+  "Already have an account?": "Đã có tài khoản?",
+  "Check your email": "Kiểm tra email",
+  "We sent a confirmation link to {{email}}. Click it to activate your account.":
+    "Đã gửi liên kết xác nhận tới {{email}}. Bấm vào đó để kích hoạt tài khoản.",
+  "Back to sign in": "Quay lại đăng nhập",
+  "Dev sign-in — set VITE_SUPABASE_URL/ANON_KEY for real auth.":
+    "Đăng nhập dev — đặt VITE_SUPABASE_URL/ANON_KEY để dùng auth thật.",
   "Dev sign-in — Google/email auth wires in with Supabase.":
     "Đăng nhập dev — đăng nhập Google/email cắm qua Supabase.",
 
