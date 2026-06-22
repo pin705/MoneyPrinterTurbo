@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://moneyprinter.studio/sitemap.xml
+Sitemap: https://vidova-landing.vercel.app/sitemap.xml
