@@ -55,7 +55,7 @@ export function DashboardPage() {
 
       <main className="mx-auto w-full max-w-5xl flex-1 px-6 py-8">
         {me.isLoading ? (
-          <div className="text-muted-foreground flex items-center gap-2 py-20 text-sm">
+          <div className="text-muted-foreground flex items-center justify-center gap-2 py-24 text-sm">
             <Loader2 className="size-4 animate-spin" /> {t("Loading…")}
           </div>
         ) : me.isError ? (

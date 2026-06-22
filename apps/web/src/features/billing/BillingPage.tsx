@@ -93,7 +93,7 @@ export function BillingPage() {
         </div>
 
         {plans.isLoading ? (
-          <div className="text-muted-foreground flex items-center gap-2 py-16 text-sm">
+          <div className="text-muted-foreground flex items-center justify-center gap-2 py-24 text-sm">
             <Loader2 className="size-4 animate-spin" /> {t("Loading…")}
           </div>
         ) : plans.data ? (
