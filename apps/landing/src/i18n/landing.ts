@@ -63,7 +63,6 @@ export interface LandingCopy {
   footer: {
     tagline: string;
     product: string;
-    legal: string;
     community: string;
     rights: string;
     made: string;
@@ -71,9 +70,6 @@ export interface LandingCopy {
       features: string;
       pricing: string;
       download: string;
-      terms: string;
-      privacy: string;
-      refund: string;
     };
   };
 }
@@ -176,7 +172,6 @@ export const landing: Record<Locale, LandingCopy> = {
     footer: {
       tagline: "AI short videos, rendered on your machine.",
       product: "Product",
-      legal: "Legal",
       community: "Community",
       rights: "All rights reserved.",
       made: "Rendered locally. Built for creators.",
@@ -184,9 +179,6 @@ export const landing: Record<Locale, LandingCopy> = {
         features: "Features",
         pricing: "Pricing",
         download: "Download",
-        terms: "Terms",
-        privacy: "Privacy",
-        refund: "Refund",
       },
     },
   },
@@ -288,7 +280,6 @@ export const landing: Record<Locale, LandingCopy> = {
     footer: {
       tagline: "Video ngắn AI, render ngay trên máy bạn.",
       product: "Sản phẩm",
-      legal: "Pháp lý",
       community: "Cộng đồng",
       rights: "Bảo lưu mọi quyền.",
       made: "Render tại máy. Dành cho người sáng tạo.",
@@ -296,9 +287,6 @@ export const landing: Record<Locale, LandingCopy> = {
         features: "Tính năng",
         pricing: "Bảng giá",
         download: "Tải về",
-        terms: "Điều khoản",
-        privacy: "Bảo mật",
-        refund: "Hoàn tiền",
       },
     },
   },
