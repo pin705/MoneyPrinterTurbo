@@ -1,0 +1,248 @@
+---
+const REPO = "https://github.com/pin705/MoneyPrinterTurbo";
+const RELEASE = `${REPO}/releases/latest`;
+
+const downloads = [
+  { os: "mac", label: "macOS", sub: "Apple Silicon · Intel", href: RELEASE },
+  { os: "windows", label: "Windows", sub: "10 / 11 · 64-bit", href: RELEASE },
+  { os: "linux", label: "Linux", sub: "AppImage · .deb", href: RELEASE },
+];
+
+const features = [
+  { icon: "✍️", title: "AI script & keywords", body: "Type a topic — get a narration script and stock-footage search terms in seconds." },
+  { icon: "🎬", title: "Renders on your machine", body: "ffmpeg + MoviePy run locally. No render queues, no per-video server fees." },
+  { icon: "🗣️", title: "Lifelike voiceover", body: "Dozens of Edge TTS voices across 15+ languages, with adjustable rate & volume." },
+  { icon: "💬", title: "Styled subtitles", body: "Fonts, colors, outline, position and translucent backgrounds — fully tunable." },
+  { icon: "🎵", title: "Stock + music", body: "Pexels, Pixabay & Coverr footage plus background music, royalty-free." },
+  { icon: "🚀", title: "Auto-updates", body: "The app updates itself when a new version ships. Always on the latest." },
+];
+
+const steps = [
+  { n: 1, t: "Enter a topic", d: "Or paste your own script." },
+  { n: 2, t: "Pick a look", d: "Aspect, voice, subtitles, music." },
+  { n: 3, t: "Generate", d: "Renders locally on your machine." },
+  { n: 4, t: "Publish", d: "Download or auto-post to TikTok / Shorts." },
+];
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MoneyPrinter Studio — AI short videos, rendered on your machine</title>
+    <meta
+      name="description"
+      content="Turn a topic into a finished short video — script, voiceover, subtitles and stock footage. Renders locally, free to use, with a small credit top-up for AI."
+    />
+  </head>
+  <body>
+    <header class="nav">
+      <div class="wrap nav-inner">
+        <a class="brand" href="/">
+          <span class="logo">✦</span> MoneyPrinter <b>Studio</b>
+        </a>
+        <nav>
+          <a href="#features">Features</a>
+          <a href="#how">How it works</a>
+          <a href="#pricing">Pricing</a>
+          <a class="btn btn-sm" href="#download">Download</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero wrap">
+        <span class="pill">Free desktop app · renders locally</span>
+        <h1>Turn a <span class="grad">topic</span> into a short video.</h1>
+        <p class="lead">
+          MoneyPrinter Studio writes the script, finds the footage, voices it,
+          adds subtitles and renders a ready-to-post video — right on your
+          machine. You only pay a few credits for the AI text.
+        </p>
+        <div class="cta">
+          <a class="btn btn-lg" id="primary-dl" href={RELEASE}>Download free</a>
+          <a class="btn btn-lg btn-ghost" href={REPO}>View source</a>
+        </div>
+        <p class="microcopy" id="os-note">Available for macOS, Windows & Linux</p>
+      </section>
+
+      <section id="features" class="wrap section">
+        <h2>Everything you need to ship Shorts</h2>
+        <div class="grid">
+          {features.map((f) => (
+            <article class="card">
+              <div class="ic">{f.icon}</div>
+              <h3>{f.title}</h3>
+              <p>{f.body}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section id="how" class="wrap section">
+        <h2>Four steps, one minute of setup</h2>
+        <div class="steps">
+          {steps.map((s) => (
+            <div class="step">
+              <span class="step-n">{s.n}</span>
+              <div>
+                <strong>{s.t}</strong>
+                <p>{s.d}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section id="pricing" class="wrap section">
+        <h2>Free to render. Credits only for AI.</h2>
+        <p class="sub">
+          Rendering is free forever — it runs on your computer. Credits cover
+          the AI that writes scripts & keywords (pennies per video).
+        </p>
+        <div class="prices">
+          <article class="price">
+            <h3>Free</h3>
+            <div class="amt">$0</div>
+            <ul>
+              <li>Unlimited local rendering</li>
+              <li>Starter AI credits</li>
+              <li>All voices & subtitle styles</li>
+              <li>Or bring your own API key</li>
+            </ul>
+            <a class="btn" href="#download">Get the app</a>
+          </article>
+          <article class="price featured">
+            <span class="tag">Best value</span>
+            <h3>Credit top-up</h3>
+            <div class="amt">from $5</div>
+            <ul>
+              <li>Managed DeepSeek — no key setup</li>
+              <li>~1 credit per video script</li>
+              <li>Credits never expire</li>
+              <li>Top up whenever you want</li>
+            </ul>
+            <a class="btn" href="#download">Start free, top up later</a>
+          </article>
+        </div>
+      </section>
+
+      <section id="download" class="wrap section">
+        <h2>Download MoneyPrinter Studio</h2>
+        <p class="sub">Free. Auto-updates. Your videos never leave your machine.</p>
+        <div class="dl-grid">
+          {downloads.map((d) => (
+            <a class="dl" data-os={d.os} href={d.href}>
+              <strong>{d.label}</strong>
+              <span>{d.sub}</span>
+            </a>
+          ))}
+        </div>
+      </section>
+    </main>
+
+    <footer class="wrap">
+      <span>© MoneyPrinter Studio</span>
+      <a href={REPO}>GitHub</a>
+    </footer>
+
+    <script is:inline>
+      // Highlight the visitor's OS and point the hero button at it.
+      const p = navigator.platform.toLowerCase() + " " + navigator.userAgent.toLowerCase();
+      const os = p.includes("mac") ? "mac" : p.includes("win") ? "windows" : p.includes("linux") ? "linux" : null;
+      if (os) {
+        document.querySelectorAll(`.dl[data-os="${os}"]`).forEach((el) => el.classList.add("dl-active"));
+        const note = document.getElementById("os-note");
+        const name = os === "mac" ? "macOS" : os === "windows" ? "Windows" : "Linux";
+        if (note) note.textContent = `Detected ${name} · also on the other platforms`;
+      }
+    </script>
+
+    <style is:global>
+      :root {
+        --bg: #14151a;
+        --bg2: #191b22;
+        --fg: #f2f3f5;
+        --muted: #a3a7b3;
+        --line: #ffffff18;
+        --acc: #2fd27a;
+        --acc2: #27c0e8;
+      }
+      * { box-sizing: border-box; margin: 0; }
+      html { scroll-behavior: smooth; }
+      body {
+        background: var(--bg);
+        color: var(--fg);
+        font: 16px/1.6 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+      .wrap { width: min(1120px, 92vw); margin: 0 auto; }
+      a { color: inherit; text-decoration: none; }
+
+      .nav { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px);
+        background: #14151acc; border-bottom: 1px solid var(--line); }
+      .nav-inner { display: flex; align-items: center; justify-content: space-between; height: 60px; }
+      .brand { font-weight: 600; display: flex; align-items: center; gap: 8px; }
+      .brand b { color: var(--acc); font-weight: 700; }
+      .logo { color: var(--acc); }
+      nav a { color: var(--muted); margin-left: 22px; font-size: 14px; }
+      nav a:hover { color: var(--fg); }
+
+      .btn { display: inline-block; background: var(--acc); color: #06231a; font-weight: 600;
+        padding: 10px 18px; border-radius: 10px; transition: transform .12s, filter .12s; }
+      .btn:hover { filter: brightness(1.07); transform: translateY(-1px); }
+      .btn-sm { padding: 7px 14px; font-size: 14px; }
+      .btn-lg { padding: 14px 26px; font-size: 17px; }
+      .btn-ghost { background: transparent; color: var(--fg); border: 1px solid var(--line); }
+
+      .hero { text-align: center; padding: 92px 0 70px; }
+      .pill { display: inline-block; font-size: 13px; color: var(--acc);
+        border: 1px solid #2fd27a44; background: #2fd27a14; padding: 5px 14px; border-radius: 999px; }
+      .hero h1 { font-size: clamp(34px, 6vw, 62px); line-height: 1.05; letter-spacing: -.02em; margin: 22px 0; }
+      .grad { background: linear-gradient(90deg, var(--acc), var(--acc2)); -webkit-background-clip: text;
+        background-clip: text; color: transparent; }
+      .lead { color: var(--muted); font-size: clamp(16px, 2.2vw, 20px); max-width: 660px; margin: 0 auto; }
+      .cta { display: flex; gap: 14px; justify-content: center; margin: 32px 0 12px; flex-wrap: wrap; }
+      .microcopy { color: var(--muted); font-size: 13px; }
+
+      .section { padding: 64px 0; border-top: 1px solid var(--line); }
+      .section h2 { font-size: clamp(24px, 4vw, 36px); letter-spacing: -.02em; text-align: center; }
+      .sub { color: var(--muted); text-align: center; max-width: 620px; margin: 12px auto 0; }
+
+      .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px; margin-top: 40px; }
+      .card { background: var(--bg2); border: 1px solid var(--line); border-radius: 16px; padding: 24px; }
+      .card .ic { font-size: 26px; }
+      .card h3 { margin: 12px 0 6px; font-size: 18px; }
+      .card p { color: var(--muted); font-size: 15px; }
+
+      .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px; margin-top: 40px; }
+      .step { display: flex; gap: 14px; align-items: flex-start; }
+      .step-n { flex: none; width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center;
+        background: #2fd27a1c; color: var(--acc); font-weight: 700; }
+      .step p { color: var(--muted); font-size: 14px; }
+
+      .prices { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px; max-width: 760px; margin: 40px auto 0; }
+      .price { position: relative; background: var(--bg2); border: 1px solid var(--line); border-radius: 18px; padding: 28px; }
+      .price.featured { border-color: #2fd27a66; box-shadow: 0 0 0 1px #2fd27a33, 0 20px 60px #2fd27a14; }
+      .price h3 { font-size: 18px; color: var(--muted); }
+      .price .amt { font-size: 40px; font-weight: 700; margin: 6px 0 16px; }
+      .price ul { list-style: none; padding: 0; margin: 0 0 22px; }
+      .price li { padding: 7px 0 7px 24px; position: relative; color: #d6d9e0; font-size: 15px; }
+      .price li::before { content: "✓"; color: var(--acc); position: absolute; left: 0; }
+      .tag { position: absolute; top: -11px; right: 20px; background: var(--acc); color: #06231a;
+        font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: 999px; }
+
+      .dl-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; max-width: 760px; margin: 36px auto 0; }
+      .dl { background: var(--bg2); border: 1px solid var(--line); border-radius: 14px; padding: 22px; text-align: center;
+        display: flex; flex-direction: column; gap: 4px; transition: border-color .15s, transform .12s; }
+      .dl:hover { transform: translateY(-2px); border-color: #ffffff33; }
+      .dl strong { font-size: 17px; }
+      .dl span { color: var(--muted); font-size: 13px; }
+      .dl-active { border-color: var(--acc); box-shadow: 0 0 0 1px #2fd27a55; }
+
+      footer { display: flex; justify-content: space-between; padding: 30px 0; color: var(--muted);
+        border-top: 1px solid var(--line); font-size: 14px; }
+      footer a:hover { color: var(--fg); }
+    </style>
+  </body>
+</html>
