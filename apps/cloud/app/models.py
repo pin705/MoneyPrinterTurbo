@@ -52,6 +52,27 @@ class ProcessedPayment(SQLModel, table=True):
     created_at: datetime = Field(default_factory=_now)
 
 
+class Order(SQLModel, table=True):
+    """A checkout intent fulfilled by a bank transfer (SePay).
+
+    The user transfers `amount_vnd` with `code` in the memo; the SePay webhook
+    matches the memo to this row, verifies the amount, and fulfills it (credits
+    for a pack, or activating/extending a subscription for a plan). status is
+    pending | paid | expired.
+    """
+    code: str = Field(primary_key=True)  # appears in the transfer memo
+    user_id: str = Field(foreign_key="user.id", index=True)
+    kind: str  # "plan" | "pack"
+    target_id: str  # plan_id or pack_id
+    billing_cycle: str = ""  # "monthly" | "yearly" for plans
+    amount_vnd: int = 0
+    credits: int = 0  # credits to grant (pack) or monthly grant (plan)
+    status: str = "pending"
+    sepay_ref: Optional[str] = None
+    created_at: datetime = Field(default_factory=_now)
+    paid_at: Optional[datetime] = None
+
+
 class Subscription(SQLModel, table=True):
     """A user's current plan. One row per user (absent row = Free tier).
 

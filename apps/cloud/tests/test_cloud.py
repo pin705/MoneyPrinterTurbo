@@ -128,5 +128,95 @@ class TestSubscriptions(unittest.TestCase):
         self.assertEqual(r.json()["plan_id"], "free")
 
 
+class TestPayments(unittest.TestCase):
+    _txn = 1000
+
+    def _webhook(self, content: str, amount: int, ttype: str = "in"):
+        TestPayments._txn += 1
+        return client.post(
+            "/v1/payments/webhook",
+            json={
+                "id": TestPayments._txn,
+                "content": content,
+                "transferAmount": amount,
+                "transferType": ttype,
+            },
+        )
+
+    def _credits(self, uid: str) -> int:
+        return client.get("/v1/me", headers=_auth(uid)).json()["credits"]
+
+    def test_pack_checkout_and_webhook_grants_credits(self):
+        uid = "pay-pack"
+        before = self._credits(uid)
+        co = client.post(
+            "/v1/payments/checkout",
+            headers=_auth(uid),
+            json={"kind": "pack", "target_id": "pack_100"},
+        ).json()
+        self.assertEqual(co["amount_vnd"], 59_000)
+        code = co["order_code"]
+
+        r = self._webhook(f"Chuyen tien {code}", 59_000)
+        self.assertEqual(r.json()["status"], "ok")
+        self.assertEqual(self._credits(uid), before + 100)
+
+    def test_webhook_is_idempotent_on_replay(self):
+        uid = "pay-idem"
+        code = client.post(
+            "/v1/payments/checkout",
+            headers=_auth(uid),
+            json={"kind": "pack", "target_id": "pack_100"},
+        ).json()["order_code"]
+        before = self._credits(uid)
+        # Same SePay txn id replayed twice.
+        TestPayments._txn += 1
+        txn = TestPayments._txn
+        body = {"id": txn, "content": code, "transferAmount": 59_000, "transferType": "in"}
+        self.assertEqual(client.post("/v1/payments/webhook", json=body).json()["status"], "ok")
+        self.assertEqual(
+            client.post("/v1/payments/webhook", json=body).json()["status"],
+            "already_processed",
+        )
+        self.assertEqual(self._credits(uid), before + 100)  # granted exactly once
+
+    def test_plan_checkout_activates_subscription(self):
+        uid = "pay-plan"
+        before = self._credits(uid)
+        code = client.post(
+            "/v1/payments/checkout",
+            headers=_auth(uid),
+            json={"kind": "plan", "target_id": "creator", "billing_cycle": "monthly"},
+        ).json()["order_code"]
+        self.assertEqual(self._webhook(code, 199_000).json()["status"], "ok")
+        me = client.get("/v1/me", headers=_auth(uid)).json()
+        self.assertEqual(me["plan_id"], "creator")
+        self.assertFalse(me["entitlements"]["watermark"])
+        self.assertEqual(me["credits"], before + 300)
+
+    def test_underpaid_does_not_fulfill(self):
+        uid = "pay-under"
+        before = self._credits(uid)
+        code = client.post(
+            "/v1/payments/checkout",
+            headers=_auth(uid),
+            json={"kind": "pack", "target_id": "pack_500"},
+        ).json()["order_code"]
+        self.assertEqual(self._webhook(code, 1_000).json()["status"], "underpaid")
+        self.assertEqual(self._credits(uid), before)
+
+    def test_unmatched_memo_is_recorded_not_fulfilled(self):
+        r = self._webhook("random transfer with no order code", 100_000)
+        self.assertEqual(r.json()["status"], "unmatched")
+
+    def test_free_plan_is_not_purchasable(self):
+        r = client.post(
+            "/v1/payments/checkout",
+            headers=_auth("pay-free"),
+            json={"kind": "plan", "target_id": "free"},
+        )
+        self.assertEqual(r.status_code, 400)
+
+
 if __name__ == "__main__":
     unittest.main()
