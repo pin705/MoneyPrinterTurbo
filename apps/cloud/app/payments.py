@@ -12,20 +12,24 @@ Flow (bank-transfer via SePay):
 Set SEPAY_WEBHOOK_API_KEY in production; SEPAY_ACCOUNT/SEPAY_BANK build the QR.
 """
 import os
+import re
 import secrets
 from datetime import datetime, timedelta, timezone
 from urllib.parse import quote
 
 from fastapi import APIRouter, Depends, Header, HTTPException, Request
 from pydantic import BaseModel
+from sqlalchemy.exc import IntegrityError
 from sqlmodel import Session, select
 
 from . import plans
-from .auth import current_user
+from .auth import _is_dev_auth, current_user
 from .credits import grant_credits
 from .db import get_session
 from .models import Order, ProcessedPayment, Subscription, User
 from .ratelimit import check_rate
+
+_ORDER_CODE_RE = re.compile(r"MPT[0-9A-F]{8}")
 
 router = APIRouter(prefix="/v1/payments", tags=["payments"])
 
@@ -148,7 +152,10 @@ def list_invoices(
 
 def _verify_webhook(authorization: str) -> bool:
     if not WEBHOOK_API_KEY:
-        return True  # dev mode — accept (DO NOT ship without the key set)
+        # Fail CLOSED in production: only accept an unauthenticated webhook when
+        # dev mode is explicitly on. A missing key must never leave this
+        # credit-granting endpoint open to the world.
+        return _is_dev_auth()
     # SePay sends: Authorization: Apikey <key>
     expected = f"Apikey {WEBHOOK_API_KEY}"
     return secrets.compare_digest(authorization or "", expected)
@@ -168,7 +175,9 @@ def _fulfill(session: Session, order: Order) -> None:
         if sub and sub.current_period_end:
             end = sub.current_period_end
             end = end if end.tzinfo else end.replace(tzinfo=timezone.utc)
-            if end > now and sub.plan_id == order.target_id:
+            # Extend from any unexpired period so a mid-period tier switch never
+            # discards paid time (same-plan renewal also stacks here).
+            if end > now:
                 base = end
         new_end = base + timedelta(days=days)
         if sub is None:
@@ -208,32 +217,45 @@ async def webhook(
     if transfer_type != "in":
         return {"status": "ignored", "reason": "not an incoming transfer"}
 
-    # Idempotency: a replayed transaction is a no-op.
-    if session.get(ProcessedPayment, sepay_id):
-        return {"status": "already_processed"}
-
-    # Match the order code embedded in the transfer memo.
-    upper = content.upper()
-    order = next(
-        (
-            o
-            for o in session.exec(select(Order).where(Order.status == "pending")).all()
-            if o.code.upper() in upper
-        ),
-        None,
-    )
-    if order is None:
-        # Record so we don't reprocess; flag for manual reconciliation.
+    # Idempotency gate: the ProcessedPayment PK is the concurrency lock. Insert
+    # it FIRST and commit; a concurrent/replayed delivery of the same txn id
+    # loses the PK race and is a no-op. (Records every txn for reconciliation,
+    # including unmatched/underpaid — they won't be reprocessed on SePay retry.)
+    try:
         session.add(ProcessedPayment(payment_id=sepay_id, user_id="", credits=0))
         session.commit()
-        return {"status": "unmatched", "reason": "no pending order in memo"}
+    except IntegrityError:
+        session.rollback()
+        return {"status": "already_processed"}
+
+    # Match the order by an EXACT code token in the memo (anchored, whole-token),
+    # resolved by primary key — never a substring scan that could hit another
+    # user's order. Require exactly one pending candidate.
+    codes = {c for c in _ORDER_CODE_RE.findall(content.upper())}
+    candidates = [
+        o for o in (session.get(Order, c) for c in codes) if o and o.status == "pending"
+    ]
+    if len(candidates) != 1:
+        reason = "no pending order in memo" if not candidates else "ambiguous order codes"
+        return {"status": "unmatched", "reason": reason}
+
+    # Lock the order row and re-check status inside the txn so the
+    # pending→paid flip (and the subscription extension) is serialized; a second
+    # delivery for the same order (different txn id) finds it already paid.
+    order = session.exec(
+        select(Order).where(Order.code == candidates[0].code).with_for_update()
+    ).one()
+    if order.status != "pending":
+        return {"status": "already_processed"}
 
     if amount < order.amount_vnd:
         return {"status": "underpaid", "expected": order.amount_vnd, "got": amount}
 
-    session.add(
-        ProcessedPayment(payment_id=sepay_id, user_id=order.user_id, credits=order.credits)
-    )
+    # Attribute the recorded payment to the user now that it's matched.
+    pp = session.get(ProcessedPayment, sepay_id)
+    pp.user_id = order.user_id
+    pp.credits = order.credits
+    session.add(pp)
     order.sepay_ref = sepay_id
     _fulfill(session, order)
     return {"status": "ok", "order_code": order.code, "fulfilled": order.kind}

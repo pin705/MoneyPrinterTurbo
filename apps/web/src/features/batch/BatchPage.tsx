@@ -35,7 +35,16 @@ export function BatchPage() {
     mutationFn: () => api.createVideoBatch(subjects.slice(0, maxBatch), params),
     onSuccess: (res) => {
       setTaskIds(res.task_ids);
-      toast.success(t("Queued {{n}} videos", { n: res.queued }));
+      if (res.queued < res.requested) {
+        toast.warning(
+          t("Queued {{q}} of {{r}} — the queue is full, try the rest later", {
+            q: res.queued,
+            r: res.requested,
+          }),
+        );
+      } else {
+        toast.success(t("Queued {{n}} videos", { n: res.queued }));
+      }
     },
     onError: (e: Error) => toast.error(e.message),
   });

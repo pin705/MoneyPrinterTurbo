@@ -36,7 +36,8 @@ export function BillingPage() {
     onError: (e: Error) => toast.error(e.message),
   });
 
-  // Poll the open order until SePay confirms payment.
+  // Poll the open order until SePay confirms payment — stopping on any terminal
+  // status so an unpaid/expired order never polls the backend forever.
   useQuery({
     queryKey: ["order", checkout?.order_code],
     queryFn: async () => {
@@ -46,11 +47,14 @@ export function BillingPage() {
         setCheckout(null);
         qc.invalidateQueries({ queryKey: ["me"] });
         qc.invalidateQueries({ queryKey: ["invoices"] });
+      } else if (o.status === "expired") {
+        toast.error(t("Payment expired — please try again"));
+        setCheckout(null);
       }
       return o;
     },
     enabled: !!checkout,
-    refetchInterval: 3000,
+    refetchInterval: (q) => (q.state.data?.status === "pending" ? 3000 : false),
   });
 
   const invoices = useQuery({

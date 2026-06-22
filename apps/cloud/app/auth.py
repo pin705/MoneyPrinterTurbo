@@ -13,8 +13,35 @@ from .models import CreditBalance, User
 # this for RS256 + JWKS verification.
 JWT_SECRET = os.getenv("SUPABASE_JWT_SECRET", "dev-secret-change-me")
 JWT_ALG = os.getenv("JWT_ALG", "HS256")
+# Pin the algorithm to a known-good allowlist so JWT_ALG=none (or other
+# alg-confusion values) can never disable signature verification.
+_ALLOWED_ALGS = {"HS256", "RS256", "ES256"}
+if JWT_ALG not in _ALLOWED_ALGS:
+    raise RuntimeError(f"unsupported JWT_ALG {JWT_ALG!r}; allowed: {sorted(_ALLOWED_ALGS)}")
 # Signup grant defaults to the Free plan's grant; env can override.
 SIGNUP_GRANT = int(os.getenv("SIGNUP_CREDIT_GRANT", str(plans.PLANS[plans.FREE]["signup_grant"])))
+
+
+def assert_production_ready() -> None:
+    """Fail fast on insecure auth config; call at startup.
+
+    Refuses to boot in production with the well-known default JWT secret, and
+    logs a loud warning whenever dev auth (unsigned tokens) is enabled.
+    """
+    import sys
+
+    if _is_dev_auth():
+        print(
+            "WARNING: AUTH_DEV_MODE is ON — unsigned dev:<uid> tokens are "
+            "accepted. NEVER enable this in production.",
+            file=sys.stderr,
+        )
+        return
+    if not JWT_SECRET.strip() or JWT_SECRET == "dev-secret-change-me":
+        raise RuntimeError(
+            "SUPABASE_JWT_SECRET must be set to a real secret when AUTH_DEV_MODE "
+            "is off — refusing to start with the default."
+        )
 
 
 def _is_dev_auth() -> bool:

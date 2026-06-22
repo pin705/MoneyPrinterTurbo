@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { LogOut, Trash2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
@@ -22,6 +23,7 @@ function Card({ title, children }: { title: string; children: ReactNode }) {
 export function SettingsPage() {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
+  const qc = useQueryClient();
   const { email, signOut } = useAuth();
 
   const setLang = (code: LangCode) => {
@@ -35,6 +37,8 @@ export function SettingsPage() {
 
   const onSignOut = () => {
     signOut();
+    // Drop any cached authenticated data so it can't leak to the next user.
+    qc.clear();
     navigate("/login");
   };
 

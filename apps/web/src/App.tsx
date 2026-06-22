@@ -39,7 +39,8 @@ export default function App() {
               </RequireAuth>
             }
           />
-          {/* Internal admin tool — no nav link; gated by both sign-in and the admin key. */}
+          {/* Internal admin tool — no nav link; route gated by sign-in only.
+              Admin actions are authorized server-side via the X-Admin-Key header. */}
           <Route
             path="/admin"
             element={

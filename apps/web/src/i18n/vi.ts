@@ -278,4 +278,9 @@ export const vi: Record<string, string> = {
   "Credits out": "Credit lưu hành",
   Revenue: "Doanh thu",
   "Credits updated": "Đã cập nhật credit",
+
+  // Review fixes
+  "Payment expired — please try again": "Thanh toán đã hết hạn — vui lòng thử lại",
+  "Queued {{q}} of {{r}} — the queue is full, try the rest later":
+    "Đã xếp {{q}}/{{r}} — hàng đợi đầy, thử phần còn lại sau",
 };

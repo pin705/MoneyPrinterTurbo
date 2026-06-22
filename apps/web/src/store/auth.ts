@@ -30,7 +30,16 @@ export const useAuth = create<AuthState>()(
       email: null,
       signInDev: (email) =>
         set({ token: `dev:${devUid(email)}:${email}`, email }),
-      signOut: () => set({ token: null, email: null }),
+      signOut: () => {
+        // Drop the privileged admin key so it can't be inherited by the next
+        // user on a shared browser. (Query cache is cleared in SettingsPage.)
+        try {
+          localStorage.removeItem("mpt-admin-key");
+        } catch {
+          /* ignore */
+        }
+        set({ token: null, email: null });
+      },
     }),
     { name: "mpt-auth" },
   ),

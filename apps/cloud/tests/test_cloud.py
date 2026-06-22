@@ -72,10 +72,23 @@ class TestAuthAndMe(unittest.TestCase):
         self.assertIsNone(body["subscription"])
 
     def test_dev_token_rejected_when_dev_mode_off(self):
-        # _claims_from_token only honors dev: tokens when AUTH_DEV_MODE is on.
+        # The critical guarantee: with dev mode OFF, a forged dev:<uid> token is
+        # NOT honored — it routes to JWT verification and is rejected (401).
         import app.auth as auth
+        from fastapi import HTTPException
 
-        self.assertTrue(auth._is_dev_auth())
+        old = os.environ.get("AUTH_DEV_MODE")
+        os.environ["AUTH_DEV_MODE"] = "0"  # _is_dev_auth reads env at call time
+        try:
+            self.assertFalse(auth._is_dev_auth())
+            with self.assertRaises(HTTPException) as ctx:
+                auth._claims_from_token("dev:hacker:evil@example.com")
+            self.assertEqual(ctx.exception.status_code, 401)
+        finally:
+            if old is None:
+                os.environ.pop("AUTH_DEV_MODE", None)
+            else:
+                os.environ["AUTH_DEV_MODE"] = old
 
 
 class TestSubscriptions(unittest.TestCase):
@@ -211,6 +224,22 @@ class TestPayments(unittest.TestCase):
     def test_unmatched_memo_is_recorded_not_fulfilled(self):
         r = self._webhook("random transfer with no order code", 100_000)
         self.assertEqual(r.json()["status"], "unmatched")
+
+    def test_second_payment_for_paid_order_does_not_double_fulfill(self):
+        # A second delivery (DIFFERENT txn id) carrying an already-paid order's
+        # code must not grant credits again or re-extend the period.
+        uid = "pay-double"
+        code = client.post(
+            "/v1/payments/checkout",
+            headers=_auth(uid),
+            json={"kind": "pack", "target_id": "pack_100"},
+        ).json()["order_code"]
+        self.assertEqual(self._webhook(code, 59_000).json()["status"], "ok")
+        after_first = self._credits(uid)
+        # Different txn id, same order code → order is now paid, so no fulfill.
+        r = self._webhook(f"again {code}", 59_000)
+        self.assertIn(r.json()["status"], ("unmatched", "already_processed"))
+        self.assertEqual(self._credits(uid), after_first)
 
     def test_free_plan_is_not_purchasable(self):
         r = client.post(

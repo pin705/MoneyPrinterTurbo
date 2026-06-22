@@ -6,7 +6,7 @@ from sqlmodel import Session
 
 from . import plans, subscriptions
 from .admin import router as admin_router
-from .auth import current_user
+from .auth import assert_production_ready, current_user
 from .credits import get_balance
 from .db import get_session, init_db
 from .llm_proxy import router as llm_router
@@ -26,7 +26,14 @@ if _SENTRY_DSN:
 
 app = FastAPI(title="MoneyPrinter Cloud", version="0.1.0")
 
-origins = os.getenv("CORS_ALLOWED_ORIGINS", "*").split(",")
+# Default to a closed localhost allowlist (web dev/preview + Tauri) rather than
+# "*", so a misconfigured deploy doesn't ship open CORS. Set explicit prod
+# origins via CORS_ALLOWED_ORIGINS.
+_cors = os.getenv(
+    "CORS_ALLOWED_ORIGINS",
+    "http://localhost:5173,http://localhost:4173,tauri://localhost",
+)
+origins = [o.strip() for o in _cors.split(",") if o.strip()]
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -37,6 +44,7 @@ app.add_middleware(
 
 @app.on_event("startup")
 def _startup():
+    assert_production_ready()
     init_db()
 
 

@@ -19,13 +19,15 @@ export function AdminPage() {
   const [key, setKey] = useState(() => localStorage.getItem(KEY_STORE) ?? "");
   const [active, setActive] = useState(!!key);
 
+  // Key the queries by the admin key so reconnecting with a different key
+  // refetches instead of serving the previous key's cached data.
   const stats = useQuery({
-    queryKey: ["admin-stats"],
+    queryKey: ["admin-stats", key],
     queryFn: () => cloud.adminStats(key),
     enabled: active,
   });
   const users = useQuery({
-    queryKey: ["admin-users"],
+    queryKey: ["admin-users", key],
     queryFn: () => cloud.adminUsers(key),
     enabled: active,
   });
