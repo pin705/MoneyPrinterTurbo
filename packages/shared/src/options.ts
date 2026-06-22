@@ -54,15 +54,6 @@ export const SUBTITLE_POSITIONS: Option<string>[] = [
   { value: "custom", labelKey: "Custom position" },
 ];
 
-export const VIDEO_ENCODERS: Option<string>[] = [
-  { value: "libx264", labelKey: "libx264 (CPU)" },
-  { value: "h264_nvenc", labelKey: "NVIDIA NVENC (h264_nvenc)" },
-  { value: "h264_amf", labelKey: "AMD AMF (h264_amf)" },
-  { value: "h264_qsv", labelKey: "Intel QSV (h264_qsv)" },
-  { value: "h264_mf", labelKey: "Windows MediaFoundation (h264_mf)" },
-  { value: "h264_videotoolbox", labelKey: "macOS VideoToolbox (h264_videotoolbox)" },
-];
-
 /** Script-generation languages (webui/Main.py support_locales). */
 export const SCRIPT_LANGUAGES = [
   { value: "", labelKey: "Auto Detect" },

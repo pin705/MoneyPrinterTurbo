@@ -12,12 +12,6 @@ export type VideoTransitionMode =
 
 export type VideoAspect = "16:9" | "9:16" | "1:1";
 
-export const ASPECT_RESOLUTION: Record<VideoAspect, [number, number]> = {
-  "16:9": [1920, 1080],
-  "9:16": [1080, 1920],
-  "1:1": [1080, 1080],
-};
-
 export interface MaterialInfo {
   provider: string;
   url: string;

@@ -153,4 +153,11 @@ export const vi: Record<string, string> = {
   "Search…": "Tìm…",
   "Search voice…": "Tìm giọng…",
   "Search provider…": "Tìm nhà cung cấp…",
+
+  // Wizard
+  "Video & Audio": "Video & Âm thanh",
+  Review: "Xem lại",
+  Back: "Quay lại",
+  On: "Bật",
+  Off: "Tắt",
 };
