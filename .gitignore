@@ -1,6 +1,9 @@
 .DS_Store
 /config.toml
 /storage/
+# Render backend moved to apps/render — ignore its local config + runtime storage
+apps/render/config.toml
+apps/render/storage/
 /.idea/
 /app/services/__pycache__
 /app/__pycache__/
