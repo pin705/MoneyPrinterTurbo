@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Download, Loader2, Sparkles, TriangleAlert } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { TaskState } from "@mpt/shared";
 
@@ -16,6 +17,7 @@ import { useGenerator } from "@/store/generator";
 import { useVideoTask } from "./useVideoTask";
 
 export function GeneratePanel() {
+  const { t } = useTranslation();
   const { params } = useGenerator();
   const { api, create, task, isRunning, reset } = useVideoTask();
   const [resultsOpen, setResultsOpen] = useState(false);
@@ -34,7 +36,7 @@ export function GeneratePanel() {
     const hasContent =
       params.video_subject.trim() || (params.video_script ?? "").trim();
     if (!hasContent) {
-      toast.error("Add a video subject or a script first");
+      toast.error(t("Add a video subject or a script first"));
       return;
     }
     reset();
@@ -53,18 +55,18 @@ export function GeneratePanel() {
                   {failed ? (
                     <>
                       <TriangleAlert className="text-destructive size-3.5" />
-                      Generation failed — check backend logs
+                      {t("Generation failed — check backend logs")}
                     </>
                   ) : (
                     <>
                       <Loader2 className="size-3.5 animate-spin" />
                       {progress < 10
-                        ? "Generating script…"
+                        ? t("Generating script…")
                         : progress < 40
-                          ? "Synthesizing audio…"
+                          ? t("Synthesizing audio…")
                           : progress < 60
-                            ? "Downloading materials…"
-                            : "Rendering video…"}
+                            ? t("Downloading materials…")
+                            : t("Rendering video…")}
                     </>
                   )}
                 </span>
@@ -76,12 +78,12 @@ export function GeneratePanel() {
 
           <div className="flex items-center justify-between gap-4">
             <p className="text-muted-foreground hidden text-xs sm:block">
-              Render runs locally · LLM via your configured provider
+              {t("Render runs locally · LLM via your configured provider")}
             </p>
             <div className="flex items-center gap-2">
               {complete && videos.length > 0 && (
                 <Button variant="outline" onClick={() => setResultsOpen(true)}>
-                  View results
+                  {t("View results")}
                 </Button>
               )}
               <Button
@@ -92,11 +94,11 @@ export function GeneratePanel() {
               >
                 {isRunning ? (
                   <>
-                    <Loader2 className="animate-spin" /> Generating…
+                    <Loader2 className="animate-spin" /> {t("Generating…")}
                   </>
                 ) : (
                   <>
-                    <Sparkles /> Generate Video
+                    <Sparkles /> {t("Generate Video")}
                   </>
                 )}
               </Button>
@@ -108,10 +110,10 @@ export function GeneratePanel() {
       <Dialog open={resultsOpen} onOpenChange={setResultsOpen}>
         <DialogContent className="max-w-3xl">
           <DialogHeader>
-            <DialogTitle>Your video is ready 🎬</DialogTitle>
+            <DialogTitle>{t("Your video is ready 🎬")}</DialogTitle>
             <DialogDescription>
-              {videos.length} video{videos.length > 1 ? "s" : ""} generated.
-              Preview and download below.
+              {videos.length} video{videos.length > 1 ? "s" : ""} ·{" "}
+              {t("Preview and download below.")}
             </DialogDescription>
           </DialogHeader>
           <div className="grid max-h-[70vh] gap-4 overflow-y-auto sm:grid-cols-2">
@@ -126,7 +128,7 @@ export function GeneratePanel() {
                   />
                   <Button asChild variant="secondary" size="sm">
                     <a href={url} download>
-                      <Download /> Download #{i + 1}
+                      <Download /> {t("Download")} #{i + 1}
                     </a>
                   </Button>
                 </div>

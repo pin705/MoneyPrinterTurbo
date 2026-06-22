@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Loader2, Settings } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { ApiError } from "@mpt/api-client";
 import { LLM_PROVIDERS, PROVIDER_DEFAULTS } from "@mpt/shared";
@@ -32,6 +33,7 @@ const strToList = (s: string) =>
     .filter(Boolean);
 
 export function SettingsDialog() {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const { backendUrl, setBackendUrl } = useSettings();
   const api = useApi();
@@ -58,12 +60,12 @@ export function SettingsDialog() {
   const save = useMutation({
     mutationFn: () => api.updateConfig(app),
     onSuccess: () => {
-      toast.success("Settings saved");
+      toast.success(t("Settings saved"));
       qc.invalidateQueries({ queryKey: ["ping"] });
       setOpen(false);
     },
     onError: (e) =>
-      toast.error("Save failed", {
+      toast.error(t("Save failed"), {
         description: e instanceof ApiError ? e.message : String(e),
       }),
   });
@@ -82,37 +84,37 @@ export function SettingsDialog() {
       </DialogTrigger>
       <DialogContent className="max-w-xl">
         <DialogHeader>
-          <DialogTitle>Settings</DialogTitle>
+          <DialogTitle>{t("Settings")}</DialogTitle>
           <DialogDescription>
-            Stored in the backend&apos;s config.toml on this machine.
+            {t("Stored in the backend's config.toml on this machine.")}
           </DialogDescription>
         </DialogHeader>
 
         <Tabs defaultValue="ai" className="w-full">
           <TabsList className="w-full">
             <TabsTrigger value="ai" className="flex-1">
-              AI / LLM
+              {t("AI / LLM")}
             </TabsTrigger>
             <TabsTrigger value="media" className="flex-1">
-              Media
+              {t("Media")}
             </TabsTrigger>
             <TabsTrigger value="conn" className="flex-1">
-              Connection
+              {t("Connection")}
             </TabsTrigger>
           </TabsList>
 
           {configQ.isLoading && open ? (
             <div className="text-muted-foreground flex items-center gap-2 py-8 text-sm">
-              <Loader2 className="size-4 animate-spin" /> Loading config…
+              <Loader2 className="size-4 animate-spin" /> {t("Loading config…")}
             </div>
           ) : configQ.isError ? (
             <p className="text-destructive py-8 text-sm">
-              Could not reach the backend. Check the Connection tab.
+              {t("Could not reach the backend. Check the Connection tab.")}
             </p>
           ) : (
             <>
               <TabsContent value="ai" className="flex flex-col gap-4 pt-2">
-                <Field label="LLM provider" htmlFor="prov">
+                <Field label={t("LLM provider")} htmlFor="prov">
                   <OptSelect
                     id="prov"
                     value={provider}
@@ -123,7 +125,7 @@ export function SettingsDialog() {
                     }))}
                   />
                 </Field>
-                <Field label="API key" htmlFor="key">
+                <Field label={t("API key")} htmlFor="key">
                   <Input
                     id="key"
                     type="password"
@@ -133,7 +135,7 @@ export function SettingsDialog() {
                   />
                 </Field>
                 <div className="grid grid-cols-2 gap-3">
-                  <Field label="Base URL" htmlFor="base">
+                  <Field label={t("Base URL")} htmlFor="base">
                     <Input
                       id="base"
                       placeholder={defaults.baseUrl ?? ""}
@@ -143,7 +145,7 @@ export function SettingsDialog() {
                       }
                     />
                   </Field>
-                  <Field label="Model" htmlFor="model">
+                  <Field label={t("Model")} htmlFor="model">
                     <Input
                       id="model"
                       placeholder={defaults.model ?? ""}
@@ -155,7 +157,7 @@ export function SettingsDialog() {
                   </Field>
                 </div>
                 {defaults.secretKey ? (
-                  <Field label="Secret key" htmlFor="secret">
+                  <Field label={t("Secret key")} htmlFor="secret">
                     <Input
                       id="secret"
                       type="password"
@@ -167,7 +169,7 @@ export function SettingsDialog() {
                   </Field>
                 ) : null}
                 {defaults.accountId ? (
-                  <Field label="Account ID" htmlFor="acct">
+                  <Field label={t("Account ID")} htmlFor="acct">
                     <Input
                       id="acct"
                       value={get(`${provider}_account_id`)}
@@ -180,7 +182,11 @@ export function SettingsDialog() {
               </TabsContent>
 
               <TabsContent value="media" className="flex flex-col gap-4 pt-2">
-                <Field label="Pexels API key" htmlFor="pexels" hint="Free at pexels.com/api. Comma-separate multiple keys.">
+                <Field
+                  label={t("Pexels API key")}
+                  htmlFor="pexels"
+                  hint="Free at pexels.com/api. Comma-separate multiple keys."
+                >
                   <Input
                     id="pexels"
                     type="password"
@@ -190,7 +196,7 @@ export function SettingsDialog() {
                     }
                   />
                 </Field>
-                <Field label="Pixabay API key" htmlFor="pixabay">
+                <Field label={t("Pixabay API key")} htmlFor="pixabay">
                   <Input
                     id="pixabay"
                     type="password"
@@ -200,7 +206,7 @@ export function SettingsDialog() {
                     }
                   />
                 </Field>
-                <Field label="Coverr API key" htmlFor="coverr">
+                <Field label={t("Coverr API key")} htmlFor="coverr">
                   <Input
                     id="coverr"
                     type="password"
@@ -215,7 +221,7 @@ export function SettingsDialog() {
           )}
 
           <TabsContent value="conn" className="flex flex-col gap-4 pt-2">
-            <Field label="Backend URL" htmlFor="backendUrl">
+            <Field label={t("Backend URL")} htmlFor="backendUrl">
               <Input
                 id="backendUrl"
                 value={urlDraft}
@@ -224,19 +230,20 @@ export function SettingsDialog() {
               />
             </Field>
             <p className="text-muted-foreground rounded-md border border-dashed p-3 text-xs leading-relaxed">
-              Render runs locally. Managed accounts &amp; a credit system (so you
-              don&apos;t bring your own keys) are on the roadmap.
+              {t(
+                "Render runs locally. Managed accounts & a credit system are on the roadmap.",
+              )}
             </p>
           </TabsContent>
         </Tabs>
 
         <div className="flex justify-end gap-2">
           <Button variant="ghost" onClick={() => setOpen(false)}>
-            Cancel
+            {t("Cancel")}
           </Button>
           <Button onClick={onSave} disabled={save.isPending}>
             {save.isPending ? <Loader2 className="animate-spin" /> : null}
-            Save
+            {t("Save")}
           </Button>
         </div>
       </DialogContent>

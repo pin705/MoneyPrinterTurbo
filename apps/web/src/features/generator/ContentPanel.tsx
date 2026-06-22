@@ -1,5 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import { Wand2, FileText, Settings2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { ApiError } from "@mpt/api-client";
 import { SCRIPT_LANGUAGES } from "@mpt/shared";
@@ -29,6 +30,7 @@ Generate a concise spoken script for a short video based on the subject.
 Return only the raw narration text, no markdown, no titles, no stage directions.`;
 
 export function ContentPanel() {
+  const { t } = useTranslation();
   const api = useApi();
   const { params, setParam } = useGenerator();
 
@@ -50,11 +52,11 @@ export function ContentPanel() {
     onSuccess: ({ video_script, video_terms }) => {
       setParam("video_script", video_script);
       setParam("video_terms", video_terms.join(", "));
-      toast.success("Script & keywords generated");
+      toast.success(t("Script & keywords generated"));
     },
     onError: (e) => {
       const msg = e instanceof ApiError ? e.message : String(e);
-      toast.error("Generation failed", { description: msg });
+      toast.error(t("Generation failed"), { description: msg });
     },
   });
 
@@ -64,8 +66,12 @@ export function ContentPanel() {
     : (params.video_terms ?? "");
 
   return (
-    <Section icon={<FileText />} title="Content">
-      <Field label="Video Subject" htmlFor="subject" hint="A keyword or topic — AI writes the script for you.">
+    <Section icon={<FileText />} title={t("Content")}>
+      <Field
+        label={t("Video Subject")}
+        htmlFor="subject"
+        hint={t("A keyword or topic — AI writes the script for you.")}
+      >
         <Input
           id="subject"
           placeholder="e.g. 5 morning habits that boost productivity"
@@ -74,7 +80,7 @@ export function ContentPanel() {
         />
       </Field>
 
-      <Field label="Script Language" htmlFor="lang">
+      <Field label={t("Script Language")} htmlFor="lang">
         <OptSelect
           id="lang"
           value={params.video_language || AUTO_LANG}
@@ -83,7 +89,7 @@ export function ContentPanel() {
           }
           options={SCRIPT_LANGUAGES.map((o) => ({
             value: o.value || AUTO_LANG,
-            label: o.labelKey,
+            label: t(o.labelKey),
           }))}
         />
       </Field>
@@ -92,13 +98,13 @@ export function ContentPanel() {
         <AccordionItem value="advanced">
           <AccordionTrigger className="text-xs">
             <span className="flex items-center gap-2">
-              <Settings2 className="size-3.5" /> Advanced script settings
+              <Settings2 className="size-3.5" /> {t("Advanced script settings")}
             </span>
           </AccordionTrigger>
           <AccordionContent className="flex flex-col gap-4">
             <Field
-              label={`Paragraphs: ${params.paragraph_number}`}
-              hint="How many paragraphs the script should contain (1-10)."
+              label={`${t("Paragraphs")}: ${params.paragraph_number}`}
+              hint={t("How many paragraphs the script should contain (1-10).")}
             >
               <Slider
                 min={1}
@@ -108,7 +114,10 @@ export function ContentPanel() {
                 onValueChange={([v]) => setParam("paragraph_number", v)}
               />
             </Field>
-            <Field label="Custom requirements" hint="Extra instructions, e.g. tone, audience, hook style.">
+            <Field
+              label={t("Custom requirements")}
+              hint={t("Extra instructions, e.g. tone, audience, hook style.")}
+            >
               <Textarea
                 rows={3}
                 placeholder="e.g. lighter tone, fit TikTok style, suspenseful opening"
@@ -118,7 +127,7 @@ export function ContentPanel() {
             </Field>
             <div className="flex items-center justify-between">
               <Label htmlFor="customsys" className="text-xs">
-                Use custom system prompt
+                {t("Use custom system prompt")}
               </Label>
               <Switch
                 id="customsys"
@@ -145,10 +154,17 @@ export function ContentPanel() {
         className="w-full"
       >
         <Wand2 />
-        {generate.isPending ? "Generating…" : "Generate Script & Keywords"}
+        {generate.isPending
+          ? t("Generating…")
+          : t("Generate Script & Keywords")}
       </Button>
 
-      <Field label="Video Script" hint="Optional. AI-generated or write your own. Good punctuation helps subtitles.">
+      <Field
+        label={t("Video Script")}
+        hint={t(
+          "Optional. AI-generated or write your own. Good punctuation helps subtitles.",
+        )}
+      >
         <Textarea
           rows={8}
           placeholder="The narration text for your video…"
@@ -157,7 +173,12 @@ export function ContentPanel() {
         />
       </Field>
 
-      <Field label="Video Keywords" hint="English keywords, comma-separated. Used to find stock footage.">
+      <Field
+        label={t("Video Keywords")}
+        hint={t(
+          "English keywords, comma-separated. Used to find stock footage.",
+        )}
+      >
         <Textarea
           rows={2}
           placeholder="morning routine, sunrise, productivity"

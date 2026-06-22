@@ -1,11 +1,40 @@
 import os
 import shutil
 import socket
+import sys
 
 import toml
 from loguru import logger
 
-root_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
+
+def _resolve_root_dir() -> str:
+    """Where config.toml + storage live.
+
+    - Source/Docker: repo root (three levels up from this file) — unchanged.
+    - Packaged desktop app (PyInstaller, ``sys.frozen``): a user-writable home,
+      not the read-only app bundle. The Tauri shell may pin it via ``MPT_HOME``.
+    """
+    env_home = os.getenv("MPT_HOME")
+    if env_home:
+        return env_home
+    if getattr(sys, "frozen", False):
+        return os.path.join(os.path.expanduser("~"), ".moneyprinter")
+    return os.path.dirname(
+        os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+    )
+
+
+def _bundle_dir() -> str:
+    """Directory holding read-only bundled assets (config.example.toml, etc.).
+
+    Under PyInstaller this is the extraction dir (``sys._MEIPASS``); otherwise
+    it is the same as ``root_dir``.
+    """
+    return getattr(sys, "_MEIPASS", root_dir)
+
+
+root_dir = _resolve_root_dir()
+os.makedirs(root_dir, exist_ok=True)
 config_file = f"{root_dir}/config.toml"
 _CONTAINER_CGROUP_MARKERS = ("docker", "containerd", "kubepods", "libpod", "podman")
 _DOCKER_HOST_GATEWAY_NAME = "host.docker.internal"
@@ -130,7 +159,7 @@ def load_config():
         shutil.rmtree(config_file)
 
     if not os.path.isfile(config_file):
-        example_file = f"{root_dir}/config.example.toml"
+        example_file = f"{_bundle_dir()}/config.example.toml"
         if os.path.isfile(example_file):
             shutil.copyfile(example_file, config_file)
             logger.info("copy config.example.toml to config.toml")
@@ -173,7 +202,7 @@ hostname = socket.gethostname()
 
 log_level = _cfg.get("log_level", "DEBUG")
 listen_host = _cfg.get("listen_host", "0.0.0.0")
-listen_port = _cfg.get("listen_port", 8080)
+listen_port = _cfg.get("listen_port", 8000)
 project_name = _cfg.get("project_name", "MoneyPrinterTurbo")
 project_description = _cfg.get(
     "project_description",

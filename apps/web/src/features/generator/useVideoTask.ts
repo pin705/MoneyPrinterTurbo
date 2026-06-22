@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { ApiError } from "@mpt/api-client";
 import { TaskState, type VideoParams } from "@mpt/shared";
 import { toast } from "sonner";
@@ -7,6 +8,7 @@ import { toast } from "sonner";
 import { useApi } from "@/lib/useApi";
 
 export function useVideoTask() {
+  const { t } = useTranslation();
   const api = useApi();
   const [taskId, setTaskId] = useState<string | null>(null);
 
@@ -15,7 +17,7 @@ export function useVideoTask() {
     onSuccess: (data) => setTaskId(data.task_id),
     onError: (e) => {
       const msg = e instanceof ApiError ? e.message : String(e);
-      toast.error("Could not start generation", { description: msg });
+      toast.error(t("Could not start generation"), { description: msg });
     },
   });
 

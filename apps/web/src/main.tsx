@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import App from "./App";
 import { Toaster } from "@/components/ui/sonner";
+import "./i18n";
 import "./index.css";
 
 const queryClient = new QueryClient({

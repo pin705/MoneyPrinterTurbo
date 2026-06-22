@@ -1,4 +1,5 @@
 import { Captions } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { SUBTITLE_POSITIONS } from "@mpt/shared";
 
 import { Field, Section } from "@/components/common/Field";
@@ -41,6 +42,7 @@ function ColorField({
 }
 
 export function SubtitlePanel() {
+  const { t } = useTranslation();
   const { params, setParam } = useGenerator();
   const enabled = params.subtitle_enabled ?? true;
 
@@ -52,10 +54,10 @@ export function SubtitlePanel() {
   const bgEnabled = params.text_background_color !== false;
 
   return (
-    <Section icon={<Captions />} title="Subtitles">
+    <Section icon={<Captions />} title={t("Subtitles")}>
       <div className="flex items-center justify-between">
         <Label htmlFor="subEnabled" className="text-xs">
-          Enable subtitles
+          {t("Enable subtitles")}
         </Label>
         <Switch
           id="subEnabled"
@@ -69,7 +71,11 @@ export function SubtitlePanel() {
           enabled ? "flex flex-col gap-4" : "pointer-events-none flex flex-col gap-4 opacity-50"
         }
       >
-        <Field label="Font name" htmlFor="font" hint="A font file under resource/fonts. Leave default if unsure.">
+        <Field
+          label={t("Font name")}
+          htmlFor="font"
+          hint={t("A font file under resource/fonts. Leave default if unsure.")}
+        >
           <Input
             id="font"
             placeholder="STHeitiMedium.ttc"
@@ -79,18 +85,18 @@ export function SubtitlePanel() {
         </Field>
 
         <div className="grid grid-cols-2 gap-3">
-          <Field label="Position" htmlFor="pos">
+          <Field label={t("Position")} htmlFor="pos">
             <OptSelect
               id="pos"
               value={params.subtitle_position ?? "bottom"}
               onValueChange={(v) =>
                 setParam("subtitle_position", v as typeof params.subtitle_position)
               }
-              options={SUBTITLE_POSITIONS.map((o) => ({ value: o.value, label: o.labelKey }))}
+              options={SUBTITLE_POSITIONS.map((o) => ({ value: o.value, label: t(o.labelKey) }))}
             />
           </Field>
           {params.subtitle_position === "custom" ? (
-            <Field label="Custom position (% from top)" htmlFor="custompos">
+            <Field label={t("Custom position (% from top)")} htmlFor="custompos">
               <Input
                 id="custompos"
                 type="number"
@@ -108,19 +114,19 @@ export function SubtitlePanel() {
         <div className="grid grid-cols-2 gap-3">
           <ColorField
             id="fore"
-            label="Font color"
+            label={t("Font color")}
             value={params.text_fore_color ?? "#FFFFFF"}
             onChange={(v) => setParam("text_fore_color", v)}
           />
           <ColorField
             id="stroke"
-            label="Stroke color"
+            label={t("Stroke color")}
             value={params.stroke_color ?? "#000000"}
             onChange={(v) => setParam("stroke_color", v)}
           />
         </div>
 
-        <Field label={`Font size: ${params.font_size}`}>
+        <Field label={`${t("Font size")}: ${params.font_size}`}>
           <Slider
             min={30}
             max={100}
@@ -130,7 +136,7 @@ export function SubtitlePanel() {
           />
         </Field>
 
-        <Field label={`Stroke width: ${params.stroke_width}`}>
+        <Field label={`${t("Stroke width")}: ${params.stroke_width}`}>
           <Slider
             min={0}
             max={10}
@@ -142,7 +148,7 @@ export function SubtitlePanel() {
 
         <div className="flex items-center justify-between">
           <Label htmlFor="bgEnabled" className="text-xs">
-            Subtitle background
+            {t("Subtitle background")}
           </Label>
           <Switch
             id="bgEnabled"
@@ -156,13 +162,13 @@ export function SubtitlePanel() {
           <>
             <ColorField
               id="bgcolor"
-              label="Background color"
+              label={t("Background color")}
               value={bgColor}
               onChange={(v) => setParam("text_background_color", v)}
             />
             <div className="flex items-center justify-between">
               <Label htmlFor="rounded" className="text-xs">
-                Rounded translucent background
+                {t("Rounded translucent background")}
               </Label>
               <Switch
                 id="rounded"
