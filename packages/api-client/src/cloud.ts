@@ -55,6 +55,37 @@ export interface PlansCatalog {
   credit_packs: CreditPack[];
 }
 
+export interface CheckoutInput {
+  kind: "plan" | "pack";
+  target_id: string;
+  billing_cycle?: "monthly" | "yearly";
+}
+
+export interface CheckoutResult {
+  order_code: string;
+  amount_vnd: number;
+  transfer_content: string;
+  qr_url: string;
+  account: string;
+  bank: string;
+  expires_in_minutes: number;
+}
+
+export interface OrderStatus {
+  order_code: string;
+  status: "pending" | "paid" | "expired";
+  amount_vnd: number;
+}
+
+export interface Invoice {
+  order_code: string;
+  kind: string;
+  target_id: string;
+  amount_vnd: number;
+  credits: number;
+  paid_at: string | null;
+}
+
 export interface CloudClientOptions {
   baseUrl: string;
   /** Bearer token; omit for public endpoints (e.g. the plans catalog). */
@@ -105,5 +136,23 @@ export class CloudClient {
   /** GET /v1/plans — public pricing catalog. */
   plans(): Promise<PlansCatalog> {
     return this.request<PlansCatalog>("/v1/plans");
+  }
+
+  /** POST /v1/payments/checkout — create an order, returns the SePay QR + memo. */
+  checkout(input: CheckoutInput): Promise<CheckoutResult> {
+    return this.request<CheckoutResult>("/v1/payments/checkout", {
+      method: "POST",
+      body: JSON.stringify(input),
+    });
+  }
+
+  /** GET /v1/payments/orders/{code} — poll until status is "paid". */
+  getOrder(code: string): Promise<OrderStatus> {
+    return this.request<OrderStatus>(`/v1/payments/orders/${code}`);
+  }
+
+  /** GET /v1/payments/invoices — the user's paid orders. */
+  invoices(): Promise<{ invoices: Invoice[] }> {
+    return this.request<{ invoices: Invoice[] }>("/v1/payments/invoices");
   }
 }

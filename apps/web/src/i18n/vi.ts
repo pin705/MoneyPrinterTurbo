@@ -225,4 +225,31 @@ export const vi: Record<string, string> = {
   "Delete account": "Xoá tài khoản",
   "Account deletion is handled by support for now.":
     "Việc xoá tài khoản hiện do bộ phận hỗ trợ xử lý.",
+
+  // Billing / pricing
+  "Plans and credit top-ups": "Gói và nạp credit",
+  Monthly: "Hàng tháng",
+  Yearly: "Hàng năm",
+  "-17%": "-17%",
+  "Credit top-ups": "Nạp credit",
+  Buy: "Mua",
+  Invoices: "Hoá đơn",
+  "Couldn’t load plans. Is the cloud backend running?":
+    "Không tải được gói. Cloud backend đã chạy chưa?",
+  Popular: "Phổ biến",
+  yr: "năm",
+  mo: "tháng",
+  "credits/mo": "credit/tháng",
+  Batch: "Batch",
+  "Free forever": "Miễn phí mãi mãi",
+  Choose: "Chọn",
+  "Scan to pay with SePay": "Quét để thanh toán bằng SePay",
+  "Transfer the exact amount — your account updates automatically.":
+    "Chuyển đúng số tiền — tài khoản của bạn tự cập nhật.",
+  "Set SEPAY_ACCOUNT/SEPAY_BANK to render the QR.":
+    "Đặt SEPAY_ACCOUNT/SEPAY_BANK để hiển thị mã QR.",
+  Amount: "Số tiền",
+  "Waiting for payment…": "Đang chờ thanh toán…",
+  "Payment received — credits added 🎉":
+    "Đã nhận thanh toán — đã cộng credit 🎉",
 };

@@ -19,10 +19,10 @@ test.describe("app shell", () => {
     await expect(page.getByText("Your generated videos")).toBeVisible();
   });
 
-  test("shows a Coming soon placeholder for not-yet-built routes", async ({ page }) => {
-    await page.goto("/#/billing");
+  test("shows a not-found placeholder for unknown routes", async ({ page }) => {
+    await page.goto("/#/does-not-exist");
     await expect(page.getByText("Coming soon")).toBeVisible();
-    await expect(page.getByText("Planned for Phase 2")).toBeVisible();
+    await expect(page.getByText("Page not found")).toBeVisible();
   });
 
   test("renders the aspect-ratio CardSelect as an accessible radio group", async ({

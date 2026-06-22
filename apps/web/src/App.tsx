@@ -3,6 +3,7 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import { Sidebar } from "@/components/Sidebar";
 import { LoginPage } from "@/features/auth/LoginPage";
 import { RequireAuth } from "@/features/auth/RequireAuth";
+import { BillingPage } from "@/features/billing/BillingPage";
 import { DashboardPage } from "@/features/dashboard/DashboardPage";
 import { ComingSoon } from "@/features/placeholder/ComingSoon";
 import { GeneratorPage } from "@/features/generator/GeneratorPage";
@@ -38,11 +39,9 @@ export default function App() {
           <Route
             path="/billing"
             element={
-              <ComingSoon
-                title="Billing"
-                description="Plans, SePay checkout, credit top-ups and invoices."
-                phase="Phase 2"
-              />
+              <RequireAuth>
+                <BillingPage />
+              </RequireAuth>
             }
           />
           <Route
