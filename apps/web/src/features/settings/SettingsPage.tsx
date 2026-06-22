@@ -88,11 +88,11 @@ export function SettingsPage() {
         </Card>
 
         <Card title={t("Danger zone")}>
-          <div className="flex items-center justify-between">
-            <p className="text-zinc-500 text-sm">
+          <div className="flex items-center justify-between gap-4">
+            <p className="text-muted-foreground text-sm">
               {t("Permanently delete your account and data.")}
             </p>
-            <Button variant="outline" size="sm" onClick={onDelete} className="border-red-500/30 text-red-400 hover:bg-red-500/10">
+            <Button variant="outline" size="sm" onClick={onDelete} className="border-destructive/30 text-destructive hover:bg-destructive/10 hover:text-destructive">
               <Trash2 /> {t("Delete account")}
             </Button>
           </div>

@@ -6,8 +6,9 @@
 /* =========================================================================
    Vidova design tokens
    A restrained, precise dark-first system in the spirit of Cursor / Linear:
-   near-black layered surfaces, hairline borders, a single disciplined emerald
-   accent, tight radii and quiet elevation. Light mode is a calm warm-neutral.
+   near-black layered surfaces, hairline borders, a MONOCHROME primary
+   (white-on-dark / black-on-light — no color accent), tight radii and quiet
+   elevation. Status colors (success/warning/destructive) are the only hues.
    ========================================================================= */
 
 :root {
@@ -21,16 +22,16 @@
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.21 0.006 286);
 
-  /* Accent — emerald, used sparingly */
-  --primary: oklch(0.6 0.13 163);
-  --primary-foreground: oklch(0.99 0.01 163);
+  /* Primary — monochrome (near-black on light), like Cursor */
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
 
   --secondary: oklch(0.968 0.002 286);
   --secondary-foreground: oklch(0.25 0.006 286);
   --muted: oklch(0.972 0.002 286);
   --muted-foreground: oklch(0.5 0.008 286);
-  --accent: oklch(0.965 0.004 163);
-  --accent-foreground: oklch(0.32 0.05 163);
+  --accent: oklch(0.962 0 0);
+  --accent-foreground: oklch(0.21 0 0);
 
   --destructive: oklch(0.58 0.21 27);
   --destructive-foreground: oklch(0.99 0.01 27);
@@ -40,7 +41,7 @@
   /* Lines — hairline borders carry the structure */
   --border: oklch(0.918 0.003 286);
   --input: oklch(0.9 0.003 286);
-  --ring: oklch(0.6 0.13 163);
+  --ring: oklch(0.45 0 0);
 
   --chart-1: oklch(0.6 0.13 163);
   --chart-2: oklch(0.6 0.13 230);
@@ -50,12 +51,12 @@
 
   --sidebar: oklch(0.985 0.001 286);
   --sidebar-foreground: oklch(0.21 0.006 286);
-  --sidebar-primary: oklch(0.6 0.13 163);
-  --sidebar-primary-foreground: oklch(0.99 0.01 163);
-  --sidebar-accent: oklch(0.965 0.004 163);
-  --sidebar-accent-foreground: oklch(0.32 0.05 163);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.962 0 0);
+  --sidebar-accent-foreground: oklch(0.21 0 0);
   --sidebar-border: oklch(0.918 0.003 286);
-  --sidebar-ring: oklch(0.6 0.13 163);
+  --sidebar-ring: oklch(0.45 0 0);
 
   --font-sans: "Geist Variable", Geist, ui-sans-serif, system-ui, sans-serif;
   --font-serif: Georgia, serif;
@@ -86,15 +87,15 @@
   --popover: oklch(0.205 0.004 286);
   --popover-foreground: oklch(0.95 0.002 286);
 
-  --primary: oklch(0.74 0.15 163);
-  --primary-foreground: oklch(0.17 0.03 165);
+  --primary: oklch(0.95 0 0);
+  --primary-foreground: oklch(0.18 0 0);
 
   --secondary: oklch(0.235 0.005 286);
   --secondary-foreground: oklch(0.92 0.002 286);
   --muted: oklch(0.215 0.004 286);
   --muted-foreground: oklch(0.66 0.008 286);
-  --accent: oklch(0.255 0.012 165);
-  --accent-foreground: oklch(0.9 0.04 165);
+  --accent: oklch(0.26 0 0);
+  --accent-foreground: oklch(0.95 0 0);
 
   --destructive: oklch(0.65 0.2 25);
   --destructive-foreground: oklch(0.98 0.01 25);
@@ -104,7 +105,7 @@
   /* Hairlines: low-contrast light-on-dark */
   --border: oklch(0.28 0.005 286);
   --input: oklch(0.3 0.005 286);
-  --ring: oklch(0.74 0.15 163);
+  --ring: oklch(0.58 0 0);
 
   --chart-1: oklch(0.74 0.15 163);
   --chart-2: oklch(0.7 0.13 230);
@@ -114,12 +115,12 @@
 
   --sidebar: oklch(0.17 0.004 286);
   --sidebar-foreground: oklch(0.95 0.002 286);
-  --sidebar-primary: oklch(0.74 0.15 163);
-  --sidebar-primary-foreground: oklch(0.17 0.03 165);
-  --sidebar-accent: oklch(0.235 0.008 165);
-  --sidebar-accent-foreground: oklch(0.9 0.04 165);
+  --sidebar-primary: oklch(0.95 0 0);
+  --sidebar-primary-foreground: oklch(0.18 0 0);
+  --sidebar-accent: oklch(0.24 0 0);
+  --sidebar-accent-foreground: oklch(0.95 0 0);
   --sidebar-border: oklch(0.255 0.005 286);
-  --sidebar-ring: oklch(0.74 0.15 163);
+  --sidebar-ring: oklch(0.58 0 0);
 
   --shadow-2xs: 0 1px 2px 0 oklch(0 0 0 / 0.2);
   --shadow-xs: 0 1px 2px 0 oklch(0 0 0 / 0.24);
