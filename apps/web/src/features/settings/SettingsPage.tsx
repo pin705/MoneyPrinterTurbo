@@ -75,10 +75,10 @@ export function SettingsPage() {
                 key={l.code}
                 onClick={() => setLang(l.code)}
                 className={cn(
-                  "rounded-xl border px-5 py-2.5 text-sm font-medium transition-all duration-200",
+                  "rounded-lg border px-5 py-2.5 text-sm font-medium transition-colors duration-150 cursor-pointer",
                   i18n.resolvedLanguage === l.code
-                    ? "border-emerald-500/50 bg-emerald-500/10 text-emerald-400"
-                    : "border-zinc-700/50 text-zinc-500 hover:bg-zinc-800/50 hover:text-zinc-300",
+                    ? "border-primary/50 bg-primary/10 text-primary"
+                    : "border-border text-muted-foreground hover:bg-secondary hover:text-foreground",
                 )}
               >
                 {l.label}
