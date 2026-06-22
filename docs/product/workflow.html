@@ -1,0 +1,534 @@
+<title>MoneyPrinter Studio — Production Workflow</title>
+<style>
+  :root{
+    --bg:#0b0d12; --panel:#12151c; --panel2:#171b24; --line:#252b38;
+    --ink:#e8ecf3; --muted:#9aa6b8; --faint:#6b7689;
+    --brand:#7c8cff; --brand2:#22d3ee; --good:#34d399; --warn:#fbbf24; --bad:#f87171;
+    --gold:#fbbf24;
+    --radius:14px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:radial-gradient(1200px 700px at 80% -10%,#1a2030 0%,var(--bg) 55%);
+    color:var(--ink);font:15px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased}
+  a{color:var(--brand2);text-decoration:none}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 22px}
+  .layout{display:grid;grid-template-columns:248px 1fr;gap:34px;align-items:start}
+  /* nav */
+  nav.toc{position:sticky;top:0;align-self:start;max-height:100vh;overflow-y:auto;padding:26px 0 40px;
+    font-size:13.5px;border-right:1px solid var(--line)}
+  nav.toc .grp{color:var(--faint);text-transform:uppercase;letter-spacing:.08em;font-size:11px;margin:18px 0 6px}
+  nav.toc a{display:block;color:var(--muted);padding:4px 10px;border-radius:8px;margin:1px 0}
+  nav.toc a:hover{background:var(--panel2);color:var(--ink)}
+  main{padding:30px 0 90px;min-width:0}
+  /* hero */
+  .hero{padding:28px 0 8px}
+  .kick{color:var(--brand);font-weight:600;letter-spacing:.04em;font-size:13px}
+  h1{font-size:34px;line-height:1.15;margin:8px 0 10px;letter-spacing:-.02em}
+  h1 .g{background:linear-gradient(90deg,var(--brand),var(--brand2));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .lead{color:var(--muted);font-size:16px;max-width:760px}
+  .badges{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 6px}
+  .badge{background:var(--panel2);border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-size:12.5px;color:var(--ink)}
+  .badge b{color:var(--brand2)}
+  section{margin:42px 0;scroll-margin-top:18px}
+  h2{font-size:23px;margin:0 0 4px;letter-spacing:-.01em;display:flex;align-items:center;gap:10px}
+  h2 .num{font-size:13px;color:var(--bg);background:var(--brand);width:26px;height:26px;border-radius:8px;
+    display:inline-flex;align-items:center;justify-content:center;font-weight:700;flex:none}
+  .sub{color:var(--faint);margin:0 0 16px;font-size:14px}
+  h3{font-size:16px;margin:22px 0 8px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;margin:12px 0}
+  .grid{display:grid;gap:14px}
+  .g2{grid-template-columns:repeat(2,1fr)} .g3{grid-template-columns:repeat(3,1fr)}
+  @media(max-width:920px){.layout{grid-template-columns:1fr}nav.toc{display:none}.g2,.g3{grid-template-columns:1fr}}
+  ul{margin:8px 0;padding-left:20px} li{margin:4px 0;color:var(--ink)}
+  li .m{color:var(--muted)}
+  .tag{font-size:10.5px;font-weight:700;letter-spacing:.04em;padding:2px 7px;border-radius:6px;vertical-align:middle;margin-left:6px}
+  .t-have{background:rgba(52,211,153,.14);color:var(--good);border:1px solid rgba(52,211,153,.3)}
+  .t-part{background:rgba(251,191,36,.14);color:var(--warn);border:1px solid rgba(251,191,36,.3)}
+  .t-new{background:rgba(248,113,113,.13);color:var(--bad);border:1px solid rgba(248,113,113,.3)}
+  table{width:100%;border-collapse:collapse;margin:10px 0;font-size:14px}
+  th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{color:var(--faint);font-size:12px;text-transform:uppercase;letter-spacing:.05em;font-weight:600}
+  td b{color:var(--ink)} .num-c{text-align:right;font-variant-numeric:tabular-nums}
+  .pill{display:inline-block;font-size:11px;padding:2px 8px;border-radius:999px;border:1px solid var(--line);background:var(--panel2);color:var(--muted)}
+  .role{font-weight:700;font-size:11px;padding:2px 7px;border-radius:6px}
+  .r-po{background:rgba(124,140,255,.16);color:#aab4ff}
+  .r-pm{background:rgba(34,211,238,.14);color:#67e8f9}
+  .r-dev{background:rgba(52,211,153,.14);color:#6ee7b7}
+  .r-qa{background:rgba(251,191,36,.14);color:#fcd34d}
+  .r-user{background:rgba(248,113,113,.13);color:#fca5a5}
+  .phase{border-left:3px solid var(--brand);padding:2px 0 2px 18px;margin:18px 0}
+  .phase h3{margin-top:0;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .phase .goal{color:var(--muted);font-size:14px;margin:2px 0 10px}
+  .dod{background:var(--panel2);border:1px dashed var(--line);border-radius:10px;padding:10px 14px;margin-top:10px;font-size:13.5px}
+  .dod b{color:var(--good)}
+  .callout{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);border-left:3px solid var(--gold);
+    border-radius:10px;padding:14px 18px;margin:14px 0}
+  .mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;color:var(--brand2)}
+  .scroll{overflow-x:auto}
+  .legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);margin:6px 0 0}
+  .foot{color:var(--faint);font-size:12.5px;border-top:1px solid var(--line);padding-top:18px;margin-top:40px}
+  .kpi{display:flex;gap:8px;align-items:baseline}
+  .kpi .big{font-size:26px;font-weight:700;color:var(--good)}
+  hr{border:none;border-top:1px solid var(--line);margin:24px 0}
+</style>
+
+<div class="wrap">
+<div class="layout">
+
+<nav class="toc">
+  <div class="grp">Tổng quan</div>
+  <a href="#vision">0 · Vision & GOAT</a>
+  <a href="#state">Hiện trạng codebase</a>
+  <div class="grp">Product Owner</div>
+  <a href="#model">1 · Business model</a>
+  <a href="#pricing">2 · Pricing có lãi</a>
+  <a href="#scope">3 · Scope đầy đủ</a>
+  <a href="#hidden">4 · Phần "chưa thấy"</a>
+  <a href="#uiux">5 · UI/UX chuẩn</a>
+  <div class="grp">Project Manager</div>
+  <a href="#roles">6 · Roles & ceremonies</a>
+  <a href="#pipeline">7 · Quy trình 1 task</a>
+  <a href="#roadmap">8 · Roadmap theo phase</a>
+  <div class="grp">Chất lượng</div>
+  <a href="#nfr">9 · NFR & bảo mật</a>
+  <a href="#risks">10 · Risk register</a>
+  <a href="#next">→ Bước tiếp theo</a>
+</nav>
+
+<main>
+  <div class="hero" id="top">
+    <div class="kick">MONEYPRINTER STUDIO · PRODUCTION WORKFLOW</div>
+    <h1>Từ tool → <span class="g">sản phẩm hoàn thiện</span> đến tay người dùng</h1>
+    <p class="lead">Workflow đầy đủ vai trò <b>PO · PM · Dev · QA · User</b> để đưa MoneyPrinterTurbo thành sản phẩm production thật — không MVP. Giữ nguyên lõi render (GOAT), bồi đắp nền móng chuẩn chỉ để sau này mở rộng thêm nguồn video & tính năng.</p>
+    <div class="badges">
+      <span class="badge">💰 Mô hình: <b>Free + Pro/Business + Credit</b></span>
+      <span class="badge">🖥️ Render: <b>Local (desktop)</b> · giá vốn hạ tầng ≈ 0</span>
+      <span class="badge">🇻🇳 Thị trường: <b>Việt Nam · VND · SePay</b></span>
+      <span class="badge">🎬 Differentiator: <b>Batch sản xuất hàng loạt</b></span>
+    </div>
+  </div>
+
+  <!-- 0 VISION -->
+  <section id="vision">
+    <h2><span class="num">0</span> Vision & GOAT cần giữ</h2>
+    <p class="sub">Điều không bao giờ được phá vỡ khi bồi đắp.</p>
+    <div class="card">
+      <p><b>Tầm nhìn:</b> "Gõ một chủ đề → ra video ngắn hoàn chỉnh (kịch bản + footage + lồng tiếng + phụ đề), render ngay trên máy bạn, rồi đăng tự động." Người dùng kiếm tiền bằng video hàng loạt; chúng ta kiếm tiền bằng subscription + credit AI với biên lãi cao vì <b>không gánh chi phí render</b>.</p>
+      <h3>🐐 GOAT — lõi bất biến (<span class="mono">app/</span>)</h3>
+      <ul>
+        <li><b>Pipeline render:</b> LLM kịch bản/từ khoá → tải stock footage (Pexels/Pixabay/Coverr) → Edge TTS lồng tiếng → phụ đề → ghép ffmpeg/moviepy. <span class="m">Mọi thay đổi phải bảo toàn pipeline này.</span></li>
+        <li><b>Auto-post</b> TikTok/Shorts (<span class="mono">upload_post.py</span>).</li>
+        <li><b>Mở rộng tương lai (đã chừa chỗ):</b> thêm nguồn video (YouTube/Storyblocks/AI gen), thêm voice (ElevenLabs), template, hiệu ứng — kiến trúc <span class="mono">material.py</span> theo <span class="mono">source</span> provider nên cắm thêm dễ.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- STATE -->
+  <section id="state">
+    <h2>Hiện trạng codebase — tôi đã tự check</h2>
+    <p class="sub">Phân loại từng phần: <span class="tag t-have">CÓ</span> dùng được · <span class="tag t-part">MỘT PHẦN</span> cần hoàn thiện · <span class="tag t-new">CHƯA CÓ</span> phải làm mới.</p>
+    <div class="grid g2">
+      <div class="card">
+        <h3>Backend render <span class="mono">app/</span> <span class="tag t-have">CÓ</span></h3>
+        <ul>
+          <li>FastAPI: <span class="mono">/videos /subtitle /audio /tasks /config /llm</span>, upload BGM/material, stream, download.</li>
+          <li>Task state Memory/Redis <span class="tag t-part">MỘT PHẦN</span> <span class="m">— chưa có DB bền vững, chưa có queue thật cho batch.</span></li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Cloud monetization <span class="mono">apps/cloud/</span> <span class="tag t-part">MỘT PHẦN</span></h3>
+        <ul>
+          <li>Auth Supabase JWT, ledger credit (balance/transaction/usage, append-only, khóa row chống overspend), LLM proxy (trừ→DeepSeek, hoàn khi lỗi), webhook idempotent. <span class="m">Tốt nhưng generic.</span></li>
+          <li><span class="tag t-new">CHƯA CÓ</span> SePay thật, gói subscription, endpoint tạo link thanh toán, /credits, /invoices, admin.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Web <span class="mono">apps/web/</span> <span class="tag t-part">MỘT PHẦN</span></h3>
+        <ul>
+          <li>React 19 + Vite + Tailwind v4 + shadcn. Chỉ <b>2 màn</b> (Create wizard, Library), điều hướng zustand. i18n en/vi.</li>
+          <li><span class="tag t-new">CHƯA CÓ</span> router thật, auth/login, profile, dashboard, billing/pricing UI, hiển thị credit, onboarding, quản lý batch.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Desktop <span class="mono">apps/desktop/</span> <span class="tag t-part">MỘT PHẦN</span></h3>
+        <ul>
+          <li>Tauri v2, dùng chung web dist, có updater + bundle Python sidecar.</li>
+          <li><span class="tag t-new">CHƯA CÓ</span> updater pubkey thật + ký số, tray, notification, deep-link OAuth, onboarding lần đầu (cài ffmpeg).</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Landing <span class="mono">apps/landing/</span> <span class="tag t-part">MỘT PHẦN</span></h3>
+        <ul>
+          <li>Astro 1 file: hero/features/how/pricing anchor/download.</li>
+          <li><span class="tag t-new">CHƯA CÓ</span> bảng giá thật, legal (ToS/Privacy/Refund), blog/docs, SEO, OG, analytics.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Admin / Ops <span class="tag t-new">CHƯA CÓ</span></h3>
+        <ul>
+          <li>Không có admin panel, analytics, error tracking, status page, support, CI build installer ký số, backup/DR.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 1 MODEL -->
+  <section id="model">
+    <h2><span class="num">1</span> Business model <span class="role r-po">PO</span></h2>
+    <p class="sub">Cỗ máy in tiền: render local (free cho ta) — bán bao quanh nó.</p>
+    <div class="card">
+      <table>
+        <tr><th>Dòng tiền</th><th>Cơ chế</th><th>Giá vốn của ta</th></tr>
+        <tr><td><b>Subscription</b> (Pro/Business)</td><td>Thuê bao tháng/năm: quota credit + mở khóa tính năng (no-watermark, 1080p/4K, batch, lịch đăng).</td><td class="num-c">≈ credit dùng thật + hạ tầng nhỏ</td></tr>
+        <tr><td><b>Credit pack</b></td><td>Mua thêm credit AI khi hết quota. Không ép subscription.</td><td class="num-c">~50–200đ / credit (DeepSeek)</td></tr>
+        <tr><td><b>Render</b></td><td>Chạy trên máy user — miễn phí với user, <b>0đ với ta</b>.</td><td class="num-c">0đ ✅</td></tr>
+        <tr><td><b>Breakage</b></td><td>Credit subscription không dùng hết → lãi thêm.</td><td class="num-c">âm (lãi)</td></tr>
+      </table>
+      <div class="callout">🔑 <b>Vì sao lãi:</b> chi phí biến đổi duy nhất là token AI (rẻ bèo). Render — phần tốn CPU/băng thông nhất — đẩy về máy user. Nên mỗi đồng subscription gần như là lãi gộp.</div>
+    </div>
+  </section>
+
+  <!-- 2 PRICING -->
+  <section id="pricing">
+    <h2><span class="num">2</span> Pricing có lãi <span class="role r-po">PO</span></h2>
+    <p class="sub">Số khởi điểm để A/B — đơn vị VND. 1 credit ≈ 1 lần sinh AI (kịch bản+từ khoá) cho 1 video.</p>
+    <div class="scroll">
+    <table>
+      <tr><th>Gói</th><th>Giá</th><th>Credit/tháng</th><th>Tính năng chính</th><th>Batch</th></tr>
+      <tr>
+        <td><b>Free</b></td><td>0đ</td><td class="num-c">30 khi đăng ký +10/tháng</td>
+        <td>Watermark · 720p · Pexels · Edge TTS cơ bản · 1 video/lần</td><td>✕</td>
+      </tr>
+      <tr>
+        <td><b>Creator</b> <span class="pill">phổ biến</span></td><td><b>199.000đ</b>/th</td><td class="num-c">300</td>
+        <td>Bỏ watermark · 1080p · tất cả nguồn + voice · cloud library · ưu tiên</td><td class="num-c">5</td>
+      </tr>
+      <tr>
+        <td><b>Studio</b></td><td><b>499.000đ</b>/th</td><td class="num-c">1.000</td>
+        <td>4K · lên lịch đăng · API · nhiều seat · analytics</td><td class="num-c">30</td>
+      </tr>
+    </table>
+    </div>
+    <h3>Credit pack mua thêm</h3>
+    <div class="scroll">
+    <table>
+      <tr><th>Pack</th><th>Giá</th><th>Đơn giá bán</th><th>Giá vốn (~150đ/cr)</th><th>Biên gộp</th></tr>
+      <tr><td>100 credit</td><td class="num-c">59.000đ</td><td class="num-c">590đ/cr</td><td class="num-c">15.000đ</td><td class="num-c">~75%</td></tr>
+      <tr><td>500 credit</td><td class="num-c">249.000đ</td><td class="num-c">498đ/cr</td><td class="num-c">75.000đ</td><td class="num-c">~70%</td></tr>
+      <tr><td>2.000 credit</td><td class="num-c">799.000đ</td><td class="num-c">400đ/cr</td><td class="num-c">300.000đ</td><td class="num-c">~62%</td></tr>
+    </table>
+    </div>
+    <div class="callout">
+      📊 <b>Worked example — gói Creator 199.000đ:</b> cấp 300 credit → giá vốn AI 300×150đ = <b>45.000đ</b>; phí SePay ~1.5–3% ≈ 4.000–6.000đ; hạ tầng (Supabase/DB/host) phân bổ ~5.000đ. → <span class="kpi"><span class="big">~143.000đ</span> lãi gộp/user/tháng (biên ~72%).</span> Render = 0đ. User không xài hết credit → lãi cao hơn. <span class="m">Cần đo giá vốn DeepSeek thật ở Phase 1 rồi chốt.</span>
+    </div>
+  </section>
+
+  <!-- 3 SCOPE -->
+  <section id="scope">
+    <h2><span class="num">3</span> Scope đầy đủ — 6 mặt sản phẩm <span class="role r-po">PO</span></h2>
+    <p class="sub">Toàn bộ tính năng cho "hoàn thiện", phân theo surface. <span class="tag t-have">CÓ</span> <span class="tag t-part">MỘT PHẦN</span> <span class="tag t-new">MỚI</span></p>
+
+    <div class="card">
+      <h3>A · Landing & Marketing (web public)</h3>
+      <ul>
+        <li>Hero + demo video/GIF, social proof <span class="tag t-part">MỘT PHẦN</span></li>
+        <li>Bảng giá tương tác (toggle tháng/năm, so sánh gói) <span class="tag t-new">MỚI</span></li>
+        <li>Trang Tính năng, How-it-works, Use-cases, FAQ <span class="tag t-new">MỚI</span></li>
+        <li>Legal: ToS, Privacy, Refund/Hoàn tiền, Cookie <span class="tag t-new">MỚI</span> <span class="m">(bắt buộc để thu tiền)</span></li>
+        <li>Trang tải về theo OS, changelog/releases <span class="tag t-part">MỘT PHẦN</span></li>
+        <li>Blog/Docs/Help center, SEO + sitemap + OG, đa ngôn ngữ vi/en <span class="tag t-new">MỚI</span></li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3>B · Web App (account & quản lý)</h3>
+      <ul>
+        <li>Router thật + layout app (thay điều hướng zustand 2-view) <span class="tag t-new">MỚI</span></li>
+        <li>Auth: đăng ký/đăng nhập, OAuth Google, quên mật khẩu, verify email <span class="tag t-new">MỚI</span></li>
+        <li>Dashboard: số dư credit, gói hiện tại, usage tháng, video gần đây <span class="tag t-new">MỚI</span></li>
+        <li>Billing: chọn gói, checkout SePay, lịch sử hoá đơn, hủy/đổi gói, nạp credit <span class="tag t-new">MỚI</span></li>
+        <li>Profile & Settings: thông tin, đổi mật khẩu, ngôn ngữ, xoá tài khoản (GDPR) <span class="tag t-new">MỚI</span></li>
+        <li>Quản lý video: thư viện, filter/search, trạng thái, tải lại, xoá <span class="tag t-part">MỘT PHẦN</span></li>
+        <li>Onboarding lần đầu (checklist, làm video mẫu) <span class="tag t-new">MỚI</span></li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3>C · Generator & Batch (tool xịn)</h3>
+      <ul>
+        <li>Wizard nhiều bước hiện có <span class="tag t-have">CÓ</span> → nâng cấp UI card/box, preset, preview realtime <span class="tag t-part">MỘT PHẦN</span></li>
+        <li><b>Batch sản xuất hàng loạt</b>: nhập list chủ đề / CSV / Google Sheet → sinh N video, hàng đợi, theo dõi tiến độ từng item <span class="tag t-new">MỚI</span> <span class="pill">tính năng trả phí</span></li>
+        <li>Template / brand kit (logo, màu, font, intro/outro) <span class="tag t-new">MỚI</span></li>
+        <li>Lên lịch đăng tự động đa nền tảng <span class="tag t-part">MỘT PHẦN</span></li>
+        <li>Hàng đợi render local + retry + tạm dừng/tiếp tục <span class="tag t-new">MỚI</span></li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3>D · Desktop (Tauri)</h3>
+      <ul>
+        <li>Auto-update có ký số + pubkey thật + latest.json <span class="tag t-part">MỘT PHẦN</span></li>
+        <li>Onboarding: kiểm tra/ cài ffmpeg, đăng nhập qua deep-link OAuth <span class="tag t-new">MỚI</span></li>
+        <li>System tray, native notification khi render xong, mở thư mục output <span class="tag t-new">MỚI</span></li>
+        <li>Quản lý sidecar Python (start/stop/health, log viewer) <span class="tag t-part">MỘT PHẦN</span></li>
+        <li>Installer ký số: .dmg (notarize), .msi/.exe (code-sign), AppImage/.deb <span class="tag t-new">MỚI</span></li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3>E · Cloud Backend (apps/cloud)</h3>
+      <ul>
+        <li>Ledger credit + LLM proxy <span class="tag t-have">CÓ</span></li>
+        <li><b>SePay tích hợp thật</b>: tạo QR/link, verify webhook chữ ký SePay, đối soát <span class="tag t-new">MỚI</span></li>
+        <li>Subscription engine: gói, chu kỳ, gia hạn, hết hạn, dunning (nhắc nợ), proration <span class="tag t-new">MỚI</span></li>
+        <li>Entitlements (quyền theo gói) + enforce server-side <span class="tag t-new">MỚI</span></li>
+        <li>License/seat cho desktop, kiểm tra gói khi mở tính năng trả phí <span class="tag t-new">MỚI</span></li>
+        <li>Rate limit, abuse/fraud guard, email transactional <span class="tag t-new">MỚI</span></li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3>F · Admin & Ops</h3>
+      <ul>
+        <li>Admin panel: user, gói, credit thủ công, refund, xem usage <span class="tag t-new">MỚI</span></li>
+        <li>Analytics sản phẩm (funnel đăng ký→trả tiền), doanh thu/MRR <span class="tag t-new">MỚI</span></li>
+        <li>Error tracking (Sentry), logging, uptime/status page <span class="tag t-new">MỚI</span></li>
+        <li>CI/CD: build + ký + release installer tự động, migration DB <span class="tag t-new">MỚI</span></li>
+        <li>Backup/DR cho DB ledger (tiền — không được mất) <span class="tag t-new">MỚI</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 4 HIDDEN -->
+  <section id="hidden">
+    <h2><span class="num">4</span> Phần "bạn chưa thấy" — bắt buộc cho production <span class="role r-po">PO</span></h2>
+    <p class="sub">Những thứ vô hình nhưng thiếu là không thể bán/giữ user.</p>
+    <div class="grid g2">
+      <div class="card"><h3>⚖️ Pháp lý & tin cậy</h3><ul>
+        <li>ToS, Privacy Policy, Refund Policy, Cookie consent</li>
+        <li>Bản quyền nhạc/footage (royalty-free disclaimer), DMCA</li>
+        <li>Hoá đơn VAT/biên nhận cho user VN</li>
+      </ul></div>
+      <div class="card"><h3>🔐 Bảo mật & chống lạm dụng</h3><ul>
+        <li>Rate limit, chống brute-force login, chống spam đăng ký free</li>
+        <li>Verify webhook SePay bằng chữ ký, idempotency (đã có nền)</li>
+        <li>Bí mật server-side (key DeepSeek/SePay không lọt client)</li>
+      </ul></div>
+      <div class="card"><h3>📈 Đo lường & vận hành</h3><ul>
+        <li>Analytics funnel, retention, churn, MRR/ARPU</li>
+        <li>Error tracking + alerting, status page, health checks</li>
+        <li>Audit log cho thao tác tiền (ledger đã append-only ✅)</li>
+      </ul></div>
+      <div class="card"><h3>💬 Trải nghiệm & hỗ trợ</h3><ul>
+        <li>Onboarding + empty states + tooltip + lỗi thân thiện</li>
+        <li>Email: welcome, biên nhận, sắp hết credit, gia hạn thất bại</li>
+        <li>Help center, kênh support (Zalo/email/Discord), in-app feedback</li>
+      </ul></div>
+      <div class="card"><h3>🌐 i18n & a11y</h3><ul>
+        <li>Đa ngôn ngữ vi/en đầy đủ (đã có nền i18next)</li>
+        <li>Accessibility: keyboard, contrast, aria; định dạng tiền/ngày VN</li>
+      </ul></div>
+      <div class="card"><h3>🔁 Vòng đời tiền</h3><ul>
+        <li>Dunning khi gia hạn lỗi, grace period, downgrade về Free</li>
+        <li>Đối soát SePay ↔ ledger định kỳ, xử lý chargeback/khiếu nại</li>
+        <li>Chính sách credit hết hạn (rõ ràng để tránh khiếu nại)</li>
+      </ul></div>
+    </div>
+  </section>
+
+  <!-- 5 UIUX -->
+  <section id="uiux">
+    <h2><span class="num">5</span> UI/UX chuẩn — "xịn, dễ dùng" <span class="role r-po">PO</span> <span class="role r-dev">DEV</span></h2>
+    <p class="sub">Yêu cầu rõ của bạn: hạn chế <span class="mono">select</span>, dùng card/box; thân thiện, dễ dùng.</p>
+    <div class="card">
+      <ul>
+        <li><b>Chọn lựa = card/box, không dropdown:</b> aspect ratio, voice, nguồn video, gói giá, transition → render thành card có icon/preview/mô tả + trạng thái selected rõ. <span class="m">Thay <span class="mono">OptSelect</span>/<span class="mono">select</span> bằng <span class="mono">CardSelect</span> / <span class="mono">RadioCardGroup</span> tái sử dụng.</span></li>
+        <li><b>Design system thống nhất:</b> token màu/space/radius, dark + light, component shadcn chuẩn hoá, trạng thái loading/empty/error cho mọi màn.</li>
+        <li><b>Preview trực quan:</b> nghe thử voice, xem thử subtitle style, preview tỉ lệ khung — quyết định bằng mắt không bằng chữ.</li>
+        <li><b>Progressive disclosure:</b> mặc định đơn giản, "Nâng cao" mới mở thêm — người mới không bị ngợp.</li>
+        <li><b>Phản hồi tức thì:</b> toast (đã có sonner), progress render theo %, thông báo khi xong.</li>
+        <li><b>Mobile-aware landing/billing</b>, app desktop tối ưu cho màn lớn.</li>
+      </ul>
+      <div class="callout">🎨 Chuẩn "xịn": mỗi màn phải pass 3 câu hỏi của User — (1) Tôi đang ở đâu? (2) Làm gì tiếp? (3) Nếu lỗi/đợi thì sao? Không màn nào được "trống trơn" hay "treo im".</div>
+    </div>
+  </section>
+
+  <!-- 6 ROLES -->
+  <section id="roles">
+    <h2><span class="num">6</span> Roles & ceremonies <span class="role r-pm">PM</span></h2>
+    <p class="sub">5 vai trò — tôi đóng tất cả theo từng giai đoạn của một hạng mục.</p>
+    <div class="scroll">
+    <table>
+      <tr><th>Vai trò</th><th>Chịu trách nhiệm</th><th>Đầu ra</th></tr>
+      <tr><td><span class="role r-po">PO</span></td><td>Định nghĩa giá trị, ưu tiên, tiêu chí chấp nhận, pricing</td><td>User story + acceptance criteria</td></tr>
+      <tr><td><span class="role r-pm">PM</span></td><td>Chia phase, quản phụ thuộc, rủi ro, Definition of Ready/Done</td><td>Roadmap + bảng task + DoD</td></tr>
+      <tr><td><span class="role r-dev">DEV</span></td><td>Thiết kế kỹ thuật, code, migration, tài liệu API</td><td>PR + test + docs</td></tr>
+      <tr><td><span class="role r-qa">QA</span></td><td>Test case, e2e, regression, kiểm thử bảo mật/thanh toán</td><td>Test report + bug log</td></tr>
+      <tr><td><span class="role r-user">USER</span></td><td>Đóng vai người dùng thật chạy thử end-to-end, UAT</td><td>UAT pass/fail + feedback UX</td></tr>
+    </table>
+    </div>
+    <p class="m">Mỗi phase đóng bằng một <b>UAT do "User" thực hiện</b>: cài app sạch → đăng ký → mua gói SePay (sandbox) → làm batch 5 video → đăng → kiểm tra hoá đơn. Pass mới sang phase sau.</p>
+  </section>
+
+  <!-- 7 PIPELINE -->
+  <section id="pipeline">
+    <h2><span class="num">7</span> Quy trình 1 hạng mục <span class="role r-pm">PM</span></h2>
+    <div class="card scroll">
+      <p class="mono" style="white-space:pre;line-height:1.9">
+PO viết story  →  PM check Definition of Ready  →  DEV thiết kế kỹ thuật
+   ↓                                                      ↓
+USER duyệt giá trị                                   DEV code + unit test
+   ↓                                                      ↓
+   └────────────  QA viết & chạy test ←──────────────────┘
+                         ↓
+              USER chạy UAT end-to-end
+                         ↓
+          PM check Definition of Done → Release</p>
+      <div class="dod"><b>Definition of Ready:</b> story có acceptance criteria · thiết kế UI (card/box) · phụ thuộc đã rõ · ước lượng xong.</div>
+      <div class="dod"><b>Definition of Done:</b> code + test pass · QA regression xanh · UAT pass · i18n vi/en · docs + changelog · không lỗi bảo mật/thanh toán · deploy được.</div>
+    </div>
+  </section>
+
+  <!-- 8 ROADMAP -->
+  <section id="roadmap">
+    <h2><span class="num">8</span> Roadmap theo phase <span class="role r-pm">PM</span></h2>
+    <p class="sub">6 phase. Mỗi phase độc lập giao được, đóng bằng UAT. Thứ tự = đường tới đồng tiền sớm nhất mà vẫn chuẩn.</p>
+
+    <div class="phase">
+      <h3>Phase 0 — Nền móng kỹ thuật <span class="pill">~1 tuần</span></h3>
+      <p class="goal">Không thêm tính năng — làm chắc đất trước khi xây.</p>
+      <ul>
+        <li><span class="role r-dev">DEV</span> Router thật cho web (thay zustand 2-view), layout app + auth guard rỗng.</li>
+        <li><span class="role r-dev">DEV</span> DB bền vững cho task render (thay memory) + migration; chuẩn hoá <span class="mono">api-client</span>.</li>
+        <li><span class="role r-dev">DEV</span> Component <span class="mono">CardSelect/RadioCardGroup</span> + design tokens; CI lint/typecheck/test.</li>
+        <li><span class="role r-qa">QA</span> Khung e2e (Playwright) + smoke pipeline render.</li>
+      </ul>
+      <div class="dod"><b>DoD:</b> web có nhiều route, render task lưu DB, CI xanh, có 1 card-select dùng được.</div>
+    </div>
+
+    <div class="phase">
+      <h3>Phase 1 — Auth + Tài khoản + Credit <span class="pill">~1.5 tuần</span></h3>
+      <p class="goal">User đăng nhập, thấy số dư credit, dùng AI bị trừ credit thật.</p>
+      <ul>
+        <li><span class="role r-dev">DEV</span> Auth UI (đăng ký/đăng nhập/OAuth Google/quên mật khẩu) nối Supabase; deep-link OAuth cho desktop.</li>
+        <li><span class="role r-dev">DEV</span> Dashboard credit + usage; nối <span class="mono">/v1/me</span>, LLM qua proxy cloud (đo giá vốn DeepSeek thật).</li>
+        <li><span class="role r-dev">DEV</span> Profile/Settings + xoá tài khoản.</li>
+        <li><span class="role r-qa">QA</span> Test trừ/hoàn credit, race condition overspend, token hết hạn.</li>
+        <li><span class="role r-user">USER</span> UAT: đăng ký → nhận 30 credit → sinh kịch bản → credit giảm đúng.</li>
+      </ul>
+      <div class="dod"><b>DoD:</b> đăng nhập thật, credit chính xác từng đồng, đo được giá vốn để chốt giá.</div>
+    </div>
+
+    <div class="phase">
+      <h3>Phase 2 — Thanh toán SePay + Gói <span class="pill">~2 tuần</span> <span class="role r-po">trọng tâm doanh thu</span></h3>
+      <p class="goal">User trả được tiền — bắt đầu có doanh thu.</p>
+      <ul>
+        <li><span class="role r-dev">DEV</span> Tích hợp SePay thật: tạo QR/link, webhook verify chữ ký, idempotency (mở rộng webhook hiện có).</li>
+        <li><span class="role r-dev">DEV</span> Subscription engine: gói Free/Creator/Studio, gia hạn, hết hạn, entitlements enforce server-side.</li>
+        <li><span class="role r-dev">DEV</span> Credit pack checkout; lịch sử hoá đơn + biên nhận VAT; UI pricing card (không dropdown).</li>
+        <li><span class="role r-qa">QA</span> Test sandbox SePay: trả tiền → cộng credit; webhook trùng không double; gia hạn lỗi → dunning.</li>
+        <li><span class="role r-user">USER</span> UAT: mua Creator qua SePay → mở khoá no-watermark/1080p → xem hoá đơn.</li>
+      </ul>
+      <div class="dod"><b>DoD:</b> dòng tiền chạy end-to-end, đối soát SePay↔ledger khớp, entitlements chặn đúng.</div>
+    </div>
+
+    <div class="phase">
+      <h3>Phase 3 — Batch & Quản lý video hàng loạt <span class="pill">~2 tuần</span> <span class="role r-po">differentiator</span></h3>
+      <p class="goal">Biến "sản xuất hàng loạt" thành tính năng trả phí hấp dẫn.</p>
+      <ul>
+        <li><span class="role r-dev">DEV</span> Hàng đợi render local (queue + retry + pause/resume) trong sidecar.</li>
+        <li><span class="role r-dev">DEV</span> Batch: nhập list chủ đề/CSV → sinh N video, theo dõi từng item, gate theo gói.</li>
+        <li><span class="role r-dev">DEV</span> Thư viện video: filter/search/trạng thái/tải lại/xoá; template & brand kit.</li>
+        <li><span class="role r-dev">DEV</span> Lên lịch đăng đa nền tảng (mở rộng <span class="mono">upload_post.py</span>).</li>
+        <li><span class="role r-qa">QA</span> Test batch 20 item, crash giữa chừng → resume; quota theo gói.</li>
+        <li><span class="role r-user">USER</span> UAT: nhập 10 chủ đề → ra 10 video đêm → sáng có hết, đăng theo lịch.</li>
+      </ul>
+      <div class="dod"><b>DoD:</b> chạy batch ổn định qua đêm, gate gói đúng, library quản lý mượt.</div>
+    </div>
+
+    <div class="phase">
+      <h3>Phase 4 — Hoàn thiện Desktop + Landing + Hardening <span class="pill">~2 tuần</span></h3>
+      <p class="goal">Đóng gói "sản phẩm thật" — cài là chạy, trông xịn, tin cậy.</p>
+      <ul>
+        <li><span class="role r-dev">DEV</span> Auto-update ký số (pubkey thật, latest.json), tray, notification, onboarding cài ffmpeg.</li>
+        <li><span class="role r-dev">DEV</span> Installer ký số: notarize macOS, code-sign Windows; CI build/release tự động.</li>
+        <li><span class="role r-dev">DEV</span> Landing đầy đủ: pricing tương tác, features, FAQ, legal (ToS/Privacy/Refund), SEO/OG, vi/en.</li>
+        <li><span class="role r-dev">DEV</span> Onboarding in-app, empty/error states, email transactional, help center.</li>
+        <li><span class="role r-qa">QA</span> Regression toàn hệ, kiểm thử bảo mật (rate limit, secrets, fraud), update từ bản cũ.</li>
+        <li><span class="role r-user">USER</span> UAT cài sạch trên 3 OS: tải → cài → đăng nhập → mua → batch → update.</li>
+      </ul>
+      <div class="dod"><b>DoD:</b> installer ký số chạy 3 OS, legal đầy đủ, không lỗ hổng bảo mật, UX hoàn chỉnh.</div>
+    </div>
+
+    <div class="phase">
+      <h3>Phase 5 — Launch & Ops <span class="pill">~1 tuần + liên tục</span></h3>
+      <p class="goal">Lên sóng có kiểm soát + nền để mở rộng.</p>
+      <ul>
+        <li><span class="role r-dev">DEV</span> Admin panel (user/gói/refund/credit thủ công), analytics + MRR, Sentry, status page.</li>
+        <li><span class="role r-dev">DEV</span> Backup/DR cho ledger, runbook sự cố thanh toán.</li>
+        <li><span class="role r-pm">PM</span> Beta kín → soft launch → mở rộng; thu feedback, đo funnel & churn.</li>
+        <li><span class="role r-po">PO</span> Backlog mở rộng: thêm nguồn video, voice ElevenLabs, USD/Stripe quốc tế, team/agency.</li>
+      </ul>
+      <div class="dod"><b>DoD:</b> theo dõi được doanh thu & lỗi realtime, refund/hỗ trợ vận hành trơn, có lộ trình mở rộng.</div>
+    </div>
+  </section>
+
+  <!-- 9 NFR -->
+  <section id="nfr">
+    <h2><span class="num">9</span> Yêu cầu phi chức năng (NFR) & bảo mật <span class="role r-dev">DEV</span> <span class="role r-qa">QA</span></h2>
+    <div class="grid g2">
+      <div class="card"><h3>Tiền & dữ liệu</h3><ul>
+        <li>Ledger append-only, đối soát định kỳ, backup hằng ngày, point-in-time recovery.</li>
+        <li>Mọi enforcement gói/credit ở server — client không bao giờ tin được.</li>
+        <li>Idempotency webhook + chữ ký SePay bắt buộc.</li>
+      </ul></div>
+      <div class="card"><h3>Hiệu năng & ổn định</h3><ul>
+        <li>Batch chạy nền không treo UI; retry tự động; resume sau crash.</li>
+        <li>API p95 < 500ms (trừ render local); health check + auto-restart sidecar.</li>
+      </ul></div>
+      <div class="card"><h3>Bảo mật</h3><ul>
+        <li>Secrets server-side; rate limit; chống brute-force & spam free-tier.</li>
+        <li>Pin phụ thuộc, quét lỗ hổng; CSP cho web; ký số installer.</li>
+      </ul></div>
+      <div class="card"><h3>Chất lượng</h3><ul>
+        <li>Unit + e2e (Playwright) + smoke render; CI bắt buộc xanh mới merge.</li>
+        <li>i18n đầy đủ vi/en; a11y cơ bản; định dạng VND/ngày VN.</li>
+      </ul></div>
+    </div>
+  </section>
+
+  <!-- 10 RISKS -->
+  <section id="risks">
+    <h2><span class="num">10</span> Risk register <span class="role r-pm">PM</span></h2>
+    <div class="scroll">
+    <table>
+      <tr><th>Rủi ro</th><th>Ảnh hưởng</th><th>Giảm thiểu</th></tr>
+      <tr><td>Giá vốn AI cao hơn dự tính</td><td>Biên lãi mỏng</td><td>Đo thật ở Phase 1 trước khi chốt giá; cache prompt; chọn model rẻ.</td></tr>
+      <tr><td>SePay webhook giả/trùng</td><td>Mất tiền</td><td>Verify chữ ký + idempotency (đã có nền) + đối soát.</td></tr>
+      <tr><td>Render local lỗi do máy yếu/thiếu ffmpeg</td><td>Churn, support nặng</td><td>Onboarding cài ffmpeg, check tài nguyên, thông báo lỗi rõ ràng.</td></tr>
+      <tr><td>Bản quyền footage/nhạc</td><td>Pháp lý</td><td>Chỉ nguồn royalty-free + disclaimer + ToS.</td></tr>
+      <tr><td>Lạm dụng free-tier (đăng ký ảo)</td><td>Đốt credit grant</td><td>Verify email, rate limit, giảm signup grant, fraud guard.</td></tr>
+      <tr><td>Phá vỡ GOAT khi refactor</td><td>Mất sản phẩm lõi</td><td>Smoke test pipeline trong CI; không đổi hợp đồng API render.</td></tr>
+    </table>
+    </div>
+  </section>
+
+  <!-- NEXT -->
+  <section id="next">
+    <h2>→ Bước tiếp theo</h2>
+    <div class="card">
+      <p>Workflow đã định nghĩa đầy đủ. Tôi đề xuất bắt đầu thực thi theo thứ tự, mỗi phase đóng bằng UAT. Có thể chọn:</p>
+      <ul>
+        <li><b>(A)</b> Tôi commit workflow này thành <span class="mono">docs/</span> trong repo (versioned cho cả team).</li>
+        <li><b>(B)</b> Bắt tay <b>Phase 0</b> ngay: router web + DB task + <span class="mono">CardSelect</span> + CI.</li>
+        <li><b>(C)</b> Đo giá vốn DeepSeek thật trước để chốt con số pricing.</li>
+        <li><b>(D)</b> Tạo task breakdown chi tiết (ClickUp/issues) cho từng phase.</li>
+      </ul>
+    </div>
+    <div class="foot">MoneyPrinter Studio · Production Workflow · Quyết định khóa: Hybrid pricing · Local render · VN/VND/SePay · Cập nhật 2026-06-22</div>
+  </section>
+
+</main>
+</div>
+</div>
