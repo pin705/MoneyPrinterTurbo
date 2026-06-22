@@ -1,7 +1,9 @@
 import type { VideoParams } from "@mpt/shared";
 import {
   ApiError,
+  type AppConfig,
   type BaseResponse,
+  type ConfigData,
   type GenerateScriptInput,
   type GenerateTermsInput,
   type ScriptData,
@@ -108,6 +110,19 @@ export class MptClient {
     return this.request<SocialMetadataData>("/social-metadata", {
       method: "POST",
       body: JSON.stringify(input),
+    });
+  }
+
+  /** GET /config — read the editable [app] config section. */
+  getConfig(): Promise<ConfigData> {
+    return this.request<ConfigData>("/config");
+  }
+
+  /** POST /config — merge a patch into [app] and persist to config.toml. */
+  updateConfig(patch: AppConfig): Promise<ConfigData> {
+    return this.request<ConfigData>("/config", {
+      method: "POST",
+      body: JSON.stringify({ app: patch }),
     });
   }
 

@@ -122,3 +122,33 @@ export const LLM_PROVIDERS: Option<string>[] = [
   { value: "pollinations", labelKey: "Pollinations" },
   { value: "litellm", labelKey: "LiteLLM" },
 ];
+
+export interface ProviderDefault {
+  baseUrl?: string;
+  model?: string;
+  /** Extra credential fields some providers require. */
+  secretKey?: boolean;
+  accountId?: boolean;
+}
+
+/** Per-provider hints (base url / model placeholders) for the settings UI. */
+export const PROVIDER_DEFAULTS: Record<string, ProviderDefault> = {
+  openai: { baseUrl: "(blank for official)", model: "gpt-4o-mini" },
+  deepseek: { baseUrl: "https://api.deepseek.com", model: "deepseek-chat" },
+  aihubmix: { baseUrl: "https://aihubmix.com/v1", model: "gpt-4o-mini" },
+  aimlapi: { baseUrl: "https://api.aimlapi.com/v1", model: "openai/gpt-4o-mini" },
+  moonshot: { baseUrl: "https://api.moonshot.cn/v1", model: "moonshot-v1-8k" },
+  azure: { baseUrl: "(blank)", model: "(deployment name)" },
+  qwen: { baseUrl: "(blank)", model: "qwen-max" },
+  modelscope: { baseUrl: "https://api-inference.modelscope.cn/v1/", model: "Qwen/Qwen3-32B" },
+  gemini: { baseUrl: "(blank)", model: "gemini-1.5-flash" },
+  grok: { baseUrl: "https://api.x.ai/v1", model: "grok-2" },
+  groq: { baseUrl: "https://api.groq.com/openai/v1", model: "llama-3.3-70b-versatile" },
+  ollama: { baseUrl: "http://localhost:11434/v1", model: "qwen2.5:7b" },
+  oneapi: { baseUrl: "(your gateway)", model: "gpt-4o-mini" },
+  cloudflare: { model: "(model name)", accountId: true },
+  ernie: { baseUrl: "(endpoint)", secretKey: true },
+  mimo: { baseUrl: "https://api.xiaomimimo.com/v1", model: "mimo-v2.5-pro" },
+  pollinations: { baseUrl: "https://text.pollinations.ai/openai", model: "openai-fast" },
+  litellm: { baseUrl: "(optional)", model: "openai/gpt-4o" },
+};

@@ -55,6 +55,13 @@ export interface GenerateTermsInput {
   amount?: number;
 }
 
+/** The editable [app] section of config.toml (flexible key/value bag). */
+export type AppConfig = Record<string, unknown>;
+
+export interface ConfigData {
+  app: AppConfig;
+}
+
 export class ApiError extends Error {
   constructor(
     public status: number,
