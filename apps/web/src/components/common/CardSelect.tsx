@@ -109,30 +109,30 @@ export function CardSelect<T extends string = string>({
             tabIndex={idx === tabbableIdx ? 0 : -1}
             onClick={() => !opt.disabled && onValueChange(opt.value)}
             className={cn(
-              "group relative flex items-start gap-3 rounded-xl border p-4 text-left transition-all duration-200",
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-zinc-900",
+              "group relative flex cursor-pointer items-start gap-3 rounded-lg border p-3.5 text-left transition-colors duration-150",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60",
               "disabled:cursor-not-allowed disabled:opacity-50",
               selected
-                ? "border-emerald-500/50 bg-emerald-500/10 text-zinc-100"
-                : "border-zinc-800/50 bg-zinc-900/50 text-zinc-400 hover:border-zinc-700/50 hover:bg-zinc-800/50",
+                ? "border-primary/60 bg-primary/5 text-foreground"
+                : "border-border bg-card text-muted-foreground hover:border-foreground/20 hover:bg-secondary/50",
             )}
           >
             {opt.icon != null && (
               <span
                 className={cn(
                   "mt-0.5 flex size-5 shrink-0 items-center justify-center [&_svg]:size-5",
-                  selected ? "text-emerald-400" : "text-zinc-500",
+                  selected ? "text-primary" : "text-muted-foreground",
                 )}
               >
                 {opt.icon}
               </span>
             )}
             <span className="min-w-0 flex-1">
-              <span className={cn("block truncate text-sm font-medium", selected ? "text-zinc-100" : "text-zinc-300")}>
+              <span className={cn("block truncate text-sm font-medium", selected ? "text-foreground" : "text-foreground/80")}>
                 {opt.label}
               </span>
               {opt.description && (
-                <span className="mt-0.5 block text-xs text-zinc-500">
+                <span className="text-muted-foreground mt-0.5 block text-xs">
                   {opt.description}
                 </span>
               )}
@@ -140,7 +140,7 @@ export function CardSelect<T extends string = string>({
             <Check
               aria-hidden
               className={cn(
-                "mt-0.5 size-4 shrink-0 text-emerald-400 transition-opacity",
+                "text-primary mt-0.5 size-4 shrink-0 transition-opacity",
                 selected ? "opacity-100" : "opacity-0",
               )}
             />

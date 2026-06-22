@@ -5,6 +5,7 @@ import { HashRouter } from "react-router-dom";
 
 import App from "./App";
 import { Toaster } from "@/components/ui/sonner";
+import { checkForUpdates } from "@/lib/updater";
 import "@fontsource-variable/geist";
 import "@fontsource-variable/geist-mono";
 import "./i18n";
@@ -30,3 +31,6 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
     </QueryClientProvider>
   </React.StrictMode>,
 );
+
+// Desktop only — checks GitHub Releases for a signed update (no-op in a browser).
+void checkForUpdates();

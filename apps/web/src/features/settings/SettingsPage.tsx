@@ -13,8 +13,8 @@ import { useAuth } from "@/store/auth";
 
 function Card({ title, children }: { title: string; children: ReactNode }) {
   return (
-    <div className="bg-zinc-900/50 rounded-2xl border border-zinc-800/50 p-6">
-      <h2 className="mb-4 text-sm font-semibold text-zinc-300 uppercase tracking-wider">{title}</h2>
+    <div className="bg-card rounded-xl border border-border shadow-xs p-6">
+      <h2 className="text-muted-foreground mb-4 text-xs font-semibold uppercase tracking-wider">{title}</h2>
       {children}
     </div>
   );
@@ -52,12 +52,17 @@ export function SettingsPage() {
       <PageHeader title={t("Account")} subtitle={t("Profile, language and account")} />
       <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6 px-6 py-8">
         <Card title={t("Profile")}>
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-zinc-200">{email ?? t("Signed in")}</p>
-              <p className="text-zinc-500 text-xs">{t("Signed in")}</p>
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="bg-primary/10 text-primary grid size-10 shrink-0 place-items-center rounded-full text-sm font-semibold uppercase">
+                {(email ?? "U").slice(0, 1)}
+              </div>
+              <div className="min-w-0">
+                <p className="truncate text-sm font-medium text-foreground">{email ?? t("Signed in")}</p>
+                <p className="text-muted-foreground text-xs">{t("Signed in")}</p>
+              </div>
             </div>
-            <Button variant="outline" size="sm" onClick={onSignOut} className="border-zinc-700 hover:bg-zinc-800 text-zinc-300">
+            <Button variant="outline" size="sm" onClick={onSignOut}>
               <LogOut /> {t("Sign out")}
             </Button>
           </div>

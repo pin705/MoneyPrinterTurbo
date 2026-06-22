@@ -53,20 +53,20 @@ export function Combobox({
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-full justify-between font-normal bg-zinc-800/50 border-zinc-700/50 text-zinc-100 hover:bg-zinc-800"
+          className="w-full justify-between font-normal"
         >
-          <span className={cn("truncate", !selected && "text-zinc-500")}>
+          <span className={cn("truncate", !selected && "text-muted-foreground")}>
             {selected ? selected.label : placeholder}
           </span>
-          <ChevronsUpDown className="ml-2 size-4 shrink-0 text-zinc-500" />
+          <ChevronsUpDown className="ml-2 size-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent
-        className="w-(--radix-popover-trigger-width) p-0 bg-zinc-800 border-zinc-700"
+        className="w-(--radix-popover-trigger-width) p-0"
         align="start"
       >
-        <Command className="bg-transparent">
-          <CommandInput placeholder={searchPlaceholder} className="border-zinc-700" />
+        <Command>
+          <CommandInput placeholder={searchPlaceholder} />
           <CommandList>
             <CommandEmpty>{emptyText}</CommandEmpty>
             <CommandGroup>
@@ -78,12 +78,11 @@ export function Combobox({
                     onValueChange(o.value);
                     setOpen(false);
                   }}
-                  className="text-zinc-300 aria-selected:bg-emerald-500/10 aria-selected:text-emerald-400"
                 >
                   <Check
                     className={cn(
-                      "mr-1 size-4",
-                      value === o.value ? "opacity-100 text-emerald-400" : "opacity-0",
+                      "mr-1 size-4 text-primary",
+                      value === o.value ? "opacity-100" : "opacity-0",
                     )}
                   />
                   <span className="truncate">{o.label}</span>

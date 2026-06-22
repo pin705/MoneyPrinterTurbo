@@ -8,7 +8,7 @@ test("sign in shows the account's credits and plan from the cloud", async ({
 }) => {
   await page.goto("/#/login");
   await page.getByLabel("Email").fill("e2e@example.com");
-  await page.getByRole("button", { name: "Continue" }).click();
+  await page.getByRole("button", { name: "Continue", exact: true }).click();
   await expect(page).toHaveURL(/#\/dashboard$/);
 
   // me() resolved from the cloud → entitlements section renders (not the error).
@@ -22,7 +22,7 @@ test("sign in shows the account's credits and plan from the cloud", async ({
 test("billing lists plans from the cloud catalog", async ({ page }) => {
   await page.goto("/#/login");
   await page.getByLabel("Email").fill("e2e@example.com");
-  await page.getByRole("button", { name: "Continue" }).click();
+  await page.getByRole("button", { name: "Continue", exact: true }).click();
   await page.goto("/#/billing");
 
   await expect(page.getByRole("heading", { name: "Creator" })).toBeVisible();
@@ -34,7 +34,7 @@ test("admin panel loads stats with the admin key", async ({ page }) => {
   // Sign in first (the route is gated by RequireAuth).
   await page.goto("/#/login");
   await page.getByLabel("Email").fill("e2e@example.com");
-  await page.getByRole("button", { name: "Continue" }).click();
+  await page.getByRole("button", { name: "Continue", exact: true }).click();
 
   await page.goto("/#/admin");
   await page.getByPlaceholder("X-Admin-Key").fill("e2e-admin");

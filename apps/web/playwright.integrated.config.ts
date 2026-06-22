@@ -18,7 +18,9 @@ export default defineConfig({
   use: { baseURL: `http://localhost:${WEB}`, trace: "on-first-retry" },
   webServer: [
     {
-      command: `pnpm build && pnpm preview --port ${WEB} --strictPort`,
+      // Force dev sign-in (deterministic; no real Google OAuth) even if a local
+      // .env has Supabase creds.
+      command: `VITE_FORCE_DEV_AUTH=1 pnpm build && pnpm preview --port ${WEB} --strictPort`,
       url: `http://localhost:${WEB}`,
       reuseExistingServer: true,
       timeout: 120_000,

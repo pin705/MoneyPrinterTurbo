@@ -10,8 +10,11 @@ import { createClient, type SupabaseClient } from "@supabase/supabase-js";
  */
 const url = import.meta.env.VITE_SUPABASE_URL as string | undefined;
 const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined;
+// e2e/CI sets this to force the deterministic dev sign-in even if Supabase
+// creds are present in a local .env, so tests don't hit real Google OAuth.
+const forceDevAuth = import.meta.env.VITE_FORCE_DEV_AUTH === "1";
 
-export const isSupabaseEnabled = !!(url && anonKey);
+export const isSupabaseEnabled = !forceDevAuth && !!(url && anonKey);
 
 export const supabase: SupabaseClient | null = isSupabaseEnabled
   ? createClient(url as string, anonKey as string, {

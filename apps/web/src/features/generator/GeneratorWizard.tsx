@@ -23,6 +23,7 @@ import {
 import { Progress } from "@/components/ui/progress";
 import { useGenerator } from "@/store/generator";
 import { ContentPanel } from "./ContentPanel";
+import { PreviewPane } from "./PreviewPane";
 import { ReviewStep } from "./ReviewStep";
 import { SubtitlePanel } from "./SubtitlePanel";
 import { useVideoTask } from "./useVideoTask";
@@ -68,60 +69,81 @@ export function GeneratorWizard() {
     <ReviewStep key="review" />,
   ][step];
 
+  const progressLabel = failed
+    ? t("Generation failed — check backend logs")
+    : progress < 10
+      ? t("Generating script…")
+      : progress < 40
+        ? t("Synthesizing audio…")
+        : progress < 60
+          ? t("Downloading materials…")
+          : t("Rendering video…");
+
   return (
-    <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col px-6 py-8">
-      <div className="mb-8">
-        <Stepper steps={steps} current={step} onStepClick={setStep} />
-      </div>
-
-      <div className="flex-1">{body}</div>
-
-      {(isRunning || failed) && (
-        <div className="mt-6 flex flex-col gap-2">
-          <div className="flex items-center justify-between text-xs">
-            <span className="text-muted-foreground flex items-center gap-1.5">
-              {failed ? (
-                <>
-                  <TriangleAlert className="text-destructive size-3.5" />
-                  {t("Generation failed — check backend logs")}
-                </>
-              ) : (
-                <>
-                  <Loader2 className="size-3.5 animate-spin text-primary" />
-                  {progress < 10
-                    ? t("Generating script…")
-                    : progress < 40
-                      ? t("Synthesizing audio…")
-                      : progress < 60
-                        ? t("Downloading materials…")
-                        : t("Rendering video…")}
-                </>
-              )}
-            </span>
-            <span className="tabular-nums font-medium text-foreground">{progress}%</span>
-          </div>
-          {!failed && <Progress value={progress} />}
+    <div className="mx-auto grid w-full max-w-6xl flex-1 gap-8 px-6 py-8 lg:grid-cols-[minmax(0,1fr)_340px]">
+      {/* Left — wizard */}
+      <div className="flex min-w-0 flex-col">
+        <div className="mb-7">
+          <Stepper steps={steps} current={step} onStepClick={setStep} />
         </div>
-      )}
 
-      <div className="mt-8 flex items-center justify-between gap-3 border-t border-border pt-6">
-        <Button
-          variant="ghost"
-          onClick={() => setStep((s) => Math.max(0, s - 1))}
-          disabled={step === 0 || isRunning}
-        >
-          <ArrowLeft /> {t("Back")}
-        </Button>
+        <div className="flex-1">{body}</div>
 
-        {step < last ? (
+        <div className="mt-7 flex items-center justify-between gap-3 border-t border-border pt-5">
           <Button
+            variant="ghost"
+            onClick={() => setStep((s) => Math.max(0, s - 1))}
+            disabled={step === 0 || isRunning}
+          >
+            <ArrowLeft /> {t("Back")}
+          </Button>
+
+          <span className="text-muted-foreground text-xs tabular-nums">
+            {t("Step")} {step + 1} / {steps.length}
+          </span>
+
+          <Button
+            variant={step < last ? "default" : "outline"}
             onClick={() => setStep((s) => Math.min(last, s + 1))}
-            disabled={step === 0 && !hasContent}
+            disabled={step >= last || (step === 0 && !hasContent)}
           >
             {t("Next")} <ArrowRight />
           </Button>
-        ) : (
-          <Button onClick={onGenerate} disabled={isRunning} className="min-w-44 bg-primary text-primary-foreground font-semibold">
+        </div>
+      </div>
+
+      {/* Right — preview + primary action (sticky) */}
+      <aside className="hidden lg:block">
+        <div className="sticky top-20 flex flex-col gap-4">
+          <PreviewPane />
+
+          {(isRunning || failed) && (
+            <div className="bg-card flex flex-col gap-2 rounded-xl border border-border p-4 shadow-xs">
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-muted-foreground flex items-center gap-1.5">
+                  {failed ? (
+                    <TriangleAlert className="text-destructive size-3.5" />
+                  ) : (
+                    <Loader2 className="text-primary size-3.5 animate-spin" />
+                  )}
+                  <span className="truncate">{progressLabel}</span>
+                </span>
+                {!failed && (
+                  <span className="text-foreground font-medium tabular-nums">
+                    {progress}%
+                  </span>
+                )}
+              </div>
+              {!failed && <Progress value={progress} />}
+            </div>
+          )}
+
+          <Button
+            size="lg"
+            onClick={onGenerate}
+            disabled={isRunning}
+            className="w-full"
+          >
             {isRunning ? (
               <>
                 <Loader2 className="animate-spin" /> {t("Generating…")}
@@ -132,7 +154,36 @@ export function GeneratorWizard() {
               </>
             )}
           </Button>
+          <p className="text-muted-foreground/70 text-center text-xs">
+            {t("Renders locally on your machine")}
+          </p>
+        </div>
+      </aside>
+
+      {/* Mobile — primary action pinned under the form */}
+      <div className="lg:hidden">
+        {(isRunning || failed) && (
+          <div className="mb-3 flex flex-col gap-2">
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-muted-foreground">{progressLabel}</span>
+              {!failed && (
+                <span className="text-foreground font-medium tabular-nums">{progress}%</span>
+              )}
+            </div>
+            {!failed && <Progress value={progress} />}
+          </div>
         )}
+        <Button size="lg" onClick={onGenerate} disabled={isRunning} className="w-full">
+          {isRunning ? (
+            <>
+              <Loader2 className="animate-spin" /> {t("Generating…")}
+            </>
+          ) : (
+            <>
+              <Sparkles /> {t("Generate Video")}
+            </>
+          )}
+        </Button>
       </div>
 
       <Dialog open={resultsOpen} onOpenChange={setResultsOpen}>
@@ -152,7 +203,7 @@ export function GeneratorWizard() {
                   <video
                     src={url}
                     controls
-                    className="bg-muted aspect-[9/16] w-full rounded-xl object-contain"
+                    className="bg-muted aspect-[9/16] w-full rounded-lg object-contain"
                   />
                   <Button asChild variant="secondary" size="sm">
                     <a href={url} download>

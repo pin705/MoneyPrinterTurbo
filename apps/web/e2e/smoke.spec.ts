@@ -50,7 +50,7 @@ test.describe("auth", () => {
   test("dev sign-in routes to the dashboard", async ({ page }) => {
     await page.goto("/#/login");
     await page.getByLabel("Email").fill("tester@example.com");
-    await page.getByRole("button", { name: "Continue" }).click();
+    await page.getByRole("button", { name: "Continue", exact: true }).click();
     await expect(page).toHaveURL(/#\/dashboard$/);
     // Dashboard chrome renders even if the cloud backend is unreachable in CI.
     await expect(page.getByRole("button", { name: /Upgrade/ })).toBeVisible();

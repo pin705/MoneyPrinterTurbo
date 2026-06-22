@@ -26,10 +26,10 @@ const PAGE_SIZE = 12;
 function StatusBadge({ state }: { state?: TaskStateValue }) {
   const { t } = useTranslation();
   if (state === TaskState.COMPLETE)
-    return <Badge className="bg-emerald-500/10 text-emerald-400 border-emerald-500/20">{t("Complete")}</Badge>;
+    return <Badge variant="success">{t("Complete")}</Badge>;
   if (state === TaskState.FAILED)
     return <Badge variant="destructive">{t("Failed")}</Badge>;
-  return <Badge variant="secondary" className="bg-zinc-800 text-zinc-400">{t("Processing")}</Badge>;
+  return <Badge variant="secondary">{t("Processing")}</Badge>;
 }
 
 export function LibraryPage() {
@@ -86,21 +86,32 @@ export function LibraryPage() {
 
       <main className="mx-auto w-full max-w-[1600px] flex-1 px-6 py-8">
         {list.isLoading ? (
-          <div className="text-zinc-500 flex items-center gap-2 py-20 text-sm">
-            <Loader2 className="size-4 animate-spin" /> {t("Loading…")}
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <div
+                key={i}
+                className="bg-card overflow-hidden rounded-xl border border-border"
+              >
+                <div className="bg-muted aspect-[9/16] w-full animate-pulse" />
+                <div className="flex flex-col gap-2 p-4">
+                  <div className="bg-muted h-4 w-20 animate-pulse rounded" />
+                  <div className="bg-muted h-3 w-full animate-pulse rounded" />
+                </div>
+              </div>
+            ))}
           </div>
         ) : tasks.length === 0 ? (
           <div className="flex flex-col items-center justify-center gap-4 py-24 text-center">
-            <div className="bg-zinc-800/50 text-zinc-500 grid size-14 place-items-center rounded-2xl">
+            <div className="bg-muted text-muted-foreground grid size-14 place-items-center rounded-xl">
               <VideoOff className="size-6" />
             </div>
             <div>
-              <p className="font-medium text-zinc-200">{t("No videos yet")}</p>
-              <p className="text-zinc-500 text-sm">
+              <p className="font-medium text-foreground">{t("No videos yet")}</p>
+              <p className="text-muted-foreground text-sm">
                 {t("Create your first video to see it here.")}
               </p>
             </div>
-            <Button onClick={() => navigate("/create")} className="bg-emerald-500 hover:bg-emerald-400 text-black font-semibold">
+            <Button onClick={() => navigate("/create")}>
               <Plus /> {t("Create a video")}
             </Button>
           </div>
@@ -114,9 +125,9 @@ export function LibraryPage() {
                 return (
                   <div
                     key={id}
-                    className="bg-zinc-900/50 flex flex-col overflow-hidden rounded-2xl border border-zinc-800/50 transition-all duration-200 hover:border-zinc-700/50"
+                    className="group bg-card flex flex-col overflow-hidden rounded-xl border border-border shadow-xs transition-colors duration-150 hover:border-foreground/20"
                   >
-                    <div className="bg-zinc-800/50 relative aspect-[9/16] w-full">
+                    <div className="bg-muted relative aspect-[9/16] w-full overflow-hidden">
                       {url ? (
                         <video
                           src={url}
@@ -127,53 +138,56 @@ export function LibraryPage() {
                       ) : (
                         <div className="flex size-full flex-col items-center justify-center gap-3 p-4">
                           {task.state === TaskState.FAILED ? (
-                            <VideoOff className="text-zinc-600 size-6" />
+                            <VideoOff className="text-muted-foreground size-6" />
                           ) : (
-                            <Loader2 className="text-emerald-400 size-6 animate-spin" />
+                            <Loader2 className="text-primary size-6 animate-spin" />
                           )}
                           <Progress
                             value={task.progress ?? 0}
-                            className="w-3/4 bg-zinc-700 [&>div]:bg-emerald-500"
+                            className="w-3/4"
                           />
                         </div>
                       )}
+                      {/* hover-reveal delete */}
+                      <Button
+                        variant="secondary"
+                        size="icon-sm"
+                        aria-label={t("Delete")}
+                        onClick={() => del.mutate(id)}
+                        disabled={del.isPending}
+                        className="absolute right-2 top-2 opacity-0 shadow-sm backdrop-blur-sm transition-opacity hover:text-destructive group-hover:opacity-100"
+                      >
+                        <Trash2 />
+                      </Button>
                     </div>
-                    <div className="flex flex-col gap-2 p-4">
+                    <div className="flex flex-col gap-2 p-3.5">
                       <div className="flex items-center justify-between gap-2">
                         <StatusBadge state={task.state} />
-                        <span className="text-zinc-600 font-mono text-[11px]">
+                        <span className="text-muted-foreground/60 font-mono text-[11px]">
                           {id.slice(0, 8)}
                         </span>
                       </div>
                       {task.script ? (
-                        <p className="text-zinc-500 line-clamp-2 text-xs">
+                        <p className="text-muted-foreground line-clamp-2 text-xs leading-relaxed">
                           {task.script}
                         </p>
-                      ) : null}
-                      <div className="mt-2 flex gap-2">
-                        {url ? (
-                          <Button
-                            asChild
-                            variant="secondary"
-                            size="sm"
-                            className="flex-1 bg-zinc-800 hover:bg-zinc-700 text-zinc-200"
-                          >
-                            <a href={url} download>
-                              <Download /> {t("Download")}
-                            </a>
-                          </Button>
-                        ) : null}
+                      ) : (
+                        <p className="text-muted-foreground/50 text-xs italic">
+                          {t("No script")}
+                        </p>
+                      )}
+                      {url ? (
                         <Button
-                          variant="ghost"
-                          size="icon"
-                          aria-label={t("Delete")}
-                          onClick={() => del.mutate(id)}
-                          disabled={del.isPending}
-                          className="text-zinc-600 hover:text-red-400 hover:bg-zinc-800"
+                          asChild
+                          variant="outline"
+                          size="sm"
+                          className="mt-1 w-full"
                         >
-                          <Trash2 />
+                          <a href={url} download>
+                            <Download /> {t("Download")}
+                          </a>
                         </Button>
-                      </div>
+                      ) : null}
                     </div>
                   </div>
                 );
@@ -186,11 +200,10 @@ export function LibraryPage() {
                 size="sm"
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page <= 1}
-                className="border-zinc-700 hover:bg-zinc-800 text-zinc-300"
               >
                 <ChevronLeft /> {t("Previous")}
               </Button>
-              <span className="text-zinc-500 text-sm tabular-nums">
+              <span className="text-muted-foreground text-sm tabular-nums">
                 {t("Page")} {page} / {totalPages} · {total} {t("videos")}
               </span>
               <Button
@@ -198,7 +211,6 @@ export function LibraryPage() {
                 size="sm"
                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                 disabled={page >= totalPages}
-                className="border-zinc-700 hover:bg-zinc-800 text-zinc-300"
               >
                 {t("Next")} <ChevronRight />
               </Button>
