@@ -160,4 +160,25 @@ export const vi: Record<string, string> = {
   Back: "Quay lại",
   On: "Bật",
   Off: "Tắt",
+
+  // Navigation / account
+  Account: "Tài khoản",
+  Dashboard: "Tổng quan",
+  Billing: "Thanh toán",
+  "Sign in": "Đăng nhập",
+
+  // Placeholder pages
+  "Coming soon": "Sắp ra mắt",
+  "Planned for {{phase}}": "Dự kiến ở {{phase}}",
+  "Your credit balance, plan and usage at a glance.":
+    "Số dư credit, gói và mức sử dụng của bạn trong một màn hình.",
+  "Plans, SePay checkout, credit top-ups and invoices.":
+    "Các gói, thanh toán SePay, nạp credit và hoá đơn.",
+  "Profile, password, language and account deletion.":
+    "Hồ sơ, mật khẩu, ngôn ngữ và xoá tài khoản.",
+  "Sign in to sync credits and manage your subscription.":
+    "Đăng nhập để đồng bộ credit và quản lý gói đăng ký.",
+  "Page not found": "Không tìm thấy trang",
+  "The page you’re looking for doesn’t exist.":
+    "Trang bạn tìm không tồn tại.",
 };

@@ -63,7 +63,7 @@ export function VideoAudioPanel() {
           <CardSelect
             id="aspect"
             columns={3}
-            aria-label={t("Aspect ratio")}
+            aria-labelledby="aspect-label"
             value={params.video_aspect ?? "9:16"}
             onValueChange={(v) => setParam("video_aspect", v as VideoAspect)}
             options={VIDEO_ASPECTS.map((o) => ({

@@ -1,12 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
-import { Clapperboard, Library, Sparkles } from "lucide-react";
+import { Sparkles } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { NavLink } from "react-router-dom";
 
 import { SettingsDialog } from "@/components/SettingsDialog";
 import { LANGUAGES, type LangCode } from "@/i18n";
 import { useApi } from "@/lib/useApi";
+import { ACCOUNT_NAV, PRIMARY_NAV, type NavItem } from "@/lib/nav";
 import { cn } from "@/lib/utils";
-import { useNav, type View } from "@/store/nav";
 
 function BackendStatus() {
   const { t } = useTranslation();
@@ -63,14 +64,36 @@ function LanguageToggle() {
   );
 }
 
+function NavItems({ items }: { items: NavItem[] }) {
+  const { t } = useTranslation();
+  return (
+    <>
+      {items.map((it) => {
+        const Icon = it.icon;
+        return (
+          <NavLink
+            key={it.to}
+            to={it.to}
+            className={({ isActive }) =>
+              cn(
+                "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                isActive
+                  ? "bg-primary/15 text-primary"
+                  : "text-muted-foreground hover:bg-accent hover:text-foreground",
+              )
+            }
+          >
+            <Icon className="size-4" />
+            {t(it.labelKey)}
+          </NavLink>
+        );
+      })}
+    </>
+  );
+}
+
 export function Sidebar() {
   const { t } = useTranslation();
-  const { view, setView } = useNav();
-
-  const items: { id: View; label: string; icon: typeof Clapperboard }[] = [
-    { id: "create", label: t("Create"), icon: Clapperboard },
-    { id: "library", label: t("Library"), icon: Library },
-  ];
 
   return (
     <aside className="bg-sidebar flex w-60 shrink-0 flex-col border-r">
@@ -84,26 +107,17 @@ export function Sidebar() {
       </div>
 
       <nav className="flex flex-col gap-1 p-3">
-        {items.map((it) => {
-          const Icon = it.icon;
-          const active = view === it.id;
-          return (
-            <button
-              key={it.id}
-              onClick={() => setView(it.id)}
-              className={cn(
-                "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
-                active
-                  ? "bg-primary/15 text-primary"
-                  : "text-muted-foreground hover:bg-accent hover:text-foreground",
-              )}
-            >
-              <Icon className="size-4" />
-              {it.label}
-            </button>
-          );
-        })}
+        <NavItems items={PRIMARY_NAV} />
       </nav>
+
+      <div className="mt-3 px-3">
+        <p className="text-muted-foreground/70 px-3 pb-1 text-[11px] font-medium tracking-wide uppercase">
+          {t("Account")}
+        </p>
+        <nav className="flex flex-col gap-1">
+          <NavItems items={ACCOUNT_NAV} />
+        </nav>
+      </div>
 
       <div className="mt-auto flex flex-col gap-3 pb-4">
         <BackendStatus />

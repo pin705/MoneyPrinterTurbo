@@ -11,6 +11,7 @@ import {
   VideoOff,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { TaskState, type TaskStateValue } from "@mpt/shared";
 
@@ -19,7 +20,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { useApi } from "@/lib/useApi";
-import { useNav } from "@/store/nav";
 
 const PAGE_SIZE = 12;
 
@@ -36,7 +36,7 @@ export function LibraryPage() {
   const { t } = useTranslation();
   const api = useApi();
   const qc = useQueryClient();
-  const setView = useNav((s) => s.setView);
+  const navigate = useNavigate();
   const [page, setPage] = useState(1);
 
   const list = useQuery({
@@ -77,7 +77,7 @@ export function LibraryPage() {
               <RefreshCw className={list.isFetching ? "animate-spin" : ""} />
               {t("Refresh")}
             </Button>
-            <Button size="sm" onClick={() => setView("create")}>
+            <Button size="sm" onClick={() => navigate("/create")}>
               <Plus /> {t("New video")}
             </Button>
           </>
@@ -100,7 +100,7 @@ export function LibraryPage() {
                 {t("Create your first video to see it here.")}
               </p>
             </div>
-            <Button onClick={() => setView("create")}>
+            <Button onClick={() => navigate("/create")}>
               <Plus /> {t("Create a video")}
             </Button>
           </div>

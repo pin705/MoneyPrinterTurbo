@@ -21,7 +21,11 @@ export function Field({ label, htmlFor, hint, className, children }: FieldProps)
   return (
     <div className={cn("flex flex-col gap-1.5", className)}>
       <div className="flex items-center gap-1.5">
-        <Label htmlFor={htmlFor} className="text-muted-foreground text-xs">
+        <Label
+          htmlFor={htmlFor}
+          id={htmlFor ? `${htmlFor}-label` : undefined}
+          className="text-muted-foreground text-xs"
+        >
           {label}
         </Label>
         {hint ? (

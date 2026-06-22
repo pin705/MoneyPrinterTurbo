@@ -21,7 +21,10 @@ interface CardSelectProps<T extends string = string> {
   columns?: 1 | 2 | 3 | 4;
   id?: string;
   className?: string;
+  /** Accessible name. Prefer `aria-labelledby` to reference a visible label. */
   "aria-label"?: string;
+  /** Id of a visible label element that names the group. */
+  "aria-labelledby"?: string;
 }
 
 const COLS: Record<NonNullable<CardSelectProps["columns"]>, string> = {
@@ -35,7 +38,8 @@ const COLS: Record<NonNullable<CardSelectProps["columns"]>, string> = {
  * Card/box selector — the project's default over `<select>`/`OptSelect`.
  * Renders each choice as a clickable card with an icon, label and optional
  * description, plus a clear selected state. Behaves as an accessible radio
- * group (roving tabindex + arrow-key navigation).
+ * group: roving tabindex (exactly one tabbable option), arrow-key navigation,
+ * and focus follows selection per the WAI-ARIA radiogroup pattern.
  */
 export function CardSelect<T extends string = string>({
   value,
@@ -45,14 +49,30 @@ export function CardSelect<T extends string = string>({
   id,
   className,
   "aria-label": ariaLabel,
+  "aria-labelledby": ariaLabelledby,
 }: CardSelectProps<T>) {
-  const enabled = options.filter((o) => !o.disabled);
+  const refs = React.useRef<(HTMLButtonElement | null)[]>([]);
+
+  // Exactly one option carries tabIndex=0 (roving tabindex): the selected and
+  // enabled one, otherwise the first enabled option. This keeps the group
+  // keyboard-reachable even when `value` matches nothing or points at a
+  // disabled option.
+  const selectedIdx = options.findIndex((o) => o.value === value && !o.disabled);
+  const tabbableIdx =
+    selectedIdx >= 0 ? selectedIdx : options.findIndex((o) => !o.disabled);
 
   const move = (dir: 1 | -1) => {
+    const enabled = options
+      .map((o, i) => ({ o, i }))
+      .filter((x) => !x.o.disabled);
     if (enabled.length === 0) return;
-    const idx = enabled.findIndex((o) => o.value === value);
-    const next = enabled[(idx + dir + enabled.length) % enabled.length];
-    onValueChange(next.value);
+    const pos = enabled.findIndex((x) => x.o.value === value);
+    const start = pos === -1 ? 0 : pos;
+    const next = enabled[(start + dir + enabled.length) % enabled.length];
+    onValueChange(next.o.value);
+    // Focus must follow selection (WAI-ARIA). focus() works before the
+    // re-render flips tabIndex, and on a tabIndex=-1 element.
+    refs.current[next.i]?.focus();
   };
 
   const onKeyDown = (e: React.KeyboardEvent) => {
@@ -69,20 +89,24 @@ export function CardSelect<T extends string = string>({
     <div
       id={id}
       role="radiogroup"
-      aria-label={ariaLabel}
+      aria-label={ariaLabelledby ? undefined : ariaLabel}
+      aria-labelledby={ariaLabelledby}
       onKeyDown={onKeyDown}
       className={cn("grid gap-2", COLS[columns], className)}
     >
-      {options.map((opt) => {
+      {options.map((opt, idx) => {
         const selected = opt.value === value;
         return (
           <button
             key={opt.value}
+            ref={(el) => {
+              refs.current[idx] = el;
+            }}
             type="button"
             role="radio"
             aria-checked={selected}
             disabled={opt.disabled}
-            tabIndex={selected ? 0 : -1}
+            tabIndex={idx === tabbableIdx ? 0 : -1}
             onClick={() => !opt.disabled && onValueChange(opt.value)}
             className={cn(
               "group relative flex items-start gap-3 rounded-lg border p-3 text-left transition-colors",
