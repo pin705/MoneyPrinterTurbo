@@ -1,0 +1,188 @@
+import { Clapperboard, AudioLines, Settings2 } from "lucide-react";
+import {
+  BGM_TYPES,
+  BGM_VOLUMES,
+  CLIP_DURATIONS,
+  COMMON_VOICES,
+  CONCAT_MODES,
+  TRANSITION_MODES,
+  VIDEO_ASPECTS,
+  VIDEO_COUNTS,
+  VIDEO_SOURCES,
+  VOICE_RATES,
+  VOICE_VOLUMES,
+  type VideoAspect,
+  type VideoConcatMode,
+  type VideoTransitionMode,
+} from "@mpt/shared";
+
+import { Field, Section } from "@/components/common/Field";
+import { OptSelect } from "@/components/common/OptSelect";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import { useGenerator } from "@/store/generator";
+
+const NONE = "__none__";
+const NO_BGM = "__nobgm__";
+const numOpts = (arr: readonly number[]) =>
+  arr.map((n) => ({ value: String(n), label: String(n) }));
+
+export function VideoAudioPanel() {
+  const { params, setParam } = useGenerator();
+
+  return (
+    <div className="flex flex-col gap-4">
+      <Section icon={<Clapperboard />} title="Video">
+        <div className="grid grid-cols-2 gap-3">
+          <Field label="Source" htmlFor="src">
+            <OptSelect
+              id="src"
+              value={params.video_source ?? "pexels"}
+              onValueChange={(v) => setParam("video_source", v)}
+              options={VIDEO_SOURCES.map((o) => ({ value: o.value, label: o.labelKey }))}
+            />
+          </Field>
+          <Field label="Aspect ratio" htmlFor="aspect">
+            <OptSelect
+              id="aspect"
+              value={params.video_aspect ?? "9:16"}
+              onValueChange={(v) => setParam("video_aspect", v as VideoAspect)}
+              options={VIDEO_ASPECTS.map((o) => ({ value: o.value, label: o.labelKey }))}
+            />
+          </Field>
+          <Field label="Concat mode" htmlFor="concat">
+            <OptSelect
+              id="concat"
+              value={params.video_concat_mode ?? "random"}
+              onValueChange={(v) =>
+                setParam("video_concat_mode", v as VideoConcatMode)
+              }
+              options={CONCAT_MODES.map((o) => ({ value: o.value, label: o.labelKey }))}
+            />
+          </Field>
+          <Field label="Transition" htmlFor="transition">
+            <OptSelect
+              id="transition"
+              value={params.video_transition_mode ?? NONE}
+              onValueChange={(v) =>
+                setParam(
+                  "video_transition_mode",
+                  v === NONE ? null : (v as VideoTransitionMode),
+                )
+              }
+              options={TRANSITION_MODES.map((o) => ({
+                value: o.value ?? NONE,
+                label: o.labelKey,
+              }))}
+            />
+          </Field>
+          <Field label="Clip duration (s)" htmlFor="clip">
+            <OptSelect
+              id="clip"
+              value={String(params.video_clip_duration ?? 3)}
+              onValueChange={(v) => setParam("video_clip_duration", Number(v))}
+              options={numOpts(CLIP_DURATIONS)}
+            />
+          </Field>
+          <Field label="Video count" htmlFor="count">
+            <OptSelect
+              id="count"
+              value={String(params.video_count ?? 1)}
+              onValueChange={(v) => setParam("video_count", Number(v))}
+              options={numOpts(VIDEO_COUNTS)}
+            />
+          </Field>
+        </div>
+
+        <Accordion type="single" collapsible className="rounded-lg border px-3">
+          <AccordionItem value="adv">
+            <AccordionTrigger className="text-xs">
+              <span className="flex items-center gap-2">
+                <Settings2 className="size-3.5" /> Advanced video settings
+              </span>
+            </AccordionTrigger>
+            <AccordionContent className="flex flex-col gap-4">
+              <div className="flex items-center justify-between">
+                <Label htmlFor="match" className="text-xs">
+                  Match materials to script order
+                </Label>
+                <Switch
+                  id="match"
+                  checked={params.match_materials_to_script ?? false}
+                  onCheckedChange={(on) =>
+                    setParam("match_materials_to_script", on)
+                  }
+                />
+              </div>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
+      </Section>
+
+      <Section icon={<AudioLines />} title="Audio">
+        <Field label="Voice" htmlFor="voice" hint="Edge TTS voice. Match the language of your script.">
+          <OptSelect
+            id="voice"
+            value={params.voice_name || "en-US-JennyNeural-Female"}
+            onValueChange={(v) => setParam("voice_name", v)}
+            options={COMMON_VOICES.map((o) => ({ value: o.value, label: o.labelKey }))}
+          />
+        </Field>
+        <div className="grid grid-cols-2 gap-3">
+          <Field label="Voice volume" htmlFor="vvol">
+            <OptSelect
+              id="vvol"
+              value={String(params.voice_volume ?? 1.0)}
+              onValueChange={(v) => setParam("voice_volume", Number(v))}
+              options={numOpts(VOICE_VOLUMES)}
+            />
+          </Field>
+          <Field label="Voice rate" htmlFor="vrate">
+            <OptSelect
+              id="vrate"
+              value={String(params.voice_rate ?? 1.0)}
+              onValueChange={(v) => setParam("voice_rate", Number(v))}
+              options={numOpts(VOICE_RATES)}
+            />
+          </Field>
+          <Field label="Background music" htmlFor="bgm">
+            <OptSelect
+              id="bgm"
+              value={params.bgm_type ? params.bgm_type : NO_BGM}
+              onValueChange={(v) => setParam("bgm_type", v === NO_BGM ? "" : v)}
+              options={BGM_TYPES.map((o) => ({
+                value: o.value || NO_BGM,
+                label: o.labelKey,
+              }))}
+            />
+          </Field>
+          <Field label="BGM volume" htmlFor="bgmvol">
+            <OptSelect
+              id="bgmvol"
+              value={String(params.bgm_volume ?? 0.2)}
+              onValueChange={(v) => setParam("bgm_volume", Number(v))}
+              options={numOpts(BGM_VOLUMES)}
+            />
+          </Field>
+        </div>
+        {params.bgm_type === "custom" ? (
+          <Field label="Custom BGM file" htmlFor="bgmfile">
+            <Input
+              id="bgmfile"
+              placeholder="filename in resource/songs"
+              value={params.bgm_file ?? ""}
+              onChange={(e) => setParam("bgm_file", e.target.value)}
+            />
+          </Field>
+        ) : null}
+      </Section>
+    </div>
+  );
+}

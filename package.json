@@ -1,0 +1,23 @@
+{
+  "name": "moneyprinter-monorepo",
+  "private": true,
+  "version": "0.0.0",
+  "packageManager": "pnpm@10.17.1",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "web": "pnpm --filter @mpt/web dev"
+  },
+  "devDependencies": {
+    "turbo": "^2.3.3",
+    "typescript": "^5.7.2"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": ["esbuild"]
+  }
+}
