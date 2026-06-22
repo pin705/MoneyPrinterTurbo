@@ -24,6 +24,15 @@ export const vi: Record<string, string> = {
   "Custom requirements": "Yêu cầu tuỳ chỉnh",
   "Extra instructions, e.g. tone, audience, hook style.":
     "Hướng dẫn thêm: giọng văn, đối tượng, kiểu mở đầu.",
+  // Placeholders
+  "e.g. 5 morning habits that boost focus":
+    "vd: 5 thói quen buổi sáng giúp tập trung",
+  "e.g. lighter tone, TikTok style, suspenseful opening":
+    "vd: giọng nhẹ nhàng, kiểu TikTok, mở đầu gây tò mò",
+  "The narration text for your video…": "Lời thoại cho video của bạn…",
+  "morning routine, sunrise, productivity":
+    "thói quen buổi sáng, bình minh, năng suất",
+  "filename in resource/songs": "tên file trong resource/songs",
   "Use custom system prompt": "Dùng system prompt tuỳ chỉnh",
   "Generate Script & Keywords": "Sinh kịch bản & từ khoá",
   "Generating…": "Đang sinh…",

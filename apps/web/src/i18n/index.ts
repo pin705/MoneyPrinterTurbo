@@ -22,7 +22,7 @@ void i18n.use(initReactI18next).init({
   resources: {
     vi: { translation: vi },
   },
-  lng: stored ?? "en",
+  lng: stored ?? "vi",
   fallbackLng: "en",
   keySeparator: false,
   nsSeparator: false,

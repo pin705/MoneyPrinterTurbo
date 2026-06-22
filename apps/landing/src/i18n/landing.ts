@@ -30,7 +30,7 @@ export interface LandingCopy {
     micro: string;
     osDetected: string; // uses {name}
   };
-  mockup: { script: string; generate: string };
+  mockup: { windowTitle: string; sample: string; script: string; generate: string };
   works: string;
   features: {
     kicker: string;
@@ -50,6 +50,12 @@ export interface LandingCopy {
     title: string;
     desc: string;
     steps: { t: string; d: string }[];
+  };
+  audience: {
+    kicker: string;
+    title: string;
+    desc: string;
+    items: { icon: "faceless" | "social" | "team" | "edu"; title: string; body: string }[];
   };
   pricing: {
     kicker: string;
@@ -101,7 +107,12 @@ export const landing: Record<Locale, LandingCopy> = {
       micro: "Available for macOS, Windows & Linux",
       osDetected: "Detected {name} · also on the other platforms",
     },
-    mockup: { script: "Generate Script", generate: "Generate Video" },
+    mockup: {
+      windowTitle: "Vidova — Create",
+      sample: "5 morning habits that boost focus",
+      script: "Generate Script",
+      generate: "Generate Video",
+    },
     works: "Works with",
     features: {
       kicker: "Features",
@@ -131,6 +142,17 @@ export const landing: Record<Locale, LandingCopy> = {
         { t: "Pick a look", d: "Aspect, voice, subtitles, music." },
         { t: "Generate", d: "Renders locally on your machine." },
         { t: "Publish", d: "Download or post to TikTok / Shorts." },
+      ],
+    },
+    audience: {
+      kicker: "Who it's for",
+      title: "Built for high-volume short-form creators",
+      desc: "If you publish Shorts, Reels or TikToks at scale, Vidova turns the repetitive work into one click — on your own machine.",
+      items: [
+        { icon: "faceless", title: "Faceless channels", body: "Spin up quote, fact, story or listicle videos daily — no camera, no editing suite." },
+        { icon: "social", title: "TikTok & Reels creators", body: "Keep a consistent posting cadence with on-brand subtitles and voiceovers." },
+        { icon: "team", title: "Marketers & small teams", body: "Batch-produce product and promo clips locally, without per-seat SaaS fees." },
+        { icon: "edu", title: "Educators & explainers", body: "Turn scripts and topics into clear narrated clips across 15+ languages." },
       ],
     },
     pricing: {
@@ -209,7 +231,12 @@ export const landing: Record<Locale, LandingCopy> = {
       micro: "Có cho macOS, Windows & Linux",
       osDetected: "Phát hiện {name} · cũng có trên các nền tảng khác",
     },
-    mockup: { script: "Tạo kịch bản", generate: "Tạo video" },
+    mockup: {
+      windowTitle: "Vidova — Tạo video",
+      sample: "5 thói quen buổi sáng giúp tập trung",
+      script: "Tạo kịch bản",
+      generate: "Tạo video",
+    },
     works: "Hoạt động với",
     features: {
       kicker: "Tính năng",
@@ -239,6 +266,17 @@ export const landing: Record<Locale, LandingCopy> = {
         { t: "Chọn phong cách", d: "Tỉ lệ, giọng đọc, phụ đề, nhạc." },
         { t: "Tạo video", d: "Render ngay trên máy bạn." },
         { t: "Xuất bản", d: "Tải về hoặc đăng lên TikTok / Shorts." },
+      ],
+    },
+    audience: {
+      kicker: "Dành cho ai",
+      title: "Dành cho người làm video ngắn số lượng lớn",
+      desc: "Nếu bạn đăng Shorts, Reels hay TikTok đều đặn, Vidova biến phần việc lặp đi lặp lại thành một cú nhấp — ngay trên máy bạn.",
+      items: [
+        { icon: "faceless", title: "Kênh ẩn danh", body: "Tạo video trích dẫn, sự thật, kể chuyện hay tổng hợp mỗi ngày — không cần máy quay, không cần dựng phim." },
+        { icon: "social", title: "Nhà sáng tạo TikTok & Reels", body: "Giữ nhịp đăng đều đặn với phụ đề và giọng đọc đúng chất kênh." },
+        { icon: "team", title: "Marketer & đội nhỏ", body: "Sản xuất hàng loạt clip sản phẩm/quảng cáo tại máy, không phí SaaS theo chỗ ngồi." },
+        { icon: "edu", title: "Giáo viên & video giải thích", body: "Biến kịch bản, chủ đề thành clip lồng tiếng rõ ràng qua hơn 15 ngôn ngữ." },
       ],
     },
     pricing: {

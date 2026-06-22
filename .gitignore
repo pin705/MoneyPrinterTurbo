@@ -27,6 +27,11 @@ apps/**/dist
 packages/**/dist
 # Tauri build artifacts
 apps/desktop/src-tauri/target/
+# Desktop sidecar binary (built by scripts/build-sidecar.sh; ~277MB)
+apps/desktop/src-tauri/binaries/
+# PyInstaller build/dist output for the sidecar (heavy)
+apps/render/build/
+apps/render/dist/
 # Playwright e2e artifacts
 apps/web/test-results/
 apps/web/playwright-report/

@@ -207,7 +207,7 @@ export function VideoAudioPanel() {
           <Field label={t("Custom BGM file")} htmlFor="bgmfile">
             <Input
               id="bgmfile"
-              placeholder="filename in resource/songs"
+              placeholder={t("filename in resource/songs")}
               value={params.bgm_file ?? ""}
               onChange={(e) => setParam("bgm_file", e.target.value)}
             />

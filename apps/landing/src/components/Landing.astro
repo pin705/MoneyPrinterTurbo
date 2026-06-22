@@ -11,8 +11,56 @@ const SITE = "https://moneyprinter.studio";
 const REPO = "https://github.com/pin705/MoneyPrinterTurbo";
 const RELEASE = `${REPO}/releases/latest`;
 
-const home = lang === "vi" ? "/vi/" : "/";
-const canonical = lang === "vi" ? `${SITE}/vi/` : `${SITE}/`;
+// Vietnamese-first: the VN market is the default at "/", English lives at "/en/".
+const home = lang === "en" ? "/en/" : "/";
+const canonical = lang === "en" ? `${SITE}/en/` : `${SITE}/`;
+const ogImage = `${SITE}/og.png`;
+
+const audienceIcons: Record<string, string> = {
+  faceless: `<circle cx="12" cy="8" r="4"/><path d="M4 21v-1a7 7 0 0 1 14 0v1"/>`,
+  social: `<circle cx="12" cy="12" r="9"/><polygon points="10 9 16 12 10 15 10 9"/>`,
+  team: `<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/>`,
+  edu: `<path d="M22 10L12 5 2 10l10 5 10-5z"/><path d="M6 12v5c0 1 2.7 2 6 2s6-1 6-2v-5"/>`,
+};
+
+// Structured data — WebSite, SoftwareApplication and FAQPage (rich results).
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": `${SITE}/#org`,
+      name: "Vidova",
+      url: SITE,
+      logo: `${SITE}/og.png`,
+    },
+    {
+      "@type": "WebSite",
+      "@id": `${SITE}/#website`,
+      name: "Vidova",
+      url: SITE,
+      inLanguage: t.htmlLang,
+      publisher: { "@id": `${SITE}/#org` },
+    },
+    {
+      "@type": "SoftwareApplication",
+      name: "Vidova",
+      operatingSystem: "macOS, Windows, Linux",
+      applicationCategory: "MultimediaApplication",
+      description: t.meta.description,
+      url: canonical,
+      offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+    },
+    {
+      "@type": "FAQPage",
+      mainEntity: t.faq.items.map((f) => ({
+        "@type": "Question",
+        name: f.q,
+        acceptedAnswer: { "@type": "Answer", text: f.a },
+      })),
+    },
+  ],
+};
 
 const downloads = [
   { os: "mac", label: "macOS", href: RELEASE },
@@ -40,10 +88,13 @@ const featureIcons: Record<string, string> = {
     <title>{t.meta.title}</title>
     <meta name="description" content={t.meta.description} />
     <meta name="robots" content="index,follow" />
+    <meta name="author" content="Vidova" />
+    <meta name="theme-color" content="#08090b" />
     <link rel="canonical" href={canonical} />
-    <link rel="alternate" hreflang="en" href={`${SITE}/`} />
-    <link rel="alternate" hreflang="vi" href={`${SITE}/vi/`} />
+    <link rel="alternate" hreflang="en" href={`${SITE}/en/`} />
+    <link rel="alternate" hreflang="vi" href={`${SITE}/`} />
     <link rel="alternate" hreflang="x-default" href={`${SITE}/`} />
+    <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -54,10 +105,18 @@ const featureIcons: Record<string, string> = {
     <meta property="og:title" content={t.meta.title} />
     <meta property="og:description" content={t.meta.ogDescription} />
     <meta property="og:url" content={canonical} />
+    <meta property="og:site_name" content="Vidova" />
     <meta property="og:locale" content={lang === "vi" ? "vi_VN" : "en_US"} />
+    <meta property="og:locale:alternate" content={lang === "vi" ? "en_US" : "vi_VN"} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Vidova — AI short videos, rendered on your machine" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Vidova" />
     <meta name="twitter:description" content={t.meta.ogDescription} />
+    <meta name="twitter:image" content={ogImage} />
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
   </head>
   <body>
     <div class="page-glow" aria-hidden="true"></div>
@@ -83,8 +142,8 @@ const featureIcons: Record<string, string> = {
 
         <div class="nav-actions">
           <div class="lang-switch" role="group" aria-label="Language">
-            <a href="/" class={lang === "en" ? "on" : ""} aria-current={lang === "en" ? "true" : undefined}>EN</a>
-            <a href="/vi/" class={lang === "vi" ? "on" : ""} aria-current={lang === "vi" ? "true" : undefined}>VI</a>
+            <a href="/" class={lang === "vi" ? "on" : ""} aria-current={lang === "vi" ? "true" : undefined}>VI</a>
+            <a href="/en/" class={lang === "en" ? "on" : ""} aria-current={lang === "en" ? "true" : undefined}>EN</a>
           </div>
           <a class="ghost-link" href={REPO} aria-label="GitHub repository">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -106,8 +165,8 @@ const featureIcons: Record<string, string> = {
         <a href="#pricing">{t.nav.pricing}</a>
         <a href="#faq">{t.nav.faq}</a>
         <div class="lang-switch lang-switch-mobile" role="group" aria-label="Language">
-          <a href="/" class={lang === "en" ? "on" : ""}>English</a>
-          <a href="/vi/" class={lang === "vi" ? "on" : ""}>Tiếng Việt</a>
+          <a href="/" class={lang === "vi" ? "on" : ""}>Tiếng Việt</a>
+          <a href="/en/" class={lang === "en" ? "on" : ""}>English</a>
         </div>
         <a class="btn btn-primary btn-full" href={RELEASE}>{t.hero.ctaPrimary}</a>
       </div>
@@ -145,7 +204,7 @@ const featureIcons: Record<string, string> = {
           <div class="window">
             <div class="window-bar">
               <span class="dot"></span><span class="dot"></span><span class="dot"></span>
-              <span class="window-title">Vidova — Create</span>
+              <span class="window-title">{t.mockup.windowTitle}</span>
             </div>
             <div class="app">
               <aside class="app-side">
@@ -167,7 +226,7 @@ const featureIcons: Record<string, string> = {
                 </div>
                 <div class="app-card">
                   <span class="app-label"></span>
-                  <span class="app-input"><b>5 morning habits that boost focus</b></span>
+                  <span class="app-input"><b>{t.mockup.sample}</b><span class="app-caret"></span></span>
                   <span class="app-label sm"></span>
                   <span class="app-input short"></span>
                   <span class="app-btn">{t.mockup.script}</span>
@@ -176,9 +235,10 @@ const featureIcons: Record<string, string> = {
               <div class="app-preview">
                 <div class="phone">
                   <div class="phone-glow"></div>
-                  <span class="caption">5 morning habits that boost focus</span>
+                  <div class="phone-scan"></div>
+                  <span class="caption">{t.mockup.sample}</span>
                 </div>
-                <span class="spec"></span>
+                <span class="app-prog"><span></span></span>
                 <span class="spec"></span>
                 <span class="app-gen">{t.mockup.generate}</span>
               </div>
@@ -210,9 +270,9 @@ const featureIcons: Record<string, string> = {
             <h3>{t.features.hero.title}</h3>
             <p>{t.features.hero.body}</p>
             <div class="feature-meta">
-              <span><b>100%</b> {t.features.hero.metaLocal}</span>
-              <span><b>0</b> {t.features.hero.metaFees}</span>
-              <span><b>∞</b> {t.features.hero.metaRenders}</span>
+              <div class="stat"><b>100%</b><span>{t.features.hero.metaLocal}</span></div>
+              <div class="stat"><b>$0</b><span>{t.features.hero.metaFees}</span></div>
+              <div class="stat"><b>∞</b><span>{t.features.hero.metaRenders}</span></div>
             </div>
           </article>
           {t.features.items.map((f) => (
@@ -241,6 +301,26 @@ const featureIcons: Record<string, string> = {
               <strong>{s.t}</strong>
               <p>{s.d}</p>
             </div>
+          ))}
+        </div>
+      </section>
+
+      <!-- Who it's for -->
+      <section id="audience" class="wrap section">
+        <div class="section-head reveal">
+          <span class="kicker">{t.audience.kicker}</span>
+          <h2>{t.audience.title}</h2>
+          <p>{t.audience.desc}</p>
+        </div>
+        <div class="audience">
+          {t.audience.items.map((a) => (
+            <article class="card aud reveal">
+              <div class="aud-ic">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" set:html={audienceIcons[a.icon]} />
+              </div>
+              <h3>{a.title}</h3>
+              <p>{a.body}</p>
+            </article>
           ))}
         </div>
       </section>
@@ -545,7 +625,22 @@ const featureIcons: Record<string, string> = {
       .caption { position: relative; font-size: 9px; font-weight: 700; color: #fff; text-align: center; line-height: 1.25; padding: 0 8px; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8); }
       .spec { height: 8px; border-radius: 4px; background: rgba(255, 255, 255, 0.07); }
       .spec:nth-of-type(2) { width: 70%; }
-      .app-gen { margin-top: auto; height: 28px; border-radius: 7px; background: linear-gradient(180deg, #fafafa, var(--brand-2)); color: var(--brand-ink); font-size: 10px; font-weight: 600; display: grid; place-items: center; }
+      .app-gen { margin-top: auto; height: 28px; border-radius: 7px; background: linear-gradient(180deg, #fafafa, var(--brand-2)); color: var(--brand-ink); font-size: 10px; font-weight: 600; display: grid; place-items: center; animation: genpulse 3.6s ease-in-out infinite; }
+
+      /* Subtle "the app is working" motion — reads as a live demo, not a static mock */
+      .app-caret { display: inline-block; width: 1.5px; height: 11px; margin-left: 1px; vertical-align: -1px; background: var(--fg); animation: caret 1.1s step-end infinite; }
+      .phone-scan { position: absolute; left: 0; right: 0; top: -45%; height: 45%; background: linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.16), transparent); pointer-events: none; animation: scan 3.6s ease-in-out infinite; }
+      .app-prog { display: block; height: 8px; border-radius: 4px; background: rgba(255, 255, 255, 0.07); overflow: hidden; }
+      .app-prog > span { display: block; height: 100%; width: 10%; border-radius: 4px; background: linear-gradient(90deg, var(--brand-2), #fafafa); animation: fill 3.6s ease-in-out infinite; }
+      @keyframes caret { 0%, 50% { opacity: 1; } 51%, 100% { opacity: 0; } }
+      @keyframes scan { 0% { top: -45%; opacity: 0; } 10% { opacity: 1; } 55% { top: 100%; opacity: 1; } 60%, 100% { top: 100%; opacity: 0; } }
+      @keyframes fill { 0% { width: 8%; } 55% { width: 96%; } 72%, 100% { width: 96%; } }
+      @keyframes genpulse { 0%, 62% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); } 72% { box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.1); } 100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); } }
+      @media (prefers-reduced-motion: reduce) {
+        .app-caret, .app-gen { animation: none; }
+        .phone-scan { display: none; }
+        .app-prog > span { width: 96%; animation: none; }
+      }
 
       /* ---------- Strip ---------- */
       .strip { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; padding-block: 14px 40px; border-bottom: 1px solid var(--line); }
@@ -572,9 +667,12 @@ const featureIcons: Record<string, string> = {
       .card h3 { font-size: 16px; font-weight: 600; letter-spacing: -0.015em; margin-bottom: 7px; }
       .card p { color: var(--fg-2); font-size: 14px; line-height: 1.6; }
       .feature-hero h3 { font-size: 19px; }
-      .feature-meta { margin-top: auto; padding-top: 22px; display: flex; gap: 22px; flex-wrap: wrap; }
-      .feature-meta span { font-size: 12px; color: var(--fg-3); }
-      .feature-meta b { display: block; font-size: 22px; color: var(--fg); font-weight: 600; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+      .feature-meta { margin-top: auto; padding-top: 18px; border-top: 1px solid var(--line); display: flex; }
+      .feature-meta .stat { flex: 1; display: flex; flex-direction: column; gap: 4px; padding: 0 16px; }
+      .feature-meta .stat:first-child { padding-left: 0; }
+      .feature-meta .stat + .stat { border-left: 1px solid var(--line); }
+      .feature-meta b { font-size: 19px; color: var(--fg); font-weight: 600; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; line-height: 1; }
+      .feature-meta span { font-size: 10.5px; color: var(--fg-3); text-transform: uppercase; letter-spacing: 0.07em; font-weight: 500; }
 
       /* ---------- Steps ---------- */
       .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
@@ -582,6 +680,11 @@ const featureIcons: Record<string, string> = {
       .step-n { font-family: var(--mono); font-size: 13px; color: var(--fg); font-weight: 500; display: inline-block; margin-bottom: 16px; padding: 3px 8px; border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 6px; background: var(--brand-soft); }
       .step strong { display: block; font-size: 15px; font-weight: 600; margin-bottom: 5px; }
       .step p { color: var(--fg-2); font-size: 13.5px; }
+
+      /* ---------- Audience ---------- */
+      .audience { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+      .aud { padding: 22px; }
+      .aud-ic { width: 38px; height: 38px; border-radius: 10px; display: grid; place-items: center; color: var(--fg); background: var(--brand-soft); border: 1px solid rgba(255, 255, 255, 0.14); margin-bottom: 14px; }
 
       /* ---------- Pricing ---------- */
       .pricing { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; max-width: 760px; margin: 0 auto; }
@@ -652,11 +755,12 @@ const featureIcons: Record<string, string> = {
         .bento { grid-template-columns: repeat(2, 1fr); }
         .feature-hero { grid-column: span 2; grid-row: auto; }
         .steps { grid-template-columns: repeat(2, 1fr); }
+        .audience { grid-template-columns: repeat(2, 1fr); }
       }
       @media (max-width: 560px) {
         .wrap { padding-inline: 18px; }
         .section { padding-block: 60px; }
-        .bento, .steps, .pricing { grid-template-columns: 1fr; }
+        .bento, .steps, .pricing, .audience { grid-template-columns: 1fr; }
         .feature-hero { grid-column: auto; }
         .hero-app { display: none; }
         .footer-cols { grid-template-columns: 1fr 1fr; }

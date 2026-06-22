@@ -74,7 +74,7 @@ export function ContentPanel() {
       >
         <Input
           id="subject"
-          placeholder="e.g. 5 morning habits that boost productivity"
+          placeholder={t("e.g. 5 morning habits that boost focus")}
           value={params.video_subject}
           onChange={(e) => setParam("video_subject", e.target.value)}
         />
@@ -121,7 +121,7 @@ export function ContentPanel() {
             >
               <Textarea
                 rows={3}
-                placeholder="e.g. lighter tone, fit TikTok style, suspenseful opening"
+                placeholder={t("e.g. lighter tone, TikTok style, suspenseful opening")}
                 value={params.video_script_prompt ?? ""}
                 onChange={(e) => setParam("video_script_prompt", e.target.value)}
               />
@@ -173,7 +173,7 @@ export function ContentPanel() {
       >
         <Textarea
           rows={8}
-          placeholder="The narration text for your video…"
+          placeholder={t("The narration text for your video…")}
           value={params.video_script ?? ""}
           onChange={(e) => setParam("video_script", e.target.value)}
           className="leading-relaxed"
@@ -188,7 +188,7 @@ export function ContentPanel() {
       >
         <Textarea
           rows={2}
-          placeholder="morning routine, sunrise, productivity"
+          placeholder={t("morning routine, sunrise, productivity")}
           value={termsValue}
           onChange={(e) => setParam("video_terms", e.target.value)}
         />

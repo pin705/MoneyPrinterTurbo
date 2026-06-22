@@ -37,10 +37,13 @@ def assert_production_ready() -> None:
             file=sys.stderr,
         )
         return
-    if not JWT_SECRET.strip() or JWT_SECRET == "dev-secret-change-me":
+    _PLACEHOLDERS = {"dev-secret-change-me", "your-supabase-jwt-secret", "changeme"}
+    if not JWT_SECRET.strip() or JWT_SECRET in _PLACEHOLDERS:
         raise RuntimeError(
-            "SUPABASE_JWT_SECRET must be set to a real secret when AUTH_DEV_MODE "
-            "is off — refusing to start with the default."
+            "SUPABASE_JWT_SECRET is still a placeholder but AUTH_DEV_MODE is off. "
+            "Set it to your real Supabase JWT secret (Supabase dashboard → "
+            "Project Settings → API → JWT Secret) in apps/cloud/.env, or set "
+            "AUTH_DEV_MODE=1 for local dev without Supabase. Refusing to start."
         )
 
 

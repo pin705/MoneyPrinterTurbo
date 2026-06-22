@@ -7,8 +7,9 @@
     "node": ">=20"
   },
   "scripts": {
-    "dev": "turbo run dev --filter=@mpt/web",
+    "dev": "bash scripts/dev.sh",
     "dev:all": "bash scripts/dev.sh",
+    "dev:web": "turbo run dev --filter=@mpt/web",
     "build": "turbo run build --filter=!@mpt/desktop",
     "lint": "turbo run lint",
     "typecheck": "turbo run typecheck --filter=!@mpt/desktop",

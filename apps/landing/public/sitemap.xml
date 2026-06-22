@@ -3,16 +3,16 @@
         xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://moneyprinter.studio/</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://moneyprinter.studio/" />
-    <xhtml:link rel="alternate" hreflang="vi" href="https://moneyprinter.studio/vi/" />
+    <xhtml:link rel="alternate" hreflang="vi" href="https://moneyprinter.studio/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://moneyprinter.studio/en/" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://moneyprinter.studio/" />
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://moneyprinter.studio/vi/</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://moneyprinter.studio/" />
-    <xhtml:link rel="alternate" hreflang="vi" href="https://moneyprinter.studio/vi/" />
+    <loc>https://moneyprinter.studio/en/</loc>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://moneyprinter.studio/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://moneyprinter.studio/en/" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://moneyprinter.studio/" />
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>

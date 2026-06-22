@@ -8,11 +8,18 @@
 # wants) but extracts to a temp dir on startup — slower for the large resource/
 # bundle. For production consider onedir + shipping resource/ as Tauri resources.
 
-from PyInstaller.utils.hooks import collect_all, collect_submodules
+import os
+import sys
+
+from PyInstaller.utils.hooks import collect_all, collect_submodules, copy_metadata
+
+# The spec lives in apps/render/packaging; the backend is one level up.
+ROOT = os.path.abspath(os.path.join(SPECPATH, os.pardir))
+sys.path.insert(0, ROOT)  # so collect_submodules("app") can import the package
 
 datas = [
-    ("config.example.toml", "."),
-    ("resource", "resource"),
+    (os.path.join(ROOT, "config.example.toml"), "."),
+    (os.path.join(ROOT, "resource"), "resource"),
 ]
 binaries = []
 hiddenimports = [
@@ -33,12 +40,20 @@ for pkg in ("faster_whisper", "edge_tts", "moviepy", "litellm"):
     except Exception:
         pass
 
+# These call importlib.metadata.version() at import time, so their dist-info
+# metadata must be bundled (collect_all does not include it).
+for pkg in ("imageio", "imageio_ffmpeg", "moviepy", "numpy", "tqdm", "decorator", "proglog"):
+    try:
+        datas += copy_metadata(pkg)
+    except Exception:
+        pass
+
 hiddenimports += collect_submodules("app")
 
 
 a = Analysis(
-    ["main.py"],
-    pathex=["."],
+    [os.path.join(ROOT, "main.py")],
+    pathex=[ROOT],
     binaries=binaries,
     datas=datas,
     hiddenimports=hiddenimports,

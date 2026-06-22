@@ -1,17 +1,19 @@
 #!/usr/bin/env bash
 # Vidova — start the whole stack with one command.
 #
-#   scripts/dev.sh            render backend (:8000) + web (:5173)
-#   scripts/dev.sh --cloud    also the cloud backend (:8787, dev auth + sqlite)
+#   scripts/dev.sh             render (:8000) + cloud (:8787) + web (:5173)
+#   scripts/dev.sh --no-cloud  skip the cloud backend
 #
+# The cloud backend is ON by default so the Dashboard/Billing pages work out of
+# the box (otherwise the web app shows "Couldn't reach the cloud backend").
 # Ctrl-C stops everything. Requires: uv (Python) and pnpm (Node) installed.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
 
-WITH_CLOUD=0
-[[ "${1:-}" == "--cloud" ]] && WITH_CLOUD=1
+WITH_CLOUD=1
+[[ "${1:-}" == "--no-cloud" ]] && WITH_CLOUD=0
 
 pids=()
 cleanup() {
