@@ -25,6 +25,7 @@ from app.models.schema import (
     TaskQueryRequest,
     TaskQueryResponse,
     TaskResponse,
+    TaskVideoBatchRequest,
     TaskVideoRequest,
     VideoMaterialUploadResponse,
     VideoMaterialRetrieveResponse
@@ -117,6 +118,55 @@ def create_video(
     background_tasks: BackgroundTasks, request: Request, body: TaskVideoRequest
 ):
     return create_task(request, body, stop_at="video")
+
+
+# Hard safety cap; per-plan limits are enforced UI-side from the user's
+# entitlements (max_batch). This just bounds a single API call.
+_max_batch_size = config.app.get("max_batch_size", 50)
+
+
+@router.post("/videos/batch", summary="Generate one video per subject (batch)")
+def create_video_batch(request: Request, body: TaskVideoBatchRequest):
+    """Mass production: enqueue one render task per subject. Each task runs
+    through the same concurrency-limited queue and appears in the library; the
+    client tracks the returned task_ids for per-item progress."""
+    request_id = base.get_task_id(request)
+    subjects = [s.strip() for s in (body.subjects or []) if s.strip()]
+    if not subjects:
+        raise HttpException(
+            task_id=request_id, status_code=400, message="subjects must not be empty"
+        )
+    if len(subjects) > _max_batch_size:
+        raise HttpException(
+            task_id=request_id,
+            status_code=400,
+            message=f"batch too large (max {_max_batch_size})",
+        )
+
+    batch_id = utils.get_uuid()
+    task_ids: list[str] = []
+    for subject in subjects:
+        item = body.model_copy(deep=True)
+        item.video_subject = subject
+        task_id = utils.get_uuid()
+        sm.state.update_task(task_id)
+        try:
+            task_manager.add_task(tm.start, task_id=task_id, params=item, stop_at="video")
+        except TaskQueueFullError:
+            # Queue saturated mid-batch: stop adding and return what was queued.
+            sm.state.delete_task(task_id)
+            break
+        task_ids.append(task_id)
+
+    return utils.get_response(
+        200,
+        {
+            "batch_id": batch_id,
+            "task_ids": task_ids,
+            "queued": len(task_ids),
+            "requested": len(subjects),
+        },
+    )
 
 
 @router.post("/subtitle", response_model=TaskResponse, summary="Generate subtitle only")

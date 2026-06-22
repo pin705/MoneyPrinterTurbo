@@ -3,6 +3,7 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import { Sidebar } from "@/components/Sidebar";
 import { LoginPage } from "@/features/auth/LoginPage";
 import { RequireAuth } from "@/features/auth/RequireAuth";
+import { BatchPage } from "@/features/batch/BatchPage";
 import { BillingPage } from "@/features/billing/BillingPage";
 import { DashboardPage } from "@/features/dashboard/DashboardPage";
 import { ComingSoon } from "@/features/placeholder/ComingSoon";
@@ -18,6 +19,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Navigate to="/create" replace />} />
           <Route path="/create" element={<GeneratorPage />} />
+          <Route path="/batch" element={<BatchPage />} />
           <Route path="/library" element={<LibraryPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route

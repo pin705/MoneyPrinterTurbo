@@ -3,6 +3,7 @@ import {
   ApiError,
   type AppConfig,
   type BaseResponse,
+  type BatchResultData,
   type ConfigData,
   type GenerateScriptInput,
   type GenerateTermsInput,
@@ -72,6 +73,17 @@ export class MptClient {
     return this.request<TaskResponseData>("/videos", {
       method: "POST",
       body: JSON.stringify(params),
+    });
+  }
+
+  /** POST /videos/batch — one video per subject (shared params). */
+  createVideoBatch(
+    subjects: string[],
+    params: VideoParams,
+  ): Promise<BatchResultData> {
+    return this.request<BatchResultData>("/videos/batch", {
+      method: "POST",
+      body: JSON.stringify({ ...params, subjects }),
     });
   }
 

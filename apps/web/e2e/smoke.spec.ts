@@ -56,3 +56,15 @@ test.describe("auth", () => {
     await expect(page.getByRole("button", { name: /Upgrade/ })).toBeVisible();
   });
 });
+
+test.describe("batch", () => {
+  test("topic count gates against the plan limit", async ({ page }) => {
+    await page.goto("/#/batch");
+    await expect(page.getByText("Topics")).toBeVisible();
+    await page
+      .getByPlaceholder("One topic per line…")
+      .fill("morning habits\nproductivity tips");
+    // Signed out (no cloud) the limit is 1, so two topics trips the upgrade prompt.
+    await expect(page.getByText(/plan allows/i)).toBeVisible();
+  });
+});

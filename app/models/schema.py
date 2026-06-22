@@ -205,6 +205,17 @@ class TaskVideoRequest(VideoParams, BaseModel):
     pass
 
 
+class TaskVideoBatchRequest(TaskVideoRequest):
+    """Generate one video per subject; all other fields are shared params.
+
+    `video_subject` is filled in per item from `subjects`, so it is optional on
+    the batch request itself.
+    """
+
+    subjects: List[str] = Field(default_factory=list)
+    video_subject: str = ""
+
+
 class TaskQueryRequest(BaseModel):
     pass
 

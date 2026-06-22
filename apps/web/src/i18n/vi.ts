@@ -252,4 +252,17 @@ export const vi: Record<string, string> = {
   "Waiting for payment…": "Đang chờ thanh toán…",
   "Payment received — credits added 🎉":
     "Đã nhận thanh toán — đã cộng credit 🎉",
+
+  // Batch
+  "Mass-produce videos — one per topic":
+    "Sản xuất video hàng loạt — mỗi chủ đề một video",
+  "Open library": "Mở thư viện",
+  Topics: "Chủ đề",
+  "One topic per line…": "Mỗi dòng một chủ đề…",
+  "Shared look comes from the Create tab. Each line becomes one video.":
+    "Giao diện chung lấy từ tab Tạo. Mỗi dòng thành một video.",
+  "Your plan allows {{n}} per batch.": "Gói của bạn cho phép {{n}} video mỗi batch.",
+  Upgrade: "Nâng cấp",
+  Generate: "Tạo",
+  "Queued {{n}} videos": "Đã xếp hàng {{n}} video",
 };

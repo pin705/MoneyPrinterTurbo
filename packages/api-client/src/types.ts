@@ -11,6 +11,13 @@ export interface TaskResponseData {
   task_id: string;
 }
 
+export interface BatchResultData {
+  batch_id: string;
+  task_ids: string[];
+  queued: number;
+  requested: number;
+}
+
 /** GET /api/v1/tasks/{task_id} → data. */
 export interface TaskQueryData {
   task_id?: string;

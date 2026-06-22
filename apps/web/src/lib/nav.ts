@@ -1,6 +1,7 @@
 import {
   Clapperboard,
   CreditCard,
+  Layers,
   LayoutDashboard,
   Library,
   Settings,
@@ -17,6 +18,7 @@ export interface NavItem {
 /** Primary product surfaces — the tool itself. */
 export const PRIMARY_NAV: NavItem[] = [
   { to: "/create", labelKey: "Create", icon: Clapperboard },
+  { to: "/batch", labelKey: "Batch", icon: Layers },
   { to: "/library", labelKey: "Library", icon: Library },
 ];
 
