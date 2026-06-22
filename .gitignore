@@ -28,6 +28,8 @@ apps/desktop/src-tauri/target/
 apps/web/test-results/
 apps/web/playwright-report/
 apps/web/.playwright/
+# Cloud local SQLite DBs
+apps/cloud/*.db
 # VuePress 默认临时文件目录
 /sites/docs/.vuepress/.temp
 # VuePress 默认缓存目录
