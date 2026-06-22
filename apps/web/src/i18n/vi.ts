@@ -1,10 +1,16 @@
 // Vietnamese translations. Keys are the English source strings (natural keys);
 // any string not listed here falls back to its English key.
+// Voice: plain, friendly Vietnamese — avoid dev jargon (backend, render, LLM…).
 export const vi: Record<string, string> = {
   // Header / status
-  "Backend connected": "Đã kết nối backend",
-  "Backend offline": "Backend offline",
+  "Backend connected": "Đã kết nối",
+  "Backend offline": "Mất kết nối",
   Settings: "Cài đặt",
+  "Light mode": "Giao diện sáng",
+  "Dark mode": "Giao diện tối",
+  "Toggle sidebar": "Ẩn/hiện thanh bên",
+  Studio: "Studio",
+  Step: "Bước",
 
   // Section titles
   Content: "Nội dung",
@@ -15,15 +21,15 @@ export const vi: Record<string, string> = {
   // Content panel
   "Video Subject": "Chủ đề video",
   "A keyword or topic — AI writes the script for you.":
-    "Một từ khoá hoặc chủ đề — AI sẽ tự viết kịch bản.",
-  "Script Language": "Ngôn ngữ kịch bản",
-  "Advanced script settings": "Cài đặt kịch bản nâng cao",
+    "Một từ khoá hoặc chủ đề — AI sẽ tự viết lời cho bạn.",
+  "Script Language": "Ngôn ngữ lời thoại",
+  "Advanced script settings": "Tuỳ chọn nâng cao",
   Paragraphs: "Số đoạn",
   "How many paragraphs the script should contain (1-10).":
-    "Số đoạn của kịch bản (1-10).",
-  "Custom requirements": "Yêu cầu tuỳ chỉnh",
+    "Lời thoại gồm bao nhiêu đoạn (1–10).",
+  "Custom requirements": "Yêu cầu riêng",
   "Extra instructions, e.g. tone, audience, hook style.":
-    "Hướng dẫn thêm: giọng văn, đối tượng, kiểu mở đầu.",
+    "Hướng dẫn thêm cho AI: giọng văn, đối tượng, kiểu mở đầu…",
   // Placeholders
   "e.g. 5 morning habits that boost focus":
     "vd: 5 thói quen buổi sáng giúp tập trung",
@@ -32,94 +38,99 @@ export const vi: Record<string, string> = {
   "The narration text for your video…": "Lời thoại cho video của bạn…",
   "morning routine, sunrise, productivity":
     "thói quen buổi sáng, bình minh, năng suất",
-  "filename in resource/songs": "tên file trong resource/songs",
-  "Use custom system prompt": "Dùng system prompt tuỳ chỉnh",
-  "Generate Script & Keywords": "Sinh kịch bản & từ khoá",
-  "Generating…": "Đang sinh…",
-  "Video Script": "Kịch bản video",
-  "Video Keywords": "Từ khoá video",
+  "filename in resource/songs": "tên file trong thư mục resource/songs",
+  "Use custom system prompt": "Tự đặt chỉ dẫn cho AI",
+  "Generate Script & Keywords": "Viết lời & từ khoá",
+  "Generating…": "Đang tạo…",
+  "Video Script": "Lời thoại",
+  "Video Keywords": "Từ khoá tìm hình",
   "Optional. AI-generated or write your own. Good punctuation helps subtitles.":
-    "Không bắt buộc. AI sinh hoặc tự viết. Dấu câu tốt giúp tạo phụ đề.",
+    "Không bắt buộc. Để AI viết hoặc tự nhập. Dấu câu rõ ràng giúp phụ đề chính xác hơn.",
   "English keywords, comma-separated. Used to find stock footage.":
-    "Từ khoá tiếng Anh, ngăn cách bằng dấu phẩy. Dùng để tìm video stock.",
+    "Từ khoá tiếng Anh, cách nhau bằng dấu phẩy. Dùng để tìm clip minh hoạ.",
 
   // Video panel
-  Source: "Nguồn",
+  Source: "Nguồn hình",
   "Aspect ratio": "Tỉ lệ khung hình",
-  "Concat mode": "Kiểu ghép",
+  "Concat mode": "Kiểu ghép cảnh",
   Transition: "Chuyển cảnh",
-  "Clip duration (s)": "Độ dài mỗi clip (giây)",
-  "Video count": "Số video",
-  "Advanced video settings": "Cài đặt video nâng cao",
-  "Match materials to script order": "Khớp tư liệu theo thứ tự kịch bản",
+  "Clip duration (s)": "Độ dài mỗi cảnh (giây)",
+  "Video count": "Số video tạo ra",
+  "Advanced video settings": "Tuỳ chọn nâng cao",
+  "Match materials to script order": "Xếp hình theo đúng thứ tự lời thoại",
 
   // Audio panel
   Voice: "Giọng đọc",
   "Edge TTS voice. Match the language of your script.":
-    "Giọng Edge TTS. Chọn khớp ngôn ngữ kịch bản.",
+    "Chọn giọng đọc cùng ngôn ngữ với lời thoại.",
   "Voice volume": "Âm lượng giọng",
-  "Voice rate": "Tốc độ giọng",
+  "Voice rate": "Tốc độ đọc",
   "Background music": "Nhạc nền",
   "BGM volume": "Âm lượng nhạc nền",
-  "Custom BGM file": "File nhạc nền tuỳ chỉnh",
+  "Custom BGM file": "File nhạc nền riêng",
 
   // Subtitle panel
   "Enable subtitles": "Bật phụ đề",
-  "Font name": "Tên font",
+  "Font name": "Phông chữ",
   Position: "Vị trí",
-  "Custom position (% from top)": "Vị trí tuỳ chỉnh (% từ trên)",
+  "Custom position (% from top)": "Vị trí tuỳ chỉnh (% tính từ trên)",
   "Font color": "Màu chữ",
-  "Stroke color": "Màu viền",
+  "Stroke color": "Màu viền chữ",
   "Font size": "Cỡ chữ",
   "Stroke width": "Độ dày viền",
   "Subtitle background": "Nền phụ đề",
   "Background color": "Màu nền",
-  "Rounded translucent background": "Nền bo tròn mờ",
+  "Rounded translucent background": "Nền mờ bo tròn",
 
-  // Generate panel
-  "Generate Video": "Tạo Video",
+  // Generate / preview
+  "Generate Video": "Tạo video",
+  Preview: "Xem trước",
+  Count: "Số lượng",
+  Auto: "Tự động",
+  "Your topic here": "Chủ đề của bạn",
+  "Renders locally on your machine": "Dựng ngay trên máy bạn",
   "View results": "Xem kết quả",
   "Render runs locally · LLM via your configured provider":
-    "Render chạy local · LLM qua nhà cung cấp bạn cấu hình",
-  "Generating script…": "Đang sinh kịch bản…",
-  "Synthesizing audio…": "Đang tổng hợp giọng…",
-  "Downloading materials…": "Đang tải tư liệu…",
-  "Rendering video…": "Đang render video…",
+    "Dựng video trên máy bạn · AI dùng nhà cung cấp bạn đã chọn",
+  "Generating script…": "Đang viết lời…",
+  "Synthesizing audio…": "Đang tạo giọng đọc…",
+  "Downloading materials…": "Đang tải hình ảnh…",
+  "Rendering video…": "Đang dựng video…",
   "Generation failed — check backend logs":
-    "Tạo thất bại — kiểm tra log backend",
-  "Your video is ready 🎬": "Video của bạn đã sẵn sàng 🎬",
-  "Preview and download below.": "Xem trước và tải xuống bên dưới.",
-  Download: "Tải xuống",
+    "Tạo video thất bại — xem nhật ký để biết chi tiết",
+  "Your video is ready": "Video của bạn đã xong 🎬",
+  "Preview and download below.": "Xem trước và tải về bên dưới.",
+  Download: "Tải về",
   "Auto Detect": "Tự động nhận diện",
   "Local file": "File trên máy",
-  "Random (Recommended)": "Ngẫu nhiên (Khuyến nghị)",
-  Sequential: "Tuần tự",
+  "Random (Recommended)": "Ngẫu nhiên (Khuyên dùng)",
+  Sequential: "Lần lượt",
   None: "Không",
-  "No Background Music": "Không nhạc nền",
+  "No Background Music": "Không có nhạc nền",
   "Random Background Music": "Nhạc nền ngẫu nhiên",
-  "Custom Background Music": "Nhạc nền tuỳ chỉnh",
+  "Custom Background Music": "Nhạc nền riêng",
   Top: "Trên",
   Center: "Giữa",
-  "Bottom (Recommended)": "Dưới (Khuyến nghị)",
-  "Custom position": "Vị trí tuỳ chỉnh",
+  "Bottom (Recommended)": "Dưới (Khuyên dùng)",
+  "Custom position": "Tuỳ chỉnh",
   "A font file under resource/fonts. Leave default if unsure.":
-    "File font trong resource/fonts. Để mặc định nếu không chắc.",
+    "File phông trong thư mục resource/fonts. Không chắc thì để mặc định.",
   "Add a video subject or a script first":
-    "Hãy nhập chủ đề hoặc kịch bản trước",
-  "Could not start generation": "Không thể bắt đầu tạo video",
-  "Script & keywords generated": "Đã sinh kịch bản & từ khoá",
-  "Generation failed": "Tạo thất bại",
+    "Hãy nhập chủ đề hoặc lời thoại trước đã",
+  "Could not start generation": "Chưa thể bắt đầu tạo video",
+  "Script & keywords generated": "Đã viết xong lời & từ khoá",
+  "Generation failed": "Tạo video thất bại",
 
   // Settings dialog
   "Stored in the backend's config.toml on this machine.":
-    "Lưu trong config.toml của backend trên máy này.",
-  "AI / LLM": "AI / LLM",
-  Media: "Tư liệu",
+    "Được lưu trong file cấu hình của ứng dụng trên máy này.",
+  "AI / LLM": "AI",
+  Media: "Hình & nhạc",
   Connection: "Kết nối",
   "Loading config…": "Đang tải cấu hình…",
   "Could not reach the backend. Check the Connection tab.":
-    "Không kết nối được backend. Kiểm tra tab Kết nối.",
-  "LLM provider": "Nhà cung cấp LLM",
+    "Không kết nối được. Kiểm tra tab Kết nối.",
+  "LLM provider": "Nhà cung cấp AI",
   "API key": "API key",
   "Base URL": "Base URL",
   Model: "Model",
@@ -128,27 +139,28 @@ export const vi: Record<string, string> = {
   "Pexels API key": "Pexels API key",
   "Pixabay API key": "Pixabay API key",
   "Coverr API key": "Coverr API key",
-  "Backend URL": "Backend URL",
+  "Backend URL": "Địa chỉ máy chủ",
   Cancel: "Huỷ",
   Save: "Lưu",
   "Settings saved": "Đã lưu cài đặt",
   "Save failed": "Lưu thất bại",
   "Render runs locally. Managed accounts & a credit system are on the roadmap.":
-    "Render chạy local. Tài khoản quản lý & hệ thống credit đang trong lộ trình.",
+    "Video được dựng trên máy bạn. Tài khoản và hệ thống credit đang được phát triển.",
 
   // Navigation + library
   Create: "Tạo video",
   Library: "Thư viện",
   "Create a video": "Tạo video",
   "Topic in, finished short video out — rendered on your machine.":
-    "Nhập chủ đề, nhận video ngắn hoàn chỉnh — render trên máy bạn.",
-  "Your generated videos": "Video bạn đã tạo",
+    "Nhập chủ đề, nhận video ngắn hoàn chỉnh — dựng ngay trên máy bạn.",
+  "Your generated videos": "Các video bạn đã tạo",
   Refresh: "Làm mới",
   "New video": "Video mới",
   "Loading…": "Đang tải…",
   "No videos yet": "Chưa có video nào",
   "Create your first video to see it here.":
     "Tạo video đầu tiên để thấy ở đây.",
+  "No script": "Chưa có lời thoại",
   Complete: "Hoàn thành",
   Failed: "Thất bại",
   Processing: "Đang xử lý",
@@ -160,11 +172,11 @@ export const vi: Record<string, string> = {
   Page: "Trang",
   videos: "video",
   "Search…": "Tìm…",
-  "Search voice…": "Tìm giọng…",
+  "Search voice…": "Tìm giọng đọc…",
   "Search provider…": "Tìm nhà cung cấp…",
 
   // Wizard
-  "Video & Audio": "Video & Âm thanh",
+  "Video & Audio": "Hình & Âm thanh",
   Review: "Xem lại",
   Back: "Quay lại",
   On: "Bật",
@@ -178,17 +190,17 @@ export const vi: Record<string, string> = {
 
   // Placeholder pages
   "Coming soon": "Sắp ra mắt",
-  "Planned for {{phase}}": "Dự kiến ở {{phase}}",
+  "Planned for {{phase}}": "Dự kiến: {{phase}}",
   "Your credit balance, plan and usage at a glance.":
-    "Số dư credit, gói và mức sử dụng của bạn trong một màn hình.",
+    "Số dư credit, gói và mức dùng — gói gọn một màn hình.",
   "Plans, SePay checkout, credit top-ups and invoices.":
     "Các gói, thanh toán SePay, nạp credit và hoá đơn.",
   "Profile, password, language and account deletion.":
     "Hồ sơ, mật khẩu, ngôn ngữ và xoá tài khoản.",
   "Sign in to sync credits and manage your subscription.":
-    "Đăng nhập để đồng bộ credit và quản lý gói đăng ký.",
+    "Đăng nhập để đồng bộ credit và quản lý gói.",
   "Page not found": "Không tìm thấy trang",
-  "The page you’re looking for doesn’t exist.":
+  "The page you're looking for doesn't exist.":
     "Trang bạn tìm không tồn tại.",
 
   // Auth / login
@@ -215,29 +227,31 @@ export const vi: Record<string, string> = {
 
   // Dashboard
   "Your credits, plan and what's unlocked":
-    "Credit, gói và những gì đã mở khoá",
+    "Credit, gói và quyền lợi của bạn",
   "Upgrade / Buy credits": "Nâng cấp / Mua credit",
-  "Couldn’t reach the cloud backend": "Không kết nối được cloud backend",
+  "Couldn't reach the cloud backend": "Không kết nối được máy chủ",
   "Start the cloud service or check VITE_CLOUD_BASE_URL.":
-    "Khởi động dịch vụ cloud hoặc kiểm tra VITE_CLOUD_BASE_URL.",
+    "Hãy khởi động dịch vụ hoặc kiểm tra lại kết nối (VITE_CLOUD_BASE_URL).",
   Retry: "Thử lại",
-  "Session not authorized": "Phiên không được xác thực",
+  "Session not authorized": "Phiên đăng nhập không hợp lệ",
   "Your session is invalid, or the cloud's SUPABASE_JWT_SECRET doesn't match your Supabase project. Sign in again or fix the secret.":
-    "Phiên không hợp lệ, hoặc SUPABASE_JWT_SECRET của cloud không khớp project Supabase. Đăng nhập lại hoặc sửa secret.",
+    "Phiên đăng nhập không hợp lệ, hoặc SUPABASE_JWT_SECRET của máy chủ không khớp project Supabase. Hãy đăng nhập lại hoặc sửa lại secret.",
   "Sign in again": "Đăng nhập lại",
   "Credit balance": "Số dư credit",
   "Buy more": "Mua thêm",
   "Current plan": "Gói hiện tại",
   Renews: "Gia hạn",
-  "Batch limit": "Giới hạn batch",
-  "videos per batch": "video mỗi batch",
-  "What's unlocked": "Đã mở khoá",
-  "No watermark": "Không watermark",
+  "Batch limit": "Giới hạn mỗi lần",
+  "videos per batch": "video mỗi lần",
+  "What's unlocked": "Quyền lợi đã mở",
+  "No watermark": "Không có watermark",
   "Up to": "Tối đa",
   "All voices": "Tất cả giọng đọc",
   "Scheduled posting": "Đăng theo lịch",
-  "Cloud library": "Thư viện cloud",
+  "Cloud library": "Thư viện trên cloud",
   "API access": "Truy cập API",
+  Free: "Miễn phí",
+  credits: "credit",
 
   // Settings
   "Profile, language and account": "Hồ sơ, ngôn ngữ và tài khoản",
@@ -253,44 +267,44 @@ export const vi: Record<string, string> = {
     "Việc xoá tài khoản hiện do bộ phận hỗ trợ xử lý.",
 
   // Billing / pricing
-  "Plans and credit top-ups": "Gói và nạp credit",
+  "Plans and credit top-ups": "Các gói và nạp credit",
   Monthly: "Hàng tháng",
   Yearly: "Hàng năm",
   "-17%": "-17%",
   "Credit top-ups": "Nạp credit",
   Buy: "Mua",
   Invoices: "Hoá đơn",
-  "Couldn’t load plans. Is the cloud backend running?":
-    "Không tải được gói. Cloud backend đã chạy chưa?",
+  "Couldn't load plans. Is the cloud backend running?":
+    "Không tải được gói. Máy chủ đã chạy chưa?",
   Popular: "Phổ biến",
   yr: "năm",
   mo: "tháng",
   "credits/mo": "credit/tháng",
-  Batch: "Batch",
+  Batch: "Mỗi lần",
   "Free forever": "Miễn phí mãi mãi",
   Choose: "Chọn",
-  "Scan to pay with SePay": "Quét để thanh toán bằng SePay",
+  "Scan to pay with SePay": "Quét mã để thanh toán bằng SePay",
   "Transfer the exact amount — your account updates automatically.":
-    "Chuyển đúng số tiền — tài khoản của bạn tự cập nhật.",
+    "Chuyển đúng số tiền — tài khoản của bạn sẽ tự cập nhật.",
   "Set SEPAY_ACCOUNT/SEPAY_BANK to render the QR.":
     "Đặt SEPAY_ACCOUNT/SEPAY_BANK để hiển thị mã QR.",
   Amount: "Số tiền",
   "Waiting for payment…": "Đang chờ thanh toán…",
-  "Payment received — credits added 🎉":
+  "Payment received — credits added":
     "Đã nhận thanh toán — đã cộng credit 🎉",
 
   // Batch
   "Mass-produce videos — one per topic":
-    "Sản xuất video hàng loạt — mỗi chủ đề một video",
+    "Làm nhiều video cùng lúc — mỗi chủ đề một video",
   "Open library": "Mở thư viện",
   Topics: "Chủ đề",
   "One topic per line…": "Mỗi dòng một chủ đề…",
   "Shared look comes from the Create tab. Each line becomes one video.":
-    "Giao diện chung lấy từ tab Tạo. Mỗi dòng thành một video.",
-  "Your plan allows {{n}} per batch.": "Gói của bạn cho phép {{n}} video mỗi batch.",
+    "Phong cách lấy từ tab Tạo video. Mỗi dòng thành một video.",
+  "Your plan allows {{n}} per batch.": "Gói của bạn cho phép {{n}} video mỗi lần.",
   Upgrade: "Nâng cấp",
   Generate: "Tạo",
-  "Queued {{n}} videos": "Đã xếp hàng {{n}} video",
+  "Queued {{n}} videos": "Đã thêm {{n}} video vào hàng đợi",
 
   // Admin
   Admin: "Quản trị",
@@ -298,15 +312,15 @@ export const vi: Record<string, string> = {
   "Admin key": "Khoá quản trị",
   Connect: "Kết nối",
   "Invalid admin key or backend offline.":
-    "Khoá quản trị sai hoặc backend offline.",
+    "Khoá quản trị sai hoặc máy chủ offline.",
   Users: "Người dùng",
   "Active subs": "Gói đang hoạt động",
   "Credits out": "Credit lưu hành",
   Revenue: "Doanh thu",
   "Credits updated": "Đã cập nhật credit",
 
-  // Review fixes
+  // Misc
   "Payment expired — please try again": "Thanh toán đã hết hạn — vui lòng thử lại",
   "Queued {{q}} of {{r}} — the queue is full, try the rest later":
-    "Đã xếp {{q}}/{{r}} — hàng đợi đầy, thử phần còn lại sau",
+    "Đã thêm {{q}}/{{r}} — hàng đợi đang đầy, thử phần còn lại sau",
 };

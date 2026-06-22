@@ -140,8 +140,11 @@ def current_user(
     user = session.get(User, uid)
     if user is None:
         # First login: create the account, balance row, and a signup grant.
+        # Flush the user first so the CreditBalance FK resolves — Postgres
+        # enforces FKs (SQLite in tests does not, which hid this ordering bug).
         user = User(id=uid, email=claims.get("email"))
         session.add(user)
+        session.flush()
         session.add(CreditBalance(user_id=uid, balance=0))
         session.commit()
         grant_credits(session, uid, SIGNUP_GRANT, reason="signup", ref=f"signup:{uid}")
