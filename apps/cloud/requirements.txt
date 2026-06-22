@@ -3,5 +3,6 @@ uvicorn[standard]==0.34.0
 sqlmodel==0.0.22
 psycopg2-binary==2.9.10
 PyJWT==2.10.1
+cryptography>=42.0.0       # ES256/RS256 verification of Supabase JWTs (JWKS)
 httpx==0.28.1
 python-dotenv==1.0.1
