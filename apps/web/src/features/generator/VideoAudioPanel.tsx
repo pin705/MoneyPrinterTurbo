@@ -1,4 +1,12 @@
-import { Clapperboard, AudioLines, Settings2 } from "lucide-react";
+import {
+  Clapperboard,
+  AudioLines,
+  Settings2,
+  Smartphone,
+  RectangleHorizontal,
+  Square,
+} from "lucide-react";
+import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import {
   BGM_TYPES,
@@ -17,6 +25,7 @@ import {
   type VideoTransitionMode,
 } from "@mpt/shared";
 
+import { CardSelect } from "@/components/common/CardSelect";
 import { Combobox } from "@/components/common/Combobox";
 import { Field, Section } from "@/components/common/Field";
 import { OptSelect } from "@/components/common/OptSelect";
@@ -36,6 +45,13 @@ const NO_BGM = "__nobgm__";
 const numOpts = (arr: readonly number[]) =>
   arr.map((n) => ({ value: String(n), label: String(n) }));
 
+// Aspect ratio is a primary, visual choice — render it as icon cards.
+const ASPECT_ICONS: Record<string, ReactNode> = {
+  "9:16": <Smartphone />,
+  "16:9": <RectangleHorizontal />,
+  "1:1": <Square />,
+};
+
 export function VideoAudioPanel() {
   const { t } = useTranslation();
   const { params, setParam } = useGenerator();
@@ -43,6 +59,20 @@ export function VideoAudioPanel() {
   return (
     <div className="flex flex-col gap-4">
       <Section icon={<Clapperboard />} title={t("Video")}>
+        <Field label={t("Aspect ratio")} htmlFor="aspect">
+          <CardSelect
+            id="aspect"
+            columns={3}
+            aria-label={t("Aspect ratio")}
+            value={params.video_aspect ?? "9:16"}
+            onValueChange={(v) => setParam("video_aspect", v as VideoAspect)}
+            options={VIDEO_ASPECTS.map((o) => ({
+              value: o.value,
+              label: t(o.labelKey),
+              icon: ASPECT_ICONS[o.value],
+            }))}
+          />
+        </Field>
         <div className="grid grid-cols-2 gap-3">
           <Field label={t("Source")} htmlFor="src">
             <OptSelect
@@ -50,14 +80,6 @@ export function VideoAudioPanel() {
               value={params.video_source ?? "pexels"}
               onValueChange={(v) => setParam("video_source", v)}
               options={VIDEO_SOURCES.map((o) => ({ value: o.value, label: t(o.labelKey) }))}
-            />
-          </Field>
-          <Field label={t("Aspect ratio")} htmlFor="aspect">
-            <OptSelect
-              id="aspect"
-              value={params.video_aspect ?? "9:16"}
-              onValueChange={(v) => setParam("video_aspect", v as VideoAspect)}
-              options={VIDEO_ASPECTS.map((o) => ({ value: o.value, label: t(o.labelKey) }))}
             />
           </Field>
           <Field label={t("Concat mode")} htmlFor="concat">
