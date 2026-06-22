@@ -4,6 +4,7 @@ import jwt
 from fastapi import Depends, Header, HTTPException
 from sqlmodel import Session
 
+from . import plans
 from .credits import grant_credits
 from .db import get_session
 from .models import CreditBalance, User
@@ -12,7 +13,34 @@ from .models import CreditBalance, User
 # this for RS256 + JWKS verification.
 JWT_SECRET = os.getenv("SUPABASE_JWT_SECRET", "dev-secret-change-me")
 JWT_ALG = os.getenv("JWT_ALG", "HS256")
-SIGNUP_GRANT = int(os.getenv("SIGNUP_CREDIT_GRANT", "20"))
+# Signup grant defaults to the Free plan's grant; env can override.
+SIGNUP_GRANT = int(os.getenv("SIGNUP_CREDIT_GRANT", str(plans.PLANS[plans.FREE]["signup_grant"])))
+
+
+def _is_dev_auth() -> bool:
+    """Dev/test auth lets the local app and e2e run without a Supabase project.
+
+    NEVER enable in production. Accepts tokens of the form ``dev:<uid>[:<email>]``
+    so a mock front-end can sign in deterministically. Gated strictly behind the
+    AUTH_DEV_MODE env flag.
+    """
+    return os.getenv("AUTH_DEV_MODE", "").lower() in ("1", "true", "yes")
+
+
+def _claims_from_token(token: str) -> dict:
+    if _is_dev_auth() and token.startswith("dev:"):
+        parts = token.split(":", 2)
+        uid = parts[1] if len(parts) > 1 else ""
+        email = parts[2] if len(parts) > 2 else None
+        if not uid:
+            raise HTTPException(401, "dev token missing uid")
+        return {"sub": uid, "email": email}
+    try:
+        return jwt.decode(
+            token, JWT_SECRET, algorithms=[JWT_ALG], audience="authenticated"
+        )
+    except jwt.PyJWTError as e:
+        raise HTTPException(401, f"invalid token: {e}")
 
 
 def current_user(
@@ -22,12 +50,7 @@ def current_user(
     if not authorization.startswith("Bearer "):
         raise HTTPException(401, "missing bearer token")
     token = authorization.split(" ", 1)[1]
-    try:
-        claims = jwt.decode(
-            token, JWT_SECRET, algorithms=[JWT_ALG], audience="authenticated"
-        )
-    except jwt.PyJWTError as e:
-        raise HTTPException(401, f"invalid token: {e}")
+    claims = _claims_from_token(token)
 
     uid = claims.get("sub")
     if not uid:

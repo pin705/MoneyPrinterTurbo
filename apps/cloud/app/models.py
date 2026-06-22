@@ -50,3 +50,22 @@ class ProcessedPayment(SQLModel, table=True):
     user_id: str
     credits: int
     created_at: datetime = Field(default_factory=_now)
+
+
+class Subscription(SQLModel, table=True):
+    """A user's current plan. One row per user (absent row = Free tier).
+
+    Created/renewed by the payment flow (Phase 2). status is one of
+    active | past_due | canceled | expired. The plan a user is entitled to is
+    resolved in subscriptions.py, which treats anything non-active (or expired
+    by date) as Free.
+    """
+    user_id: str = Field(primary_key=True, foreign_key="user.id")
+    plan_id: str  # "creator" | "studio"
+    status: str = "active"
+    billing_cycle: str = "monthly"  # "monthly" | "yearly"
+    current_period_start: datetime = Field(default_factory=_now)
+    current_period_end: Optional[datetime] = None
+    cancel_at_period_end: bool = False
+    updated_at: datetime = Field(default_factory=_now)
+

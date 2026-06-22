@@ -92,3 +92,26 @@ jobs:
       # The Playwright config's webServer builds + serves the production bundle.
       - name: Run e2e smoke tests
         run: pnpm --filter @mpt/web test:e2e
+
+  cloud:
+    name: Cloud backend tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install cloud dependencies
+        run: pip install -r apps/cloud/requirements.txt
+
+      - name: Run cloud tests
+        working-directory: apps/cloud
+        env:
+          AUTH_DEV_MODE: "1"
+          DATABASE_URL: "sqlite:///./ci-test.db"
+        run: python -m unittest discover -s tests -p "test_*.py" -v
