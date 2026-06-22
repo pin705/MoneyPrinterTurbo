@@ -1,9 +1,13 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 
 import { Sidebar } from "@/components/Sidebar";
+import { LoginPage } from "@/features/auth/LoginPage";
+import { RequireAuth } from "@/features/auth/RequireAuth";
+import { DashboardPage } from "@/features/dashboard/DashboardPage";
 import { ComingSoon } from "@/features/placeholder/ComingSoon";
 import { GeneratorPage } from "@/features/generator/GeneratorPage";
 import { LibraryPage } from "@/features/library/LibraryPage";
+import { SettingsPage } from "@/features/settings/SettingsPage";
 
 export default function App() {
   return (
@@ -14,15 +18,21 @@ export default function App() {
           <Route path="/" element={<Navigate to="/create" replace />} />
           <Route path="/create" element={<GeneratorPage />} />
           <Route path="/library" element={<LibraryPage />} />
-          {/* Account surfaces — implemented in later phases. */}
+          <Route path="/login" element={<LoginPage />} />
           <Route
             path="/dashboard"
             element={
-              <ComingSoon
-                title="Dashboard"
-                description="Your credit balance, plan and usage at a glance."
-                phase="Phase 1"
-              />
+              <RequireAuth>
+                <DashboardPage />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/settings"
+            element={
+              <RequireAuth>
+                <SettingsPage />
+              </RequireAuth>
             }
           />
           <Route
@@ -32,26 +42,6 @@ export default function App() {
                 title="Billing"
                 description="Plans, SePay checkout, credit top-ups and invoices."
                 phase="Phase 2"
-              />
-            }
-          />
-          <Route
-            path="/settings"
-            element={
-              <ComingSoon
-                title="Account"
-                description="Profile, password, language and account deletion."
-                phase="Phase 1"
-              />
-            }
-          />
-          <Route
-            path="/login"
-            element={
-              <ComingSoon
-                title="Sign in"
-                description="Sign in to sync credits and manage your subscription."
-                phase="Phase 1"
               />
             }
           />

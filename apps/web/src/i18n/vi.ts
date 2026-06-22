@@ -181,4 +181,48 @@ export const vi: Record<string, string> = {
   "Page not found": "Không tìm thấy trang",
   "The page you’re looking for doesn’t exist.":
     "Trang bạn tìm không tồn tại.",
+
+  // Auth / login
+  "Sign in to MoneyPrinter Studio": "Đăng nhập MoneyPrinter Studio",
+  "Sync credits and manage your subscription.":
+    "Đồng bộ credit và quản lý gói đăng ký.",
+  Email: "Email",
+  Continue: "Tiếp tục",
+  "Dev sign-in — Google/email auth wires in with Supabase.":
+    "Đăng nhập dev — đăng nhập Google/email cắm qua Supabase.",
+
+  // Dashboard
+  "Your credits, plan and what's unlocked":
+    "Credit, gói và những gì đã mở khoá",
+  "Upgrade / Buy credits": "Nâng cấp / Mua credit",
+  "Couldn’t reach the cloud backend": "Không kết nối được cloud backend",
+  "Start the cloud service or check VITE_CLOUD_BASE_URL.":
+    "Khởi động dịch vụ cloud hoặc kiểm tra VITE_CLOUD_BASE_URL.",
+  Retry: "Thử lại",
+  "Credit balance": "Số dư credit",
+  "Buy more": "Mua thêm",
+  "Current plan": "Gói hiện tại",
+  Renews: "Gia hạn",
+  "Batch limit": "Giới hạn batch",
+  "videos per batch": "video mỗi batch",
+  "What's unlocked": "Đã mở khoá",
+  "No watermark": "Không watermark",
+  "Up to": "Tối đa",
+  "All voices": "Tất cả giọng đọc",
+  "Scheduled posting": "Đăng theo lịch",
+  "Cloud library": "Thư viện cloud",
+  "API access": "Truy cập API",
+
+  // Settings
+  "Profile, language and account": "Hồ sơ, ngôn ngữ và tài khoản",
+  Profile: "Hồ sơ",
+  "Signed in": "Đã đăng nhập",
+  "Sign out": "Đăng xuất",
+  Language: "Ngôn ngữ",
+  "Danger zone": "Vùng nguy hiểm",
+  "Permanently delete your account and data.":
+    "Xoá vĩnh viễn tài khoản và dữ liệu của bạn.",
+  "Delete account": "Xoá tài khoản",
+  "Account deletion is handled by support for now.":
+    "Việc xoá tài khoản hiện do bộ phận hỗ trợ xử lý.",
 };

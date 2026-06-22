@@ -19,10 +19,10 @@ test.describe("app shell", () => {
     await expect(page.getByText("Your generated videos")).toBeVisible();
   });
 
-  test("shows a Coming soon placeholder for account routes", async ({ page }) => {
-    await page.goto("/#/dashboard");
+  test("shows a Coming soon placeholder for not-yet-built routes", async ({ page }) => {
+    await page.goto("/#/billing");
     await expect(page.getByText("Coming soon")).toBeVisible();
-    await expect(page.getByText("Planned for Phase 1")).toBeVisible();
+    await expect(page.getByText("Planned for Phase 2")).toBeVisible();
   });
 
   test("renders the aspect-ratio CardSelect as an accessible radio group", async ({
@@ -38,5 +38,21 @@ test.describe("app shell", () => {
     await expect(aspect).toBeVisible();
     // The three aspect options render as cards, not a dropdown (UI/UX standard).
     await expect(aspect.getByRole("radio")).toHaveCount(3);
+  });
+});
+
+test.describe("auth", () => {
+  test("a protected route redirects to /login when signed out", async ({ page }) => {
+    await page.goto("/#/dashboard");
+    await expect(page).toHaveURL(/#\/login$/);
+  });
+
+  test("dev sign-in routes to the dashboard", async ({ page }) => {
+    await page.goto("/#/login");
+    await page.getByLabel("Email").fill("tester@example.com");
+    await page.getByRole("button", { name: "Continue" }).click();
+    await expect(page).toHaveURL(/#\/dashboard$/);
+    // Dashboard chrome renders even if the cloud backend is unreachable in CI.
+    await expect(page.getByRole("button", { name: /Upgrade/ })).toBeVisible();
   });
 });
