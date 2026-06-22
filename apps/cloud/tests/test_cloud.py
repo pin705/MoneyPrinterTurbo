@@ -218,5 +218,20 @@ class TestPayments(unittest.TestCase):
         self.assertEqual(r.status_code, 400)
 
 
+class TestRateLimit(unittest.TestCase):
+    def test_allows_up_to_limit_then_429(self):
+        from fastapi import HTTPException
+
+        from app.ratelimit import check_rate, reset
+
+        reset()
+        key = "unit-test-key"
+        for _ in range(3):
+            check_rate(key, limit=3, window=60)  # ok
+        with self.assertRaises(HTTPException) as ctx:
+            check_rate(key, limit=3, window=60)  # 4th trips
+        self.assertEqual(ctx.exception.status_code, 429)
+
+
 if __name__ == "__main__":
     unittest.main()

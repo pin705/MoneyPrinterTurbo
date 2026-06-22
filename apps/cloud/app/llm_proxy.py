@@ -15,6 +15,10 @@ from .auth import current_user
 from .credits import InsufficientCredits, debit_credits, grant_credits, log_usage
 from .db import get_session
 from .models import User
+from .ratelimit import check_rate
+
+# Per-user ceiling on AI calls/minute — caps credit burn from a runaway client.
+LLM_RATE_LIMIT = int(os.getenv("LLM_RATE_LIMIT_PER_MIN", "30"))
 
 router = APIRouter(prefix="/v1/llm", tags=["llm"])
 
@@ -54,6 +58,7 @@ def _deepseek(messages: list[dict]) -> tuple[str, dict]:
 
 def _metered(session: Session, user: User, endpoint: str, messages: list[dict], ref):
     """Debit first, call DeepSeek, refund if the call fails."""
+    check_rate(f"llm:{user.id}", limit=LLM_RATE_LIMIT, window=60)
     try:
         debit_credits(session, user.id, CREDITS_PER_CALL, f"llm:{endpoint}", ref)
     except InsufficientCredits:

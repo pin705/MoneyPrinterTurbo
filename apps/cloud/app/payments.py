@@ -25,6 +25,7 @@ from .auth import current_user
 from .credits import grant_credits
 from .db import get_session
 from .models import Order, ProcessedPayment, Subscription, User
+from .ratelimit import check_rate
 
 router = APIRouter(prefix="/v1/payments", tags=["payments"])
 
@@ -82,6 +83,7 @@ def checkout(
     user: User = Depends(current_user),
     session: Session = Depends(get_session),
 ):
+    check_rate(f"checkout:{user.id}", limit=20, window=60)
     amount, credits = _price_order(body)
     code = _new_code()
     order = Order(
