@@ -17,7 +17,7 @@ import { useAuth } from "@/store/auth";
 function Shell({ children }: { children: ReactNode }) {
   const { t } = useTranslation();
   return (
-    <div className="flex min-h-full items-center justify-center px-6 py-16">
+    <div className="bg-background flex min-h-screen items-center justify-center px-6 py-16">
       <div className="bg-card w-full max-w-sm rounded-2xl border border-border p-8 shadow-xl">
         <div className="mb-8 flex flex-col items-center gap-3 text-center">
           <div className="bg-primary/10 text-primary grid size-12 place-items-center rounded-2xl">

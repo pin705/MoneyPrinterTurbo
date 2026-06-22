@@ -3,7 +3,6 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import { Sidebar } from "@/components/Sidebar";
 import { AdminPage } from "@/features/admin/AdminPage";
 import { LoginPage } from "@/features/auth/LoginPage";
-import { RequireAuth } from "@/features/auth/RequireAuth";
 import { BatchPage } from "@/features/batch/BatchPage";
 import { BillingPage } from "@/features/billing/BillingPage";
 import { DashboardPage } from "@/features/dashboard/DashboardPage";
@@ -11,8 +10,16 @@ import { ComingSoon } from "@/features/placeholder/ComingSoon";
 import { GeneratorPage } from "@/features/generator/GeneratorPage";
 import { LibraryPage } from "@/features/library/LibraryPage";
 import { SettingsPage } from "@/features/settings/SettingsPage";
+import { useAuth } from "@/store/auth";
 
 export default function App() {
+  const token = useAuth((s) => s.token);
+
+  // Auth gate: when signed out, the login screen takes over the entire viewport
+  // (no sidebar/shell behind it). An account is required — the AI step is metered
+  // against credits server-side.
+  if (!token) return <LoginPage />;
+
   return (
     <div className="flex h-screen overflow-hidden">
       <Sidebar />
@@ -23,41 +30,14 @@ export default function App() {
             <Route path="/create" element={<GeneratorPage />} />
             <Route path="/batch" element={<BatchPage />} />
             <Route path="/library" element={<LibraryPage />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route
-              path="/dashboard"
-              element={
-                <RequireAuth>
-                  <DashboardPage />
-                </RequireAuth>
-              }
-            />
-            <Route
-              path="/settings"
-              element={
-                <RequireAuth>
-                  <SettingsPage />
-                </RequireAuth>
-              }
-            />
-            {/* Internal admin tool — no nav link; route gated by sign-in only.
-                Admin actions are authorized server-side via the X-Admin-Key header. */}
-            <Route
-              path="/admin"
-              element={
-                <RequireAuth>
-                  <AdminPage />
-                </RequireAuth>
-              }
-            />
-            <Route
-              path="/billing"
-              element={
-                <RequireAuth>
-                  <BillingPage />
-                </RequireAuth>
-              }
-            />
+            <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/settings" element={<SettingsPage />} />
+            <Route path="/billing" element={<BillingPage />} />
+            {/* Internal admin tool — no nav link; actions authorized server-side
+                via the X-Admin-Key header. */}
+            <Route path="/admin" element={<AdminPage />} />
+            {/* Authed users who hit /login just go home. */}
+            <Route path="/login" element={<Navigate to="/" replace />} />
             <Route
               path="*"
               element={
