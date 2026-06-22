@@ -30,6 +30,7 @@ export interface LandingCopy {
     micro: string;
     osDetected: string; // uses {name}
   };
+  mockup: { script: string; generate: string };
   works: string;
   features: {
     kicker: string;
@@ -104,6 +105,7 @@ export const landing: Record<Locale, LandingCopy> = {
       micro: "Available for macOS, Windows & Linux",
       osDetected: "Detected {name} · also on the other platforms",
     },
+    mockup: { script: "Generate Script", generate: "Generate Video" },
     works: "Works with",
     features: {
       kicker: "Features",
@@ -215,6 +217,7 @@ export const landing: Record<Locale, LandingCopy> = {
       micro: "Có cho macOS, Windows & Linux",
       osDetected: "Phát hiện {name} · cũng có trên các nền tảng khác",
     },
+    mockup: { script: "Tạo kịch bản", generate: "Tạo video" },
     works: "Hoạt động với",
     features: {
       kicker: "Tính năng",
