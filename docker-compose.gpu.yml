@@ -6,14 +6,9 @@
 #   2. NVIDIA Container Toolkit installed
 #   3. Verify with: docker info | grep nvidia
 #
-# This file overrides the default docker-compose.yml to:
-#   - Build with Dockerfile.gpu (NVIDIA CUDA base image)
-#   - Attach GPU device to the api service
+# Overrides the default compose to build the api with Dockerfile.gpu (CUDA base)
+# and attach a GPU device.
 services:
-  webui:
-    build:
-      context: .
-      dockerfile: Dockerfile.gpu
   api:
     build:
       context: .

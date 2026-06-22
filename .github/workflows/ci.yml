@@ -29,10 +29,10 @@ jobs:
         run: uv sync --frozen
 
       - name: Compile Python sources
-        run: uv run python -m compileall app cli.py main.py webui test
+        run: uv run python -m compileall app cli.py main.py test
 
       - name: Run deterministic unit tests
-        run: uv run python -X utf8 -m unittest test.services.test_state test.services.test_task test.services.test_schema test.services.test_webui_i18n test.services.test_batch
+        run: uv run python -X utf8 -m unittest test.services.test_state test.services.test_task test.services.test_schema test.services.test_batch test.services.test_subtitle_background_settings
 
   frontend:
     name: Frontend typecheck

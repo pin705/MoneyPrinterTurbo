@@ -1,4 +1,4 @@
-# MoneyPrinter Studio — Desktop (Tauri v2)
+# Vidova — Desktop (Tauri v2)
 
 Wraps the React UI (`apps/web`) in a native window and spawns the Python backend
 (`main.py`) as a **sidecar** — so video rendering runs locally on the user's

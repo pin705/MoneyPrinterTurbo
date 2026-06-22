@@ -183,7 +183,7 @@ export const vi: Record<string, string> = {
     "Trang bạn tìm không tồn tại.",
 
   // Auth / login
-  "Sign in to MoneyPrinter Studio": "Đăng nhập MoneyPrinter Studio",
+  "Sign in to Vidova": "Đăng nhập Vidova",
   "Sync credits and manage your subscription.":
     "Đồng bộ credit và quản lý gói đăng ký.",
   Email: "Email",

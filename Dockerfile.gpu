@@ -5,10 +5,10 @@ FROM nvidia/cuda:12.1.1-cudnn8-runtime-ubuntu22.04
 ENV DEBIAN_FRONTEND=noninteractive
 
 # Set the working directory in the container
-WORKDIR /MoneyPrinterTurbo
-RUN chmod 777 /MoneyPrinterTurbo
+WORKDIR /app
+RUN chmod 777 /app
 
-ENV PYTHONPATH="/MoneyPrinterTurbo"
+ENV PYTHONPATH="/app"
 
 # Install Python 3.11 and system dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -48,8 +48,8 @@ RUN python3 -m pip install --no-cache-dir \
 # Now copy the rest of the codebase into the image
 COPY . .
 
-# Expose the port the app runs on
-EXPOSE 8501
+# Expose the render API port
+EXPOSE 8000
 
-# Command to run the application
-CMD ["streamlit", "run", "./webui/Main.py","--browser.serverAddress=127.0.0.1","--server.enableCORS=True","--browser.gatherUsageStats=False","--server.showEmailPrompt=False"]
+# Run the render backend API (GPU-accelerated whisper, etc.)
+CMD ["python3", "main.py"]

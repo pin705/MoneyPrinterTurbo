@@ -67,7 +67,7 @@ jobs:
         with:
           projectPath: apps/desktop
           tagName: ${{ github.ref_name }}
-          releaseName: "MoneyPrinter Studio ${{ github.ref_name }}"
+          releaseName: "Vidova ${{ github.ref_name }}"
           releaseDraft: true
           prerelease: false
           args: ${{ matrix.args }}

@@ -24,7 +24,7 @@ if _SENTRY_DSN:
     except ImportError:
         pass
 
-app = FastAPI(title="MoneyPrinter Cloud", version="0.1.0")
+app = FastAPI(title="Vidova Cloud", version="0.1.0")
 
 # Default to a closed localhost allowlist (web dev/preview + Tauri) rather than
 # "*", so a misconfigured deploy doesn't ship open CORS. Set explicit prod

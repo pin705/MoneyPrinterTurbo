@@ -29,7 +29,7 @@ export function LoginPage() {
             <Sparkles className="size-5" />
           </div>
           <h1 className="text-lg font-semibold tracking-tight">
-            {t("Sign in to MoneyPrinter Studio")}
+            {t("Sign in to Vidova")}
           </h1>
           <p className="text-muted-foreground text-sm">
             {t("Sync credits and manage your subscription.")}

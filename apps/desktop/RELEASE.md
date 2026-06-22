@@ -1,6 +1,6 @@
 # Desktop release & signing
 
-MoneyPrinter Studio ships as a Tauri v2 desktop app that bundles the Python
+Vidova ships as a Tauri v2 desktop app that bundles the Python
 render backend as a sidecar (`binaries/mpt-backend`) and renders locally. This
 doc is the checklist to cut a **signed, auto-updating** release. Items marked
 🔑 require secrets you provide once (stored as CI secrets, never committed).

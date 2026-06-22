@@ -1,5 +1,5 @@
 /**
- * Client for the MoneyPrinter Cloud backend (apps/cloud) — accounts, credits,
+ * Client for the Vidova Cloud backend (apps/cloud) — accounts, credits,
  * plans, subscriptions and payments. Distinct from MptClient, which talks to the
  * local render backend. Auth is a Bearer token (Supabase JWT in production, or a
  * `dev:<uid>:<email>` token when the cloud runs with AUTH_DEV_MODE).

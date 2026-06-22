@@ -1,4 +1,4 @@
-# MoneyPrinter Cloud
+# Vidova Cloud
 
 The managed backend that powers accounts, **credits**, and the **LLM proxy**.
 The desktop app calls this for AI text generation so the DeepSeek key never

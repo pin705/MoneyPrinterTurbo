@@ -102,7 +102,7 @@ export function Sidebar() {
           <Sparkles className="size-4" />
         </div>
         <span className="font-semibold tracking-tight">
-          MoneyPrinter <span className="text-primary">Studio</span>
+Vid<span className="text-primary">ova</span>
         </span>
       </div>
 
