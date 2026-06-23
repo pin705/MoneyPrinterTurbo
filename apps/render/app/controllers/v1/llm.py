@@ -2,6 +2,8 @@ from fastapi import Request
 
 from app.controllers.v1.base import new_router
 from app.models.schema import (
+    VideoContentPlanRequest,
+    VideoContentPlanResponse,
     VideoScriptRequest,
     VideoScriptResponse,
     VideoSocialMetadataRequest,
@@ -47,6 +49,23 @@ def generate_video_terms(request: Request, body: VideoTermsRequest):
     )
     response = {"video_terms": video_terms}
     return utils.get_response(200, response)
+
+
+@router.post(
+    "/content-plan",
+    response_model=VideoContentPlanResponse,
+    summary="Generate a batch of distinct short-video ideas from a niche + audience",
+)
+def generate_video_content_plan(request: Request, body: VideoContentPlanRequest):
+    ideas = llm.generate_content_plan(
+        niche=body.niche,
+        audience=body.audience,
+        topic=body.topic,
+        count=body.count,
+        tone=body.tone,
+        language=body.language,
+    )
+    return utils.get_response(200, {"ideas": ideas})
 
 
 @router.post(

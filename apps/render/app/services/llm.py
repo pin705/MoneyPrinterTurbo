@@ -844,6 +844,161 @@ Please note that you must use English for generating video search terms; Chinese
 
 
 # =============================================================================
+# Content plan (Phase 1 — Content Factory)
+#
+# 把"领域 + 受众"转成一批"互不重复"的短视频创意，每条是不同切入点，
+# 直接喂给批量生成。只复用现有 LLM provider，输出固定为 JSON 数组。
+# =============================================================================
+
+MAX_CONTENT_PLAN_COUNT = 50
+MIN_CONTENT_PLAN_COUNT = 1
+MAX_CONTENT_FIELD_LENGTH = 4000
+
+
+def _content_plan_language_instruction(language: str | None) -> str:
+    value = (language or "").strip()
+    if not value or value.lower() in ("auto", "auto detect"):
+        return (
+            'Write "title", "hook" and "angle" in the same language as the niche '
+            "and audience. Keywords must always be in English."
+        )
+    return (
+        f'Write "title", "hook" and "angle" in this language: {value}. '
+        "Keywords must always be in English."
+    )
+
+
+def build_content_plan_prompt(
+    niche: str,
+    audience: str = "",
+    topic: str = "",
+    count: int = 30,
+    tone: str = "",
+    language: str = "",
+) -> str:
+    count = max(MIN_CONTENT_PLAN_COUNT, min(int(count or 30), MAX_CONTENT_PLAN_COUNT))
+    niche = (niche or "").strip()[:MAX_CONTENT_FIELD_LENGTH]
+    audience = (audience or "").strip()[:MAX_CONTENT_FIELD_LENGTH]
+    topic = (topic or "").strip()[:MAX_CONTENT_FIELD_LENGTH]
+    tone = (tone or "").strip()[:200]
+
+    return f"""
+# Role: Short-Video Content Strategist
+
+## Goal
+Generate {count} DISTINCT short-video ideas for the niche and audience below.
+Every idea must take a different angle — no near-duplicates, no rephrasings of
+the same point.
+
+## Constraints
+1. Respond ONLY with a single valid minified JSON array. No markdown, no code fences, no commentary.
+2. Each array item is an object with exactly these keys: "title", "hook", "angle", "keywords".
+   - "title": a scroll-stopping topic, at most 80 characters.
+   - "hook": the first spoken line of the video, at most 120 characters.
+   - "angle": one short phrase naming the unique take.
+   - "keywords": a JSON array of 3-6 English stock-footage search terms.
+3. Return EXACTLY {count} items, all clearly distinct from each other.
+4. {_content_plan_language_instruction(language)}
+
+## Output Example
+[{{"title":"The 50/30/20 rule in 30s","hook":"Most people budget wrong — here's the fix.","angle":"Simple framework, fast payoff","keywords":["money","budget","savings"]}}]
+
+## Context
+- Niche: {niche}
+- Audience: {audience}
+- Extra focus (optional): {topic}
+- Tone (optional): {tone}
+""".strip()
+
+
+def _coerce_idea(raw, fallback_keywords_subject: str) -> dict | None:
+    if not isinstance(raw, dict):
+        return None
+    title = _clamp_text(raw.get("title", ""), 80)
+    if not title:
+        return None
+    hook = _clamp_text(raw.get("hook", ""), 120)
+    angle = _clamp_text(raw.get("angle", ""), 120)
+    kw_raw = raw.get("keywords", [])
+    if isinstance(kw_raw, str):
+        keywords = [k.strip() for k in re.split(r"[,\n]", kw_raw) if k.strip()]
+    elif isinstance(kw_raw, (list, tuple)):
+        keywords = [str(k).strip() for k in kw_raw if str(k).strip()]
+    else:
+        keywords = []
+    keywords = keywords[:6]
+    return {"title": title, "hook": hook, "angle": angle, "keywords": keywords}
+
+
+def generate_content_plan(
+    niche: str,
+    audience: str = "",
+    topic: str = "",
+    count: int = 30,
+    tone: str = "",
+    language: str = "",
+) -> List[dict]:
+    """
+    返回固定结构 `[{"title","hook","angle","keywords"}]` 的创意列表。
+    LLM 不可用或解析失败时返回空列表，由上层提示用户重试。
+    """
+    count = max(MIN_CONTENT_PLAN_COUNT, min(int(count or 30), MAX_CONTENT_PLAN_COUNT))
+    prompt = build_content_plan_prompt(
+        niche=niche,
+        audience=audience,
+        topic=topic,
+        count=count,
+        tone=tone,
+        language=language,
+    )
+    logger.info(
+        f"generating content plan: niche={niche!r}, audience={audience!r}, count={count}"
+    )
+
+    ideas: List[dict] = []
+    response = ""
+    for i in range(_max_retries):
+        try:
+            response = _generate_response(prompt)
+            if isinstance(response, str) and "Error: " in response:
+                logger.error(f"failed to generate content plan: {response}")
+                break
+            parsed = None
+            try:
+                parsed = json.loads(_strip_code_fence(response))
+            except Exception:
+                match = re.search(r"\[.*\]", response or "", re.DOTALL)
+                if match:
+                    parsed = json.loads(match.group())
+
+            if not isinstance(parsed, list):
+                logger.warning("content plan response is not a JSON array")
+                continue
+
+            seen = set()
+            ideas = []
+            for item in parsed:
+                idea = _coerce_idea(item, niche)
+                if not idea:
+                    continue
+                key = idea["title"].lower()
+                if key in seen:
+                    continue
+                seen.add(key)
+                ideas.append(idea)
+        except Exception as e:
+            logger.warning(f"failed to parse content plan: {str(e)}")
+
+        if ideas:
+            break
+        if i < _max_retries - 1:
+            logger.warning(f"failed to generate content plan, trying again... {i + 1}")
+
+    logger.success(f"completed content plan: {len(ideas)} ideas")
+    return ideas[:count]
+
+
+# =============================================================================
 # Social publishing metadata
 #
 # 根据视频主题和脚本生成发布到短视频平台时常用的 title、caption 和 hashtags。

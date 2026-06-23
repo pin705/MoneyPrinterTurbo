@@ -4,6 +4,7 @@ import {
   Layers,
   LayoutDashboard,
   Library,
+  Lightbulb,
   Settings,
   type LucideIcon,
 } from "lucide-react";
@@ -17,6 +18,7 @@ export interface NavItem {
 
 /** Primary product surfaces — the tool itself. */
 export const PRIMARY_NAV: NavItem[] = [
+  { to: "/plan", labelKey: "Content plan", icon: Lightbulb },
   { to: "/create", labelKey: "Create", icon: Clapperboard },
   { to: "/batch", labelKey: "Batch", icon: Layers },
   { to: "/library", labelKey: "Library", icon: Library },

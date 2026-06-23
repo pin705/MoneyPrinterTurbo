@@ -5,6 +5,8 @@ import {
   type BaseResponse,
   type BatchResultData,
   type ConfigData,
+  type ContentPlanData,
+  type GenerateContentPlanInput,
   type GenerateScriptInput,
   type GenerateTermsInput,
   type ScriptData,
@@ -115,6 +117,16 @@ export class MptClient {
   /** POST /terms — generate English search keywords from a script. */
   generateTerms(input: GenerateTermsInput): Promise<TermsData> {
     return this.request<TermsData>("/terms", {
+      method: "POST",
+      body: JSON.stringify(input),
+    });
+  }
+
+  /** POST /content-plan — N distinct short-video ideas from a niche + audience. */
+  generateContentPlan(
+    input: GenerateContentPlanInput,
+  ): Promise<ContentPlanData> {
+    return this.request<ContentPlanData>("/content-plan", {
       method: "POST",
       body: JSON.stringify(input),
     });

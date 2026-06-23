@@ -599,36 +599,38 @@ def stream_edge_tts_chunks(
         on_chunk: 每拿到一个事件块时执行的回调
         timeout_seconds: 单次流式请求总超时；为 None 时不启用超时。
     """
-    if hasattr(communicate, "stream_sync"):
-        if timeout_seconds:
-            _stream_edge_tts_sync_with_timeout(
-                communicate, on_chunk, timeout_seconds
-            )
-            return
+    # Prefer the async `stream()` path. edge_tts 7.x's `stream_sync()` can hang
+    # indefinitely on some platforms (its internal loop/thread deadlocks, so the
+    # request times out with no audio), whereas consuming the async `stream()` on
+    # a dedicated event loop is reliable. We keep `stream_sync()` only as a
+    # fallback for old builds that don't expose `stream()`.
+    if hasattr(communicate, "stream"):
+        async def _consume_async_stream():
+            async for chunk in communicate.stream():
+                on_chunk(chunk)
 
-        for chunk in communicate.stream_sync():
-            on_chunk(chunk)
+        # Explicit dedicated event loop avoids "no current event loop" / reused
+        # cross-thread loop issues when called from the sync task pipeline.
+        loop = asyncio.new_event_loop()
+        try:
+            if timeout_seconds:
+                loop.run_until_complete(
+                    asyncio.wait_for(_consume_async_stream(), timeout=timeout_seconds)
+                )
+            else:
+                loop.run_until_complete(_consume_async_stream())
+        finally:
+            loop.close()
         return
 
-    if not hasattr(communicate, "stream"):
+    if not hasattr(communicate, "stream_sync"):
         raise AttributeError("edge_tts communicate object has no stream method")
 
-    async def _consume_async_stream():
-        async for chunk in communicate.stream():
-            on_chunk(chunk)
-
-    # 这里显式创建独立事件循环，而不是复用外部上下文，目的是避免
-    # 在同步调用栈里遇到“当前线程没有事件循环”或跨线程复用循环的问题。
-    loop = asyncio.new_event_loop()
-    try:
-        if timeout_seconds:
-            loop.run_until_complete(
-                asyncio.wait_for(_consume_async_stream(), timeout=timeout_seconds)
-            )
-        else:
-            loop.run_until_complete(_consume_async_stream())
-    finally:
-        loop.close()
+    if timeout_seconds:
+        _stream_edge_tts_sync_with_timeout(communicate, on_chunk, timeout_seconds)
+        return
+    for chunk in communicate.stream_sync():
+        on_chunk(chunk)
 
 
 def azure_tts_v1(
@@ -683,6 +685,13 @@ def azure_tts_v1(
                         "failed to remove empty tts file: "
                         f"{voice_file}, error: {str(remove_error)}"
                     )
+            # Microsoft throttles the free edge-tts endpoint per-IP after bursts
+            # ("No audio was received"). Retrying immediately just hits the same
+            # throttle, so back off with increasing delay to let it clear.
+            if i < 2:
+                backoff = 5 * (i + 1)
+                logger.info(f"retrying edge-tts in {backoff}s…")
+                time.sleep(backoff)
     return None
 
 

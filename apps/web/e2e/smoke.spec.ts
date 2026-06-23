@@ -9,6 +9,18 @@ async function signIn(page: Page) {
   await expect(page.getByRole("link", { name: "Create" })).toBeVisible();
 }
 
+// The app defaults to Vietnamese; pin English so these label-based assertions
+// stay deterministic regardless of the default locale.
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => {
+    try {
+      localStorage.setItem("mpt-lang", "en");
+    } catch {
+      /* ignore */
+    }
+  });
+});
+
 test.describe("auth gate", () => {
   test("signed out shows full-screen login — no app shell behind it", async ({ page }) => {
     await page.goto("/#/create");

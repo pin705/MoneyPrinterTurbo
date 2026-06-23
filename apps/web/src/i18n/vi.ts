@@ -182,6 +182,72 @@ export const vi: Record<string, string> = {
   On: "Bật",
   Off: "Tắt",
 
+  // Content plan (Giai đoạn 1)
+  "Content plan": "Kế hoạch nội dung",
+  "Turn a niche into a batch of distinct video ideas":
+    "Biến một ngách thành loạt ý tưởng video khác nhau",
+  "What do you make videos about?": "Bạn làm video về chủ đề gì?",
+  Niche: "Ngách",
+  "The topic area of your channel.": "Lĩnh vực kênh của bạn.",
+  "e.g. personal finance for beginners": "vd: tài chính cá nhân cho người mới",
+  Audience: "Đối tượng",
+  "e.g. Gen Z in Vietnam, new to investing": "vd: Gen Z Việt Nam, mới tập đầu tư",
+  "How many ideas": "Số ý tưởng",
+  Tone: "Giọng điệu",
+  "e.g. punchy": "vd: dứt khoát",
+  "Extra focus": "Tập trung thêm",
+  "Optional. Steer the ideas toward something specific.":
+    "Không bắt buộc. Hướng ý tưởng vào điều cụ thể.",
+  "e.g. focus on saving habits and budgeting apps":
+    "vd: tập trung thói quen tiết kiệm và app quản lý chi tiêu",
+  "Generate ideas": "Tạo ý tưởng",
+  "Each idea is a different angle — pick the ones you like.":
+    "Mỗi ý tưởng một góc nhìn khác nhau — chọn cái bạn thích.",
+  "No ideas yet": "Chưa có ý tưởng nào",
+  "Fill in your niche and audience, then generate a batch of ideas.":
+    "Nhập ngách và đối tượng, rồi tạo một loạt ý tưởng.",
+  ideas: "ý tưởng",
+  selected: "đã chọn",
+  "Select all": "Chọn tất cả",
+  "Deselect all": "Bỏ chọn tất cả",
+  Make: "Tạo",
+  "Your plan makes up to {{n}} per batch — extras will wait.":
+    "Gói của bạn tạo tối đa {{n}} mỗi lần — phần dư sẽ chờ.",
+  "Couldn't generate ideas — try again": "Chưa tạo được ý tưởng — thử lại nhé",
+
+  // Library v2 (folders / quản lý)
+  "All videos": "Tất cả video",
+  Unsorted: "Chưa phân loại",
+  Folders: "Thư mục",
+  "New folder": "Thư mục mới",
+  "New folder…": "Thư mục mới…",
+  "Folder name": "Tên thư mục",
+  "No folders yet": "Chưa có thư mục",
+  Rename: "Đổi tên",
+  "Delete folder “{{name}}”? Videos stay in the library.":
+    "Xoá thư mục “{{name}}”? Video vẫn còn trong thư viện.",
+  "Search videos…": "Tìm video…",
+  All: "Tất cả",
+  Done: "Xong",
+  Newest: "Mới nhất",
+  Oldest: "Cũ nhất",
+  Grid: "Lưới",
+  List: "Danh sách",
+  Clear: "Bỏ chọn",
+  "Move to": "Chuyển vào",
+  Move: "Chuyển",
+  "Remove from folder": "Bỏ khỏi thư mục",
+  "Moved to {{name}}": "Đã chuyển vào {{name}}",
+  "Removed from folder": "Đã bỏ khỏi thư mục",
+  Select: "Chọn",
+  "Deleted {{n}} videos": "Đã xoá {{n}} video",
+  "Delete {{n}} videos? This can't be undone.":
+    "Xoá {{n}} video? Không thể hoàn tác.",
+  "Load more": "Tải thêm",
+  "No matches": "Không có kết quả",
+  "Try a different folder, status or search.":
+    "Thử thư mục, trạng thái hoặc từ khoá khác.",
+
   // Navigation / account
   Account: "Tài khoản",
   Dashboard: "Tổng quan",

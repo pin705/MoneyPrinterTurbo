@@ -9,6 +9,7 @@ import { DashboardPage } from "@/features/dashboard/DashboardPage";
 import { ComingSoon } from "@/features/placeholder/ComingSoon";
 import { GeneratorPage } from "@/features/generator/GeneratorPage";
 import { LibraryPage } from "@/features/library/LibraryPage";
+import { PlanPage } from "@/features/plan/PlanPage";
 import { SettingsPage } from "@/features/settings/SettingsPage";
 import { useAuth } from "@/store/auth";
 
@@ -26,7 +27,8 @@ export default function App() {
       <div className="flex flex-1 flex-col overflow-hidden">
         <div className="flex-1 overflow-y-auto">
           <Routes>
-            <Route path="/" element={<Navigate to="/create" replace />} />
+            <Route path="/" element={<Navigate to="/plan" replace />} />
+            <Route path="/plan" element={<PlanPage />} />
             <Route path="/create" element={<GeneratorPage />} />
             <Route path="/batch" element={<BatchPage />} />
             <Route path="/library" element={<LibraryPage />} />

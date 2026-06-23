@@ -69,6 +69,27 @@ export interface GenerateTermsInput {
   amount?: number;
 }
 
+/** One distinct short-video idea from the Phase 1 content plan. */
+export interface ContentIdea {
+  title: string;
+  hook: string;
+  angle: string;
+  keywords: string[];
+}
+
+export interface ContentPlanData {
+  ideas: ContentIdea[];
+}
+
+export interface GenerateContentPlanInput {
+  niche: string;
+  audience?: string;
+  topic?: string;
+  count?: number;
+  tone?: string;
+  language?: string;
+}
+
 /** The editable [app] section of config.toml (flexible key/value bag). */
 export type AppConfig = Record<string, unknown>;
 

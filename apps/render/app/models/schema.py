@@ -195,6 +195,29 @@ class VideoSocialMetadataParams:
     platform: Optional[str] = Field(default="tiktok", max_length=64)
 
 
+class VideoContentPlanParams:
+    """
+    Phase 1 — Content Factory. Turn a niche + audience into a batch of DISTINCT
+    short-video ideas (each a different angle), ready to feed the batch render.
+
+    {
+      "niche": "personal finance",
+      "audience": "Gen Z in Vietnam",
+      "topic": "",
+      "count": 30,
+      "tone": "",
+      "language": ""
+    }
+    """
+
+    niche: Optional[str] = ""
+    audience: Optional[str] = ""
+    topic: Optional[str] = Field(default="", max_length=500)
+    count: int = Field(default=30, ge=1, le=50)
+    tone: Optional[str] = Field(default="", max_length=200)
+    language: Optional[str] = ""
+
+
 class BaseResponse(BaseModel):
     status: int = 200
     message: Optional[str] = "success"
@@ -229,6 +252,10 @@ class VideoTermsRequest(VideoTermsParams, BaseModel):
 
 
 class VideoSocialMetadataRequest(VideoSocialMetadataParams, BaseModel):
+    pass
+
+
+class VideoContentPlanRequest(VideoContentPlanParams, BaseModel):
     pass
 
 
@@ -312,6 +339,26 @@ class VideoTermsResponse(BaseResponse):
                 "status": 200,
                 "message": "success",
                 "data": {"video_terms": ["sky", "tree"]},
+            },
+        }
+
+
+class VideoContentPlanResponse(BaseResponse):
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "status": 200,
+                "message": "success",
+                "data": {
+                    "ideas": [
+                        {
+                            "title": "The 50/30/20 rule explained in 30 seconds",
+                            "hook": "Most people budget wrong — here's the fix.",
+                            "angle": "Simple framework, fast payoff",
+                            "keywords": ["money", "budget", "savings"],
+                        }
+                    ]
+                },
             },
         }
 

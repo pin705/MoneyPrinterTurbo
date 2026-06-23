@@ -917,7 +917,14 @@ def generate_video(
     font_path = ""
     if params.subtitle_enabled:
         if not params.font_name:
-            params.font_name = "STHeitiMedium.ttc"
+            # STHeiti/MicrosoftYaHei cover Chinese but are MISSING Vietnamese
+            # precomposed glyphs (ế ữ ậ …), which render as tofu boxes. Default
+            # to a Vietnamese-capable font unless the script is Chinese.
+            lang = (params.video_language or "").lower()
+            if lang.startswith("zh") or lang in ("cn", "中文"):
+                params.font_name = "STHeitiMedium.ttc"
+            else:
+                params.font_name = "BeVietnamPro-Bold.ttf"
         font_path = os.path.join(utils.font_dir(), params.font_name)
         if os.name == "nt":
             font_path = font_path.replace("\\", "/")
