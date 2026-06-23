@@ -1098,15 +1098,51 @@ def generate_video(
             font_size=params.font_size,
         )
 
+    # Phase 2 polish: hook title card over the opening seconds. Overlaid on the
+    # footage (no timing shift to audio/subtitles). Wrapped so a title failure can
+    # never break the render — worst case the video just has no title.
+    title_clip = None
+    if config.app.get("hook_title", True) and getattr(params, "video_subject", "").strip():
+        try:
+            title_font = font_path or os.path.join(
+                utils.font_dir(), "BeVietnamPro-Bold.ttf"
+            )
+            title_dur = float(config.app.get("hook_title_seconds", 1.8))
+            title_clip = (
+                TextClip(
+                    text=params.video_subject.strip(),
+                    font=title_font,
+                    font_size=int(video_width * 0.085),
+                    color="#FFFFFF",
+                    stroke_color="#000000",
+                    stroke_width=max(2, int(video_width * 0.005)),
+                    size=(int(video_width * 0.86), None),
+                    method="caption",
+                    text_align="center",
+                )
+                .with_start(0)
+                .with_duration(title_dur)
+                .with_position(("center", video_height * 0.4))
+            )
+            try:
+                title_clip = video_effects.fadeout_transition(title_clip, 0.4)
+            except Exception:
+                pass  # fade is cosmetic; keep the title if the effect is unavailable
+        except Exception as e:
+            logger.warning(f"hook title skipped: {e}")
+            title_clip = None
+
+    overlays = []
+    if title_clip is not None:
+        overlays.append(title_clip)
     if subtitle_path and os.path.exists(subtitle_path):
         sub = SubtitlesClip(
             subtitles=subtitle_path, encoding="utf-8", make_textclip=make_textclip
         )
-        text_clips = []
         for item in sub.subtitles:
-            clip = create_text_clip(subtitle_item=item)
-            text_clips.append(clip)
-        video_clip = CompositeVideoClip([video_clip, *text_clips])
+            overlays.append(create_text_clip(subtitle_item=item))
+    if overlays:
+        video_clip = CompositeVideoClip([video_clip, *overlays])
 
     bgm_file = get_bgm_file(bgm_type=params.bgm_type, bgm_file=params.bgm_file)
     if bgm_file:

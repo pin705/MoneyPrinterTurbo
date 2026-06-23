@@ -231,6 +231,16 @@ subtitle_provider = "edge"
 subtitle_granularity = "word"
 # subtitle_chunk_words = 3   # words per cue when subtitle_granularity = "chunk"
 
+# Hook title (Phase 2): show the video subject as a big title over the opening
+# seconds to grab attention. Set false to disable.
+hook_title = true
+# hook_title_seconds = 1.8   # how long the title stays on screen
+
+# Research grounding (Phase 4): pull a few facts from Wikipedia (free, no key)
+# and feed them to the LLM so the script is grounded, not generic/hallucinated.
+# Best-effort — never blocks a render. Set false to disable.
+research = true
+
 #
 # ImageMagick
 #
