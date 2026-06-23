@@ -1,5 +1,4 @@
 import glob
-import itertools
 import io
 import os
 import random
@@ -702,15 +701,22 @@ def combine_videos(
             f"({required_video_duration:.2f}s), looping clips to match audio length."
         )
         base_clips = processed_clips.copy()
-        for clip in itertools.cycle(base_clips):
-            if video_duration >= required_video_duration:
-                break
-            processed_clips.append(clip)
-            video_duration += clip.duration
+        appended = 0
+        # Re-shuffle the pool each pass so the unavoidable repeat doesn't read as
+        # an obvious A-B-C-A-B-C loop.
+        while video_duration < required_video_duration and base_clips:
+            pool = base_clips.copy()
+            random.shuffle(pool)
+            for clip in pool:
+                if video_duration >= required_video_duration:
+                    break
+                processed_clips.append(clip)
+                video_duration += clip.duration
+                appended += 1
         logger.info(
             f"video duration: {video_duration:.2f}s, audio duration: {audio_duration:.2f}s, "
             f"required duration: {required_video_duration:.2f}s, "
-            f"looped {len(processed_clips)-len(base_clips)} clips"
+            f"looped {appended} clips"
         )
      
     # merge video clips progressively, avoid loading all videos at once to avoid memory overflow

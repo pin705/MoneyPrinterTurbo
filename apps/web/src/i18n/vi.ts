@@ -409,18 +409,4 @@ export const vi: Record<string, string> = {
   "Payment expired — please try again": "Thanh toán đã hết hạn — vui lòng thử lại",
   "Queued {{q}} of {{r}} — the queue is full, try the rest later":
     "Đã thêm {{q}}/{{r}} — hàng đợi đang đầy, thử phần còn lại sau",
-
-  // Updates (app + optional local AI)
-  "Update {{version}} available — downloading…":
-    "Có bản cập nhật {{version}} — đang tải…",
-  "Local AI is on but not installed yet.":
-    "AI ảnh local đang bật nhưng chưa được cài.",
-  "Local AI is on but only {{free}}GB free (needs ~{{need}}GB). Free up disk or use a cloud image key.":
-    "AI local đang bật nhưng ổ chỉ còn {{free}}GB (cần ~{{need}}GB). Hãy dọn ổ hoặc dùng key ảnh cloud.",
-  "Install now": "Cài ngay",
-  "Installing local AI (a few GB, one time)…":
-    "Đang cài AI local (vài GB, chỉ một lần)…",
-  "Local AI ready.": "AI local đã sẵn sàng.",
-  "Install failed — staying on stock footage.":
-    "Cài thất bại — vẫn dùng video kho.",
 };

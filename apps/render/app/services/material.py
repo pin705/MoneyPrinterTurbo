@@ -16,6 +16,42 @@ from app.utils import utils
 _api_key_counter = 0
 _api_key_lock = threading.Lock()
 
+# When a search term returns fewer than this many usable clips, pull more from
+# the other configured providers before giving up — sparse coverage is what
+# forces the compositor to loop the same footage to fill time.
+_MIN_CANDIDATES_PER_TERM = 3
+
+
+def _best_video_file(video_files: list, target_w: int, target_h: int):
+    """Pick the best file for a Pexels video.
+
+    Pexels returns several renditions per clip. The old code only accepted an
+    *exact* WxH match, which threw away most usable footage (720p, 4K, any
+    non-standard portrait) and starved the candidate pool. Instead: among files
+    whose orientation matches the target, prefer the smallest rendition that is
+    still >= the target on both sides (good quality, smallest download); if none
+    reach the target, take the largest available. Returns the chosen file dict
+    or None.
+    """
+    want_portrait = target_h >= target_w
+    sized = []
+    for f in video_files:
+        try:
+            w, h = int(f["width"]), int(f["height"])
+        except (KeyError, TypeError, ValueError):
+            continue
+        if w <= 0 or h <= 0 or not f.get("link"):
+            continue
+        if (h >= w) != want_portrait:  # wrong orientation
+            continue
+        sized.append((w, h, f))
+    if not sized:
+        return None
+    at_least = [s for s in sized if s[0] >= target_w and s[1] >= target_h]
+    if at_least:
+        return min(at_least, key=lambda s: s[0] * s[1])[2]  # smallest >= target
+    return max(sized, key=lambda s: s[0] * s[1])[2]  # largest below target
+
 
 def _get_tls_verify() -> bool:
     # 默认开启 TLS 证书校验，防止素材搜索和下载过程被中间人篡改。
@@ -90,18 +126,15 @@ def search_videos_pexels(
             # check if video has desired minimum duration
             if duration < minimum_duration:
                 continue
-            video_files = v["video_files"]
-            # loop through each url to determine the best quality
-            for video in video_files:
-                w = int(video["width"])
-                h = int(video["height"])
-                if w == video_width and h == video_height:
-                    item = MaterialInfo()
-                    item.provider = "pexels"
-                    item.url = video["link"]
-                    item.duration = duration
-                    video_items.append(item)
-                    break
+            best = _best_video_file(
+                v.get("video_files", []), video_width, video_height
+            )
+            if best:
+                item = MaterialInfo()
+                item.provider = "pexels"
+                item.url = best["link"]
+                item.duration = duration
+                video_items.append(item)
         return video_items
     except Exception as e:
         logger.error(f"search videos failed: {str(e)}")
@@ -146,18 +179,24 @@ def search_videos_pixabay(
             if duration < minimum_duration:
                 continue
             video_files = v["videos"]
-            # loop through each url to determine the best quality
-            for video_type in video_files:
-                video = video_files[video_type]
-                w = int(video["width"])
-                # h = int(video["height"])
-                if w >= video_width:
-                    item = MaterialInfo()
-                    item.provider = "pixabay"
-                    item.url = video["url"]
-                    item.duration = duration
-                    video_items.append(item)
-                    break
+            # Renditions come keyed by size; prefer the smallest that still
+            # reaches the target width (largest-to-smallest order), else the
+            # biggest available — never silently grab "tiny".
+            ordered = [
+                video_files[k]
+                for k in ("large", "medium", "small", "tiny")
+                if k in video_files and video_files[k].get("url")
+            ]
+            chosen = next(
+                (vf for vf in reversed(ordered) if int(vf.get("width", 0)) >= video_width),
+                ordered[0] if ordered else None,
+            )
+            if chosen:
+                item = MaterialInfo()
+                item.provider = "pixabay"
+                item.url = chosen["url"]
+                item.duration = duration
+                video_items.append(item)
         return video_items
     except Exception as e:
         logger.error(f"search videos failed: {str(e)}")
@@ -301,6 +340,55 @@ def save_video(video_url: str, save_dir: str = "") -> str:
     return ""
 
 
+_SEARCH_FNS = {
+    "pexels": search_videos_pexels,
+    "pixabay": search_videos_pixabay,
+    "coverr": search_videos_coverr,
+}
+
+
+def _available_providers(primary: str):
+    """Ordered (name, search_fn) for providers that have an API key configured,
+    primary first. Lets a term with few hits on one source borrow from others."""
+    order = [primary] + [p for p in ("pexels", "pixabay", "coverr") if p != primary]
+    out = []
+    for name in order:
+        if name in _SEARCH_FNS and config.app.get(f"{name}_api_keys"):
+            out.append((name, _SEARCH_FNS[name]))
+    return out or [(primary, _SEARCH_FNS.get(primary, search_videos_pexels))]
+
+
+def _search_term_with_fallback(
+    search_term: str,
+    minimum_duration: int,
+    video_aspect: VideoAspect,
+    providers: list,
+) -> List[MaterialInfo]:
+    """Query providers in order, merging unique clips, until we have enough
+    candidates for this term. Keeps a sparse term from leaving a timeline gap
+    (which the compositor would otherwise paper over by looping other clips)."""
+    items: List[MaterialInfo] = []
+    seen = set()
+    for name, fn in providers:
+        try:
+            results = fn(
+                search_term=search_term,
+                minimum_duration=minimum_duration,
+                video_aspect=video_aspect,
+            )
+        except Exception as e:
+            logger.warning(f"provider '{name}' failed for '{search_term}': {e}")
+            results = []
+        for it in results:
+            if it.url not in seen:
+                seen.add(it.url)
+                items.append(it)
+        if len(items) >= _MIN_CANDIDATES_PER_TERM:
+            break
+    logger.info(f"found {len(items)} videos for '{search_term}'")
+    return items
+
+
 def download_videos(
     task_id: str,
     search_terms: List[str],
@@ -311,11 +399,7 @@ def download_videos(
     max_clip_duration: int = 5,
     match_script_order: bool = False,
 ) -> List[str]:
-    search_videos = search_videos_pexels
-    if source == "pixabay":
-        search_videos = search_videos_pixabay
-    elif source == "coverr":
-        search_videos = search_videos_coverr
+    providers = _available_providers(source)
 
     material_directory = config.app.get("material_directory", "").strip()
     if material_directory == "task":
@@ -327,7 +411,7 @@ def download_videos(
         return _download_videos_by_script_order(
             task_id=task_id,
             search_terms=search_terms,
-            search_videos=search_videos,
+            providers=providers,
             video_aspect=video_aspect,
             audio_duration=audio_duration,
             max_clip_duration=max_clip_duration,
@@ -338,12 +422,12 @@ def download_videos(
     valid_video_urls = []
     found_duration = 0.0
     for search_term in search_terms:
-        video_items = search_videos(
+        video_items = _search_term_with_fallback(
             search_term=search_term,
             minimum_duration=max_clip_duration,
             video_aspect=video_aspect,
+            providers=providers,
         )
-        logger.info(f"found {len(video_items)} videos for '{search_term}'")
 
         for item in video_items:
             if item.url not in valid_video_urls:
@@ -386,7 +470,7 @@ def download_videos(
 def _download_videos_by_script_order(
     task_id: str,
     search_terms: List[str],
-    search_videos,
+    providers: list,
     video_aspect: VideoAspect,
     audio_duration: float,
     max_clip_duration: int,
@@ -407,12 +491,12 @@ def _download_videos_by_script_order(
     found_duration = 0.0
 
     for search_term in search_terms:
-        video_items = search_videos(
+        video_items = _search_term_with_fallback(
             search_term=search_term,
             minimum_duration=max_clip_duration,
             video_aspect=video_aspect,
+            providers=providers,
         )
-        logger.info(f"found {len(video_items)} videos for '{search_term}'")
 
         term_items = []
         for item in video_items:

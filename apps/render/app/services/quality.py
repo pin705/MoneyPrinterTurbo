@@ -155,10 +155,15 @@ def check_video(
         except Exception as exc:  # parsing must never crash the gate
             logger.warning(f"subtitle coverage check skipped: {exc}")
 
-    # Slideshow risk (soft): too few distinct clips for the length.
+    # Slideshow risk (soft): too few distinct clips for the length. Expect
+    # roughly one fresh clip per `secs_per_clip` of video (clamped to a floor),
+    # so a 60s video looping 2 clips is flagged — not just the 0/1-clip case.
     distinct = len({os.path.basename(p) for p in (materials or [])})
-    if dur > 8 and distinct < int(_thr("min_distinct_clips", 2)):
-        issues.append("slideshow_risk")
+    if dur > 8:
+        secs_per_clip = max(4.0, _thr("secs_per_distinct_clip", 8.0))
+        need = max(int(_thr("min_distinct_clips", 2)), int(dur // secs_per_clip))
+        if distinct < need:
+            issues.append("slideshow_risk")
 
     critical = any(i in _CRITICAL for i in issues)
     return {"passed": not critical, "critical": critical, "issues": issues, "metrics": m}
