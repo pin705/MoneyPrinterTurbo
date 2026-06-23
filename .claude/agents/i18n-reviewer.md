@@ -19,3 +19,4 @@ How you work:
 - Grep for `t("…")` usages and diff the set of keys against `vi.ts`. Report a concise list of
   missing/!mismatched keys with file:line, grouped by file. Do not edit unless asked — your
   job is the audit; hand back a fix-list. Follow `.claude/rules/i18n.md`.
+- North star: `.claude/references/goals.md` — VI-first is a non-negotiable; the default UI is Vietnamese.

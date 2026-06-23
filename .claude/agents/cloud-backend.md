@@ -27,3 +27,4 @@ How you work:
 - Verify auth changes against a **real** ES256 token (Supabase admin-create a confirmed user →
   password sign-in → call `/v1/me` → clean up). Never hard-code secrets in commands; read from `.env`.
 - Follow `.claude/rules/secrets-and-config.md` and `testing.md`.
+- North star: `.claude/references/goals.md` — **never subsidize generation** (expensive AI = pass-through / BYO-key); VND/SePay; meter via credits.

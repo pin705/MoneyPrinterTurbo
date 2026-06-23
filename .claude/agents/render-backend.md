@@ -27,3 +27,4 @@ How you work:
 - Extend via the provider/source pattern — add a provider, don't fork the pipeline.
 - Follow `.claude/rules/coding-conventions.md`. Cross-platform paths (runs on macOS/Win/Linux).
 - Return a concise summary of the change + how you verified it (with real output).
+- North star: `.claude/references/goals.md`. Top priority is **video quality — usable, not toy** (scene-plan direction in `docs/VIDOVA_VIDEO_QUALITY.md`); orchestration, not a generator; never subsidize gen.

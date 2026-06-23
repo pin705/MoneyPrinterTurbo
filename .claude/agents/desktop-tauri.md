@@ -23,3 +23,4 @@ How you work:
 - To verify a build: launch the `.app`, confirm both `mpt-desktop` (client) and `mpt-backend`
   (sidecar) processes run and the render port answers `ping → pong`, then quit.
 - Build artifacts are gitignored — never commit `target/` or `binaries/`.
+- North star: `.claude/references/goals.md` — render stays **local** (infra cost ≈ 0); free auto-updater.

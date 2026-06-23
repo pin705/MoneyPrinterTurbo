@@ -24,3 +24,4 @@ How you work:
 - `pnpm --filter @mpt/web typecheck` must pass. Update/extend Playwright e2e when you change
   routes or key flows (pin `mpt-lang=en`).
 - Keep components small and composable; match the existing feature-folder structure.
+- North star: `.claude/references/goals.md` — VI-first, **monochrome** (no emerald), orchestration UX (workflow > raw generator).
