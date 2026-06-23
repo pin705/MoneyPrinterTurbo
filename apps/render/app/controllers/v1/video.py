@@ -4,12 +4,13 @@ import pathlib
 import shutil
 from typing import Union
 
-from fastapi import BackgroundTasks, Depends, Path, Query, Request, UploadFile
+from fastapi import BackgroundTasks, Body, Depends, Path, Query, Request, UploadFile
 from fastapi.params import File
 from fastapi.responses import FileResponse, StreamingResponse
 from loguru import logger
 
 from app.config import config
+from app.models import const
 from app.controllers import base
 from app.controllers.manager.base_manager import TaskQueueFullError
 from app.controllers.manager.memory_manager import InMemoryTaskManager
@@ -213,9 +214,32 @@ def create_task(
             task_id=task_id, status_code=400, message=f"{request_id}: {str(e)}"
         )
 
+_STATUS_TO_STATE = {
+    "complete": const.TASK_STATE_COMPLETE,
+    "processing": const.TASK_STATE_PROCESSING,
+    "failed": const.TASK_STATE_FAILED,
+}
+
+
 @router.get("/tasks", response_model=TaskQueryResponse, summary="Get all tasks")
-def get_all_tasks(request: Request, page: int = Query(1, ge=1), page_size: int = Query(10, ge=1)):
-    tasks, total = sm.state.get_all_tasks(page, page_size)
+def get_all_tasks(
+    request: Request,
+    page: int = Query(1, ge=1),
+    page_size: int = Query(10, ge=1),
+    q: str = Query("", description="Search in script / task id"),
+    status: str = Query("", description="complete | processing | failed"),
+    sort: str = Query("newest", description="newest | oldest"),
+    folder: str = Query("", description="Folder name, or __unsorted__"),
+):
+    state_filter = _STATUS_TO_STATE.get(status.lower()) if status else None
+    tasks, total = sm.state.get_all_tasks(
+        page,
+        page_size,
+        q=q.strip(),
+        status=state_filter,
+        sort=sort,
+        folder=folder or None,
+    )
 
     response = {
         "tasks": tasks,
@@ -224,6 +248,25 @@ def get_all_tasks(request: Request, page: int = Query(1, ge=1), page_size: int =
         "page_size": page_size,
     }
     return utils.get_response(200, response)
+
+
+@router.get("/tasks/folders", summary="List folders in use with counts")
+def list_task_folders(request: Request):
+    # Declared before /tasks/{task_id} so "folders" is not captured as a task id.
+    return utils.get_response(200, {"folders": sm.state.list_folders()})
+
+
+@router.post("/tasks/{task_id}/folder", summary="Assign a task to a folder")
+def set_task_folder(
+    request: Request,
+    task_id: str = Path(..., description="Task ID"),
+    folder: str | None = Body(None, embed=True),
+):
+    task = sm.state.get_task(task_id)
+    if not task:
+        raise HttpException(task_id=task_id, status_code=404, message="task not found")
+    sm.state.set_folder(task_id, (folder or "").strip() or None)
+    return utils.get_response(200, {"task_id": task_id, "folder": folder})
 
 
 

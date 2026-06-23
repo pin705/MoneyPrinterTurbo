@@ -27,6 +27,8 @@ import { useMe } from "@/lib/useCloud";
 import { cn } from "@/lib/utils";
 import { useGenerator } from "@/store/generator";
 
+import { TemplatePicker } from "./TemplatePicker";
+
 const COUNT_OPTS = [10, 20, 30, 50].map((n) => ({ value: String(n), label: String(n) }));
 
 export function PlanPage() {
@@ -41,6 +43,7 @@ export function PlanPage() {
   const [topic, setTopic] = useState("");
   const [tone, setTone] = useState("");
   const [count, setCount] = useState(30);
+  const [template, setTemplate] = useState<string | null>(null);
 
   const [ideas, setIdeas] = useState<ContentIdea[]>([]);
   const [selected, setSelected] = useState<Set<number>>(new Set());
@@ -117,6 +120,22 @@ export function PlanPage() {
               <Lightbulb className="text-muted-foreground size-4" />
               {t("What do you make videos about?")}
             </div>
+
+            <Field
+              label={t("Start from a template")}
+              hint={t("Pick an industry or platform to prefill the fields below.")}
+            >
+              <TemplatePicker
+                active={template}
+                onPick={(tpl) => {
+                  setTemplate(tpl.id);
+                  setNiche(tpl.niche);
+                  setAudience(tpl.audience);
+                  setTone(tpl.tone);
+                  setTopic(tpl.topic);
+                }}
+              />
+            </Field>
 
             <Field label={t("Niche")} htmlFor="niche" hint={t("The topic area of your channel.")}>
               <Input

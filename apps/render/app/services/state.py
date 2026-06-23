@@ -10,6 +10,39 @@ from abc import ABC, abstractmethod
 from app.config import config
 from app.models import const
 
+# Sentinel folder filter for "tasks not assigned to any folder".
+FOLDER_UNSORTED = "__unsorted__"
+
+
+def _match_task(task: dict, q: str, status, folder) -> bool:
+    """Shared server-side filter for the in-memory/redis backends."""
+    if status is not None:
+        try:
+            if int(task.get("state", -1)) != int(status):
+                return False
+        except (TypeError, ValueError):
+            return False
+    if folder is not None:
+        tf = (task.get("folder") or "").strip()
+        if folder == FOLDER_UNSORTED:
+            if tf:
+                return False
+        elif tf != folder:
+            return False
+    if q:
+        ql = q.lower()
+        hay = f"{task.get('script', '')} {task.get('task_id', '')}".lower()
+        if ql not in hay:
+            return False
+    return True
+
+
+def _sort_paginate(rows: list, sort: str, page: int, page_size: int):
+    rows.sort(key=lambda t: t.get("created_at") or 0, reverse=(sort != "oldest"))
+    total = len(rows)
+    start = (page - 1) * page_size
+    return rows[start : start + page_size], total
+
 
 # Base class for state management
 class BaseState(ABC):
@@ -22,23 +55,55 @@ class BaseState(ABC):
         pass
 
     @abstractmethod
-    def get_all_tasks(self, page: int, page_size: int):
+    def get_all_tasks(
+        self,
+        page: int,
+        page_size: int,
+        q: str = "",
+        status=None,
+        sort: str = "newest",
+        folder=None,
+    ):
         pass
+
+    def set_folder(self, task_id: str, folder: str | None):
+        """Assign a task to a folder (label). Override per backend."""
+        raise NotImplementedError
+
+    def list_folders(self):
+        """Return [{"name", "count"}] of folders in use. Override per backend."""
+        return []
 
 
 # Memory state management
 class MemoryState(BaseState):
     def __init__(self):
         self._tasks = {}
+        # Folder + created_at live outside the task record so update_task's
+        # full-replace (called from the render pipeline) never wipes them.
+        self._folders: dict = {}
+        self._created: dict = {}
         self._lock = threading.RLock()
 
-    def get_all_tasks(self, page: int, page_size: int):
-        start = (page - 1) * page_size
-        end = start + page_size
+    def _enrich(self, task_id: str, task: dict) -> dict:
+        t = copy.deepcopy(task)
+        t["folder"] = self._folders.get(task_id)
+        t["created_at"] = self._created.get(task_id, 0)
+        return t
+
+    def get_all_tasks(
+        self,
+        page: int,
+        page_size: int,
+        q: str = "",
+        status=None,
+        sort: str = "newest",
+        folder=None,
+    ):
         with self._lock:
-            tasks = [copy.deepcopy(task) for task in self._tasks.values()]
-            total = len(tasks)
-        return tasks[start:end], total
+            rows = [self._enrich(tid, task) for tid, task in self._tasks.items()]
+        rows = [t for t in rows if _match_task(t, q, status, folder)]
+        return _sort_paginate(rows, sort, page, page_size)
 
     def update_task(
         self,
@@ -52,6 +117,7 @@ class MemoryState(BaseState):
             progress = 100
 
         with self._lock:
+            self._created.setdefault(task_id, time.time())
             self._tasks[task_id] = {
                 "task_id": task_id,
                 "state": state,
@@ -62,11 +128,28 @@ class MemoryState(BaseState):
     def get_task(self, task_id: str):
         with self._lock:
             task = self._tasks.get(task_id, None)
-            return copy.deepcopy(task) if task is not None else None
+            return self._enrich(task_id, task) if task is not None else None
 
     def delete_task(self, task_id: str):
         with self._lock:
             self._tasks.pop(task_id, None)
+            self._folders.pop(task_id, None)
+            self._created.pop(task_id, None)
+
+    def set_folder(self, task_id: str, folder: str | None):
+        with self._lock:
+            if folder:
+                self._folders[task_id] = folder
+            else:
+                self._folders.pop(task_id, None)
+
+    def list_folders(self):
+        with self._lock:
+            counts: dict = {}
+            for f in self._folders.values():
+                if f:
+                    counts[f] = counts.get(f, 0) + 1
+        return [{"name": k, "count": v} for k, v in sorted(counts.items())]
 
 
 # Redis state management
@@ -86,37 +169,35 @@ class RedisState(BaseState):
 
         self._redis = redis.StrictRedis(host=host, port=port, db=db, password=password)
 
-    def get_all_tasks(self, page: int, page_size: int):
-        start = (page - 1) * page_size
-        end = start + page_size
-        tasks = []
+    def _load_all(self) -> list:
+        rows = []
         cursor = 0
-        total = 0
         while True:
-            cursor, keys = self._redis.scan(cursor, count=page_size)
-            batch_start = total
-            batch_size = len(keys)
-            total += batch_size
-
-            # Redis SCAN 是分批返回 key。分页切片必须基于“当前批次起始索引”
-            # 计算，而不能用累积后的 total 反推，否则第一页会切到空数组，
-            # 第二页也可能只返回部分数据。
-            if batch_start < end and total > start:
-                slice_start = max(0, start - batch_start)
-                slice_end = min(batch_size, end - batch_start)
-                for key in keys[slice_start:slice_end]:
-                    task_data = self._redis.hgetall(key)
-                    task = {
-                        k.decode("utf-8"): self._convert_to_original_type(v)
-                        for k, v in task_data.items()
-                    }
-                    tasks.append(task)
-
-            # 即使当前页已经取满，也要继续 SCAN 到 cursor=0，
-            # 因为调用方需要准确 total 来渲染分页信息。
+            cursor, keys = self._redis.scan(cursor, count=200)
+            for key in keys:
+                task_data = self._redis.hgetall(key)
+                if not task_data:
+                    continue
+                task = {
+                    k.decode("utf-8"): self._convert_to_original_type(v)
+                    for k, v in task_data.items()
+                }
+                rows.append(task)
             if cursor == 0:
                 break
-        return tasks, total
+        return rows
+
+    def get_all_tasks(
+        self,
+        page: int,
+        page_size: int,
+        q: str = "",
+        status=None,
+        sort: str = "newest",
+        folder=None,
+    ):
+        rows = [t for t in self._load_all() if _match_task(t, q, status, folder)]
+        return _sort_paginate(rows, sort, page, page_size)
 
     def update_task(
         self,
@@ -138,6 +219,26 @@ class RedisState(BaseState):
 
         for field, value in fields.items():
             self._redis.hset(task_id, field, str(value))
+
+        # Stamp created_at once; never overwrite (so sort-by-date is stable).
+        # `folder` is intentionally NOT in `fields`, so a render-progress update
+        # can never wipe a user's folder assignment.
+        if not self._redis.hexists(task_id, "created_at"):
+            self._redis.hset(task_id, "created_at", str(time.time()))
+
+    def set_folder(self, task_id: str, folder: str | None):
+        if folder:
+            self._redis.hset(task_id, "folder", str(folder))
+        else:
+            self._redis.hdel(task_id, "folder")
+
+    def list_folders(self):
+        counts: dict = {}
+        for t in self._load_all():
+            f = t.get("folder")
+            if f:
+                counts[f] = counts.get(f, 0) + 1
+        return [{"name": k, "count": v} for k, v in sorted(counts.items())]
 
     def get_task(self, task_id: str):
         task_data = self._redis.hgetall(task_id)
@@ -222,18 +323,74 @@ class DbState(BaseState):
             """
         )
         self._conn.commit()
+        self._ensure_folder_column()
 
-    def get_all_tasks(self, page: int, page_size: int):
+    def _ensure_folder_column(self):
+        # Lightweight migration: `folder` is a dedicated column (not part of the
+        # JSON `data`) so update_task's full-replace never wipes a user's folder.
+        cols = [r[1] for r in self._conn.execute("PRAGMA table_info(tasks)").fetchall()]
+        if "folder" not in cols:
+            self._conn.execute("ALTER TABLE tasks ADD COLUMN folder TEXT")
+            self._conn.commit()
+
+    def get_all_tasks(
+        self,
+        page: int,
+        page_size: int,
+        q: str = "",
+        status=None,
+        sort: str = "newest",
+        folder=None,
+    ):
+        where = []
+        args: list = []
+        if status is not None:
+            where.append("state = ?")
+            args.append(int(status))
+        if folder is not None:
+            if folder == FOLDER_UNSORTED:
+                where.append("(folder IS NULL OR folder = '')")
+            else:
+                where.append("folder = ?")
+                args.append(folder)
+        if q:
+            where.append("LOWER(data) LIKE ?")
+            args.append(f"%{q.lower()}%")
+        clause = ("WHERE " + " AND ".join(where)) if where else ""
+        order = "ASC" if sort == "oldest" else "DESC"
         offset = (page - 1) * page_size
         with self._lock:
-            total = self._conn.execute("SELECT COUNT(*) FROM tasks").fetchone()[0]
+            total = self._conn.execute(
+                f"SELECT COUNT(*) FROM tasks {clause}", args
+            ).fetchone()[0]
             rows = self._conn.execute(
-                # ORDER BY rowid keeps first-seen insertion order, matching
-                # MemoryState (a dict preserves first-insert position on update).
-                "SELECT data FROM tasks ORDER BY rowid LIMIT ? OFFSET ?",
-                (page_size, offset),
+                f"SELECT data, created_at, folder FROM tasks {clause} "
+                f"ORDER BY created_at {order}, rowid {order} LIMIT ? OFFSET ?",
+                (*args, page_size, offset),
             ).fetchall()
-        return [json.loads(row[0]) for row in rows], total
+        result = []
+        for data, created_at, folder_val in rows:
+            task = json.loads(data)
+            task["created_at"] = created_at
+            task["folder"] = folder_val
+            result.append(task)
+        return result, total
+
+    def set_folder(self, task_id: str, folder: str | None):
+        with self._lock:
+            self._conn.execute(
+                "UPDATE tasks SET folder = ? WHERE task_id = ?",
+                (folder or None, task_id),
+            )
+            self._conn.commit()
+
+    def list_folders(self):
+        with self._lock:
+            rows = self._conn.execute(
+                "SELECT folder, COUNT(*) FROM tasks "
+                "WHERE folder IS NOT NULL AND folder != '' GROUP BY folder ORDER BY folder"
+            ).fetchall()
+        return [{"name": r[0], "count": r[1]} for r in rows]
 
     def update_task(
         self,

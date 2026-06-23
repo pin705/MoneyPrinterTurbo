@@ -6,7 +6,9 @@ import {
   type BatchResultData,
   type ConfigData,
   type ContentPlanData,
+  type FolderListData,
   type GenerateContentPlanInput,
+  type ListTasksQuery,
   type GenerateScriptInput,
   type GenerateTermsInput,
   type ScriptData,
@@ -89,11 +91,34 @@ export class MptClient {
     });
   }
 
-  /** GET /tasks — paginated list of all tasks (the user's video library). */
-  listTasks(page = 1, pageSize = 12): Promise<TaskListData> {
-    return this.request<TaskListData>(
-      `/tasks?page=${page}&page_size=${pageSize}`,
-    );
+  /** GET /tasks — paginated library list with server-side search/filter/sort. */
+  listTasks(
+    page = 1,
+    pageSize = 12,
+    query: ListTasksQuery = {},
+  ): Promise<TaskListData> {
+    const params = new URLSearchParams({
+      page: String(page),
+      page_size: String(pageSize),
+    });
+    if (query.q) params.set("q", query.q);
+    if (query.status) params.set("status", query.status);
+    if (query.sort) params.set("sort", query.sort);
+    if (query.folder) params.set("folder", query.folder);
+    return this.request<TaskListData>(`/tasks?${params.toString()}`);
+  }
+
+  /** GET /tasks/folders — folder names in use, with counts. */
+  listFolders(): Promise<FolderListData> {
+    return this.request<FolderListData>("/tasks/folders");
+  }
+
+  /** POST /tasks/{id}/folder — file a task under a folder (null = unsort). */
+  setTaskFolder(taskId: string, folder: string | null): Promise<unknown> {
+    return this.request(`/tasks/${taskId}/folder`, {
+      method: "POST",
+      body: JSON.stringify({ folder }),
+    });
   }
 
   /** GET /tasks/{id} — poll task status. */

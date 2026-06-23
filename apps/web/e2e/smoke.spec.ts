@@ -41,9 +41,9 @@ test.describe("app (signed in)", () => {
     await signIn(page);
   });
 
-  test("/ redirects to /create", async ({ page }) => {
+  test("/ redirects to the content plan", async ({ page }) => {
     await page.goto("/");
-    await expect(page).toHaveURL(/#\/create$/);
+    await expect(page).toHaveURL(/#\/plan$/);
   });
 
   test("navigates to the Library page", async ({ page }) => {

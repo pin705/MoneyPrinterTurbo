@@ -32,6 +32,10 @@ export interface TaskQueryData {
   subtitle_path?: string;
   materials?: string[];
   cross_post_results?: Record<string, unknown>[];
+  /** Epoch seconds the task was first created (server-side). */
+  created_at?: number;
+  /** Folder name this task is filed under, or null/undefined when unsorted. */
+  folder?: string | null;
 }
 
 export interface TaskListData {
@@ -39,6 +43,26 @@ export interface TaskListData {
   total: number;
   page: number;
   page_size: number;
+}
+
+export interface FolderInfo {
+  name: string;
+  count: number;
+}
+
+export interface FolderListData {
+  folders: FolderInfo[];
+}
+
+/** Server-side query for the library list. */
+export interface ListTasksQuery {
+  q?: string;
+  /** "complete" | "processing" | "failed" */
+  status?: string;
+  /** "newest" | "oldest" */
+  sort?: string;
+  /** Folder name, or "__unsorted__" for unfiled tasks. */
+  folder?: string;
 }
 
 export interface ScriptData {

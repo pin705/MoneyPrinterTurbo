@@ -143,3 +143,103 @@ export const PROVIDER_DEFAULTS: Record<string, ProviderDefault> = {
   pollinations: { baseUrl: "https://text.pollinations.ai/openai", model: "openai-fast" },
   litellm: { baseUrl: "(optional)", model: "openai/gpt-4o" },
 };
+
+/**
+ * Content-plan templates — on the Content plan page, instead of typing a niche
+ * from scratch the user picks an industry/platform card. Each prefills the
+ * niche / audience / tone / focus so idea generation is one click away.
+ * `icon` maps to a lucide-react icon; labels go through i18n.
+ */
+export interface ContentTemplate {
+  id: string;
+  icon: string;
+  titleKey: string;
+  descKey: string;
+  niche: string;
+  audience: string;
+  tone: string;
+  topic: string;
+}
+
+export const CONTENT_TEMPLATES: ContentTemplate[] = [
+  {
+    id: "ecommerce",
+    icon: "ShoppingBag",
+    titleKey: "E-commerce",
+    descKey: "Sell a product, drive orders",
+    niche: "Bán hàng online & giới thiệu sản phẩm",
+    audience: "Người mua sắm online tại Việt Nam",
+    tone: "thuyết phục, chốt đơn",
+    topic: "tập trung vào lợi ích sản phẩm, ưu đãi và lời kêu gọi mua ngay",
+  },
+  {
+    id: "affiliate",
+    icon: "BadgePercent",
+    titleKey: "Affiliate",
+    descKey: "Reviews & comparisons",
+    niche: "Review & so sánh sản phẩm (affiliate)",
+    audience: "Người đang cân nhắc mua, so sánh trước khi quyết định",
+    tone: "trung thực, đáng tin",
+    topic: "top sản phẩm đáng mua, ưu/nhược điểm, gợi ý link mua",
+  },
+  {
+    id: "tiktok",
+    icon: "Music2",
+    titleKey: "TikTok",
+    descKey: "Strong hook, fast pace",
+    niche: "Mẹo nhanh & nội dung giải trí ngắn",
+    audience: "Gen Z lướt TikTok",
+    tone: "nhanh, bắt trend, hook mạnh",
+    topic: "mẹo nhanh, sự thật bất ngờ, nội dung dễ viral",
+  },
+  {
+    id: "facebook-reels",
+    icon: "Facebook",
+    titleKey: "Facebook Reels",
+    descKey: "Relatable, story-driven",
+    niche: "Câu chuyện & nội dung truyền cảm hứng",
+    audience: "Người dùng Facebook 25-45 tuổi",
+    tone: "gần gũi, cảm xúc",
+    topic: "câu chuyện đời thường, bài học, nội dung dễ chia sẻ",
+  },
+  {
+    id: "youtube",
+    icon: "Youtube",
+    titleKey: "YouTube Shorts",
+    descKey: "Valuable, concise",
+    niche: "Kiến thức & hướng dẫn súc tích",
+    audience: "Người tìm kiến thức nhanh",
+    tone: "rõ ràng, nhiều giá trị",
+    topic: "mẹo, hướng dẫn từng bước, kiến thức hữu ích",
+  },
+  {
+    id: "education",
+    icon: "GraduationCap",
+    titleKey: "Education",
+    descKey: "Explain it simply",
+    niche: "Giáo dục & giải thích khái niệm",
+    audience: "Học sinh, sinh viên, người tự học",
+    tone: "dễ hiểu, gần gũi",
+    topic: "giải thích khái niệm bằng ví dụ và phép so sánh đơn giản",
+  },
+  {
+    id: "travel",
+    icon: "Plane",
+    titleKey: "Travel",
+    descKey: "Inspire the trip",
+    niche: "Du lịch & khám phá",
+    audience: "Người mê du lịch, lên kế hoạch cho chuyến đi",
+    tone: "truyền cảm hứng",
+    topic: "điểm đến đẹp, mẹo du lịch, trải nghiệm địa phương",
+  },
+  {
+    id: "news",
+    icon: "Newspaper",
+    titleKey: "Fun facts",
+    descKey: "Surprising & shareable",
+    niche: "Sự thật thú vị & khám phá",
+    audience: "Người tò mò, thích khám phá",
+    tone: "hào hứng, năng lượng",
+    topic: "sự thật bất ngờ, khoa học vui, con số gây sốc",
+  },
+];

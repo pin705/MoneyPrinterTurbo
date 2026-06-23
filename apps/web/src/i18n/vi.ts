@@ -19,6 +19,26 @@ export const vi: Record<string, string> = {
   Subtitles: "Phụ đề",
 
   // Content panel
+  "Start from a template": "Bắt đầu từ mẫu",
+  "Pick an industry or platform to prefill the fields below.":
+    "Chọn ngành hoặc nền tảng để tự điền các ô bên dưới.",
+  // Template cards
+  "E-commerce": "Thương mại điện tử",
+  "Sell a product, drive orders": "Bán sản phẩm, chốt đơn",
+  Affiliate: "Affiliate",
+  "Reviews & comparisons": "Review & so sánh",
+  TikTok: "TikTok",
+  "Strong hook, fast pace": "Hook mạnh, nhịp nhanh",
+  "Facebook Reels": "Facebook Reels",
+  "Relatable, story-driven": "Gần gũi, kể chuyện",
+  "YouTube Shorts": "YouTube Shorts",
+  "Valuable, concise": "Giá trị, súc tích",
+  Education: "Giáo dục",
+  "Explain it simply": "Giải thích dễ hiểu",
+  Travel: "Du lịch",
+  "Inspire the trip": "Truyền cảm hứng",
+  "Fun facts": "Sự thật thú vị",
+  "Surprising & shareable": "Bất ngờ, dễ chia sẻ",
   "Video Subject": "Chủ đề video",
   "A keyword or topic — AI writes the script for you.":
     "Một từ khoá hoặc chủ đề — AI sẽ tự viết lời cho bạn.",
