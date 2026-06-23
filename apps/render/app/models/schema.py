@@ -81,6 +81,11 @@ class VideoParams(BaseModel):
     video_transition_mode: Optional[VideoTransitionMode] = None
     video_clip_duration: Optional[int] = 5
     match_materials_to_script: bool = False
+    # Scene mode (Phase 1, default ON): split the script into scenes and fetch a
+    # footage clip per sentence in order, so visuals track the narration instead
+    # of being generic keyword stock. Falls back to keyword terms if it yields
+    # nothing. Set false for the legacy global-keyword behavior.
+    scene_mode: Optional[bool] = True
     video_count: Optional[int] = 1
 
     video_source: Optional[str] = "pexels"

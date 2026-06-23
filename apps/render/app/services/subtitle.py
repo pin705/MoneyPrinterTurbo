@@ -171,6 +171,56 @@ def file_to_subtitles(filename):
     return times_texts
 
 
+def resegment(subtitle_file: str, granularity: str = "word", max_words: int = 3) -> None:
+    """Split each subtitle cue into smaller word-level cues (Phase 2, TikTok-style).
+
+    The MoviePy renderer shows one cue at a time, so finer cues == word-by-word
+    captions. Each cue's [start,end] is distributed across its words/chunks
+    proportional to character length. Provider-agnostic (operates on the SRT),
+    so it works for both Edge and Whisper output. granularity:
+    "word" (1 word) | "chunk" (max_words per cue) | anything else = no-op.
+    """
+    granularity = (granularity or "").strip().lower()
+    if granularity not in ("word", "chunk"):
+        return
+    if not subtitle_file or not os.path.isfile(subtitle_file):
+        return
+    try:
+        from moviepy.video.tools.subtitles import file_to_subtitles as _mp_parse
+
+        cues = _mp_parse(subtitle_file, encoding="utf-8")  # [((ta, tb), text)]
+    except Exception as e:
+        logger.warning(f"resegment skipped (parse failed): {e}")
+        return
+
+    n = 1 if granularity == "word" else max(1, int(max_words))
+    blocks = []
+    idx = 0
+    for (ta, tb), text in cues:
+        words = (text or "").split()
+        if not words:
+            continue
+        groups = [words[i : i + n] for i in range(0, len(words), n)]
+        total_chars = sum(len(" ".join(g)) for g in groups) or 1
+        span = max(0.0, float(tb) - float(ta))
+        t = float(ta)
+        for g in groups:
+            seg = span * (len(" ".join(g)) / total_chars)
+            end = min(float(tb), t + seg) if seg > 0 else float(tb)
+            idx += 1
+            blocks.append(utils.text_to_srt(idx, " ".join(g), t, end))
+            t = end
+
+    if not blocks:
+        return
+    try:
+        with open(subtitle_file, "w", encoding="utf-8") as f:
+            f.write("\n".join(blocks) + "\n")
+        logger.info(f"resegmented subtitles → {idx} cues ({granularity})")
+    except Exception as e:
+        logger.warning(f"resegment write failed: {e}")
+
+
 def levenshtein_distance(s1, s2):
     if len(s1) < len(s2):
         return levenshtein_distance(s2, s1)

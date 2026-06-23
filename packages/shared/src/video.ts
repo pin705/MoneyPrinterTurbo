@@ -28,6 +28,8 @@ export interface VideoParams {
   video_transition_mode?: VideoTransitionMode;
   video_clip_duration?: number;
   match_materials_to_script?: boolean;
+  /** Phase 1: fetch footage per sentence (scene-aligned) instead of global keywords. */
+  scene_mode?: boolean;
   video_count?: number;
   video_source?: string;
   video_materials?: MaterialInfo[] | null;
@@ -76,6 +78,7 @@ export const DEFAULT_VIDEO_PARAMS: VideoParams = {
   video_transition_mode: null,
   video_clip_duration: 3,
   match_materials_to_script: false,
+  scene_mode: true,
   video_count: 1,
   video_source: "pexels",
   video_language: "",

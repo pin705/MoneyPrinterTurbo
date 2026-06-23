@@ -224,6 +224,13 @@ litellm_model_name = "openai/gpt-4o-mini"
 # If empty, the subtitle will not be generated
 subtitle_provider = "edge"
 
+# Caption granularity (Phase 2): how subtitles are revealed.
+#   "word"   → one word at a time, TikTok-style (default)
+#   "chunk"  → small groups of words (set subtitle_chunk_words)
+#   "phrase" → the original full-line captions (legacy)
+subtitle_granularity = "word"
+# subtitle_chunk_words = 3   # words per cue when subtitle_granularity = "chunk"
+
 #
 # ImageMagick
 #

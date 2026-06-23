@@ -39,15 +39,34 @@ def generate_terms(task_id, params, video_script):
     logger.info("\n\n## generating video terms")
     video_terms = params.video_terms
     if not video_terms:
-        # 开启素材按文案顺序匹配后，关键词本身也必须按脚本叙事顺序生成；
-        # 否则后续即使顺序下载和顺序拼接，也只能复用一组全局主题词，
-        # 无法改善“后面内容的画面提前出现”的问题。
-        video_terms = llm.generate_terms(
-            video_subject=params.video_subject,
-            video_script=video_script,
-            amount=8 if params.match_materials_to_script else 5,
-            match_script_order=params.match_materials_to_script,
-        )
+        # Phase 1 — scene mode: split the script into scenes and use one ordered
+        # search query PER SENTENCE, so the footage follows the narration instead
+        # of a few global keywords. Forces ordered download + sequential compose.
+        if getattr(params, "scene_mode", True):
+            scenes = llm.generate_scene_plan(
+                video_script, language=params.video_language or ""
+            )
+            scene_terms = [
+                ((" ".join(s.get("keywords") or [])).strip() or s.get("visual_query", "").strip())
+                for s in scenes
+            ]
+            scene_terms = [t for t in scene_terms if t]
+            if scene_terms:
+                video_terms = scene_terms
+                params.match_materials_to_script = True
+                logger.info(
+                    f"scene-aligned terms ({len(video_terms)} scenes): "
+                    f"{utils.to_json(video_terms)}"
+                )
+
+        # Fallback: legacy keyword terms (scene mode off, or scene plan empty).
+        if not video_terms:
+            video_terms = llm.generate_terms(
+                video_subject=params.video_subject,
+                video_script=video_script,
+                amount=8 if params.match_materials_to_script else 5,
+                match_script_order=params.match_materials_to_script,
+            )
     else:
         if isinstance(video_terms, str):
             video_terms = [term.strip() for term in re.split(r"[,，]", video_terms)]
@@ -206,6 +225,15 @@ def generate_subtitle(task_id, params, video_script, sub_maker, audio_file):
         subtitle.create(audio_file=audio_file, subtitle_file=subtitle_path)
         logger.info("\n\n## correcting subtitle")
         subtitle.correct(subtitle_file=subtitle_path, video_script=video_script)
+
+    # Phase 2: word-by-word captions (TikTok-style). Re-segment the SRT into
+    # finer cues so the renderer reveals captions word by word, synced to speech.
+    # Config: subtitle_granularity = "word" (default) | "chunk" | "phrase" (off).
+    subtitle.resegment(
+        subtitle_path,
+        granularity=config.app.get("subtitle_granularity", "word"),
+        max_words=int(config.app.get("subtitle_chunk_words", 3)),
+    )
 
     subtitle_lines = subtitle.file_to_subtitles(subtitle_path)
     if not subtitle_lines:
