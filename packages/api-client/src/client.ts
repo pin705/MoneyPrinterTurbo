@@ -1,6 +1,8 @@
 import type { VideoParams } from "@mpt/shared";
 import {
   ApiError,
+  type AiStatusData,
+  type AiUpdateData,
   type AppConfig,
   type BaseResponse,
   type BatchResultData,
@@ -181,6 +183,24 @@ export class MptClient {
       method: "POST",
       body: JSON.stringify({ app: patch }),
     });
+  }
+
+  /** GET /ai/status — local-AI image generator snapshot (optional feature). */
+  getAiStatus(): Promise<AiStatusData> {
+    return this.request<AiStatusData>("/ai/status");
+  }
+
+  /**
+   * GET /ai/check-update — whether the optional local AI needs install/update.
+   * Call this alongside the app update check so we surface both in one pass.
+   */
+  checkAiUpdate(): Promise<AiUpdateData> {
+    return this.request<AiUpdateData>("/ai/check-update");
+  }
+
+  /** POST /ai/setup — install deps + download the model (one-time, several GB). */
+  setupAi(): Promise<AiStatusData> {
+    return this.request<AiStatusData>("/ai/setup", { method: "POST" });
   }
 
   /** Absolute URL to a generated file served by the backend static mount. */

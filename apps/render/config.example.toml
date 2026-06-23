@@ -241,6 +241,33 @@ hook_title = true
 # Best-effort — never blocks a render. Set false to disable.
 research = true
 
+# ───────────────────────────────────────────────────────────────────────────
+# Visuals source (Phase 3)
+# ───────────────────────────────────────────────────────────────────────────
+# Stock footage is the DEFAULT and recommended source — free, fast, no install.
+# Local AI images are OPTIONAL: good for abstract topics where stock is weak.
+# When you turn it on, the app auto-detects whether the local AI is installed;
+# if not, it installs it for you on first use (several GB, see below) and falls
+# back to stock footage if anything goes wrong — a render never hard-fails.
+# Full guide + hardware recommendations: docs/VIDOVA_LOCAL_AI.md
+#
+#   image_provider = "none"   → always use stock footage (default)
+#   image_provider = "local"  → generate b-roll with a local Stable Diffusion model
+# image_provider = "none"
+#
+# Auto-install the local-AI deps (torch/diffusers) the first time they're needed.
+# Requires `uv` on PATH. Set false to manage the install yourself.
+# image_auto_install = true
+#
+# Refuse to auto-install / generate unless at least this much disk is free (GB).
+# The model + deps need ~5GB; 6 leaves headroom. Below this we fall back to stock.
+# image_min_free_gb = 6.0
+#
+# Which model to pull from Hugging Face. sd-turbo is small + fast (1-2 steps).
+# image_model = "stabilityai/sd-turbo"
+# image_steps = 2          # sd-turbo: 1-4 is plenty
+# image_guidance = 0.0     # sd-turbo requires 0.0
+
 #
 # ImageMagick
 #

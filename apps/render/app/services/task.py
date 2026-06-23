@@ -8,7 +8,7 @@ from loguru import logger
 from app.config import config
 from app.models import const
 from app.models.schema import VideoConcatMode, VideoParams
-from app.services import llm, material, quality, research, subtitle, video, voice, upload_post
+from app.services import image_gen, llm, material, quality, research, subtitle, video, voice, upload_post
 from app.services import state as sm
 from app.utils import file_security, utils
 
@@ -261,6 +261,57 @@ def generate_subtitle(task_id, params, video_script, sub_maker, audio_file):
     return subtitle_path
 
 
+def _generate_ai_scene_clips(task_id, params, video_terms, audio_duration):
+    """Phase 3: one local-AI image per scene → Ken Burns clip. Footage stays the
+    default; this only runs when image_provider=local. Returns [] on any shortfall
+    so the caller falls back to stock (never breaks a render)."""
+    from app.models.schema import VideoAspect
+
+    if not image_gen.ensure_installed():  # auto-installs deps, or returns False
+        return []
+    width, height = VideoAspect(params.video_aspect).to_resolution()
+    terms = [t for t in (video_terms or []) if t]
+    if not terms:
+        return []
+    per = max(2.0, min(float(params.video_clip_duration or 4), audio_duration / len(terms)))
+    out_dir = utils.task_dir(task_id)
+    clips = []
+    for i, term in enumerate(terms):
+        img = image_gen.generate_image(
+            f"{term}, cinematic, high detail, vertical",
+            path.join(out_dir, f"ai-{i+1}.png"),
+            width=512,
+            height=512,
+        )
+        if not img:
+            continue
+        clip = image_gen.image_to_kenburns_clip(
+            img, path.join(out_dir, f"ai-clip-{i+1}.mp4"), per, width, height
+        )
+        if clip:
+            clips.append(clip)
+    return clips
+
+
+def _download_stock(task_id, params, video_terms, audio_duration):
+    """Download stock footage (the default source). Returns [] on failure."""
+    logger.info(f"\n\n## downloading videos from {params.video_source}")
+    return material.download_videos(
+        task_id=task_id,
+        search_terms=video_terms,
+        source=params.video_source,
+        video_aspect=params.video_aspect,
+        video_concat_mode=(
+            VideoConcatMode.sequential
+            if params.match_materials_to_script
+            else params.video_concat_mode
+        ),
+        audio_duration=audio_duration * params.video_count,
+        max_clip_duration=params.video_clip_duration,
+        match_script_order=params.match_materials_to_script,
+    )
+
+
 def get_video_materials(task_id, params, video_terms, audio_duration):
     if params.video_source == "local":
         logger.info("\n\n## preprocess local materials")
@@ -274,31 +325,26 @@ def get_video_materials(task_id, params, video_terms, audio_duration):
             )
             return None
         return [material_info.url for material_info in materials]
+    elif config.app.get("image_provider", "none") == "local":
+        logger.info("\n\n## generating local AI images per scene")
+        ai_clips = _generate_ai_scene_clips(task_id, params, video_terms, audio_duration)
+        if ai_clips:
+            return ai_clips
+        logger.warning("local AI produced no clips → falling back to stock footage")
+        downloaded = _download_stock(task_id, params, video_terms, audio_duration)
+        if not downloaded:
+            sm.state.update_task(task_id, state=const.TASK_STATE_FAILED)
+            return None
+        return downloaded
     else:
-        logger.info(f"\n\n## downloading videos from {params.video_source}")
-        # 顺序匹配模式只在用户显式开启时生效。这里强制素材下载按关键词顺序
-        # 轮询，避免某个早期关键词下载太多素材，把后续脚本主题挤出最终时间线。
-        downloaded_videos = material.download_videos(
-            task_id=task_id,
-            search_terms=video_terms,
-            source=params.video_source,
-            video_aspect=params.video_aspect,
-            video_concat_mode=(
-                VideoConcatMode.sequential
-                if params.match_materials_to_script
-                else params.video_concat_mode
-            ),
-            audio_duration=audio_duration * params.video_count,
-            max_clip_duration=params.video_clip_duration,
-            match_script_order=params.match_materials_to_script,
-        )
-        if not downloaded_videos:
+        downloaded = _download_stock(task_id, params, video_terms, audio_duration)
+        if not downloaded:
             sm.state.update_task(task_id, state=const.TASK_STATE_FAILED)
             logger.error(
                 "failed to download videos, maybe the network is not available. if you are in China, please use a VPN."
             )
             return None
-        return downloaded_videos
+        return downloaded
 
 
 def generate_final_videos(

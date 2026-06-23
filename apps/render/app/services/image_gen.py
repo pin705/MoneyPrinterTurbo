@@ -11,8 +11,11 @@ Activate with `image_provider = "local"` in config.toml. First run downloads the
 model (~2.5GB for sd-turbo). Runs on MPS (Apple), CUDA, or CPU.
 """
 
+import importlib
 import os
+import shutil
 import subprocess
+import sys
 
 from loguru import logger
 
@@ -22,11 +25,134 @@ from app.utils import utils
 _pipe = None
 _pipe_failed = False
 
+# Heavy local-AI deps (installed on demand, never required for the stock path).
+_DEPS = ["torch", "diffusers", "transformers", "accelerate", "safetensors"]
+
 
 def is_available() -> bool:
     import importlib.util as u
 
     return all(u.find_spec(m) for m in ("torch", "diffusers"))
+
+
+def _free_gb(path: str | None = None) -> float:
+    try:
+        _, _, free = shutil.disk_usage(path or os.path.dirname(sys.executable))
+        return free / (1024**3)
+    except Exception:
+        return 0.0
+
+
+def _model_id() -> str:
+    return config.app.get("image_model", "stabilityai/sd-turbo")
+
+
+def _model_present(model: str | None = None) -> bool:
+    model = model or _model_id()
+    cache = os.path.expanduser(
+        os.environ.get("HF_HOME", "~/.cache/huggingface")
+    )
+    hub = os.path.join(os.path.expanduser(cache), "hub")
+    folder = "models--" + model.replace("/", "--")
+    return os.path.isdir(os.path.join(hub, folder))
+
+
+def ensure_installed(auto_install: bool | None = None) -> bool:
+    """Make the local-AI deps available. Auto-installs via uv on demand.
+
+    Returns True if torch/diffusers are importable. On a machine without them it
+    will (when allowed and there's enough disk) run `uv pip install …` once;
+    otherwise it logs a clear recommendation and returns False so the caller
+    falls back to stock footage.
+    """
+    if is_available():
+        return True
+    if auto_install is None:
+        auto_install = bool(config.app.get("image_auto_install", True))
+    if not auto_install:
+        logger.warning(
+            "local AI is off-disk and auto-install is disabled → using stock. "
+            "Install once with: uv pip install " + " ".join(_DEPS)
+        )
+        return False
+
+    need = float(config.app.get("image_min_free_gb", 6.0))
+    free = _free_gb()
+    if free < need:
+        logger.warning(
+            f"local AI needs ~{need:.0f}GB free but only {free:.1f}GB available → "
+            "using stock. Free up disk, or use a cloud image key (FLUX/DALL·E) instead."
+        )
+        return False
+
+    uv = shutil.which("uv")
+    if not uv:
+        logger.warning(
+            "`uv` not found → can't auto-install local AI. Install manually: "
+            "uv pip install " + " ".join(_DEPS)
+        )
+        return False
+
+    logger.info(
+        f"local AI not installed — auto-installing ({', '.join(_DEPS)}) once, ~2GB; "
+        f"{free:.1f}GB free…"
+    )
+    try:
+        subprocess.run(
+            [uv, "pip", "install", "--python", sys.executable, *_DEPS],
+            check=True,
+            timeout=1800,
+        )
+    except Exception as e:
+        logger.warning(f"local AI auto-install failed ({e}) → using stock.")
+        return False
+    importlib.invalidate_caches()
+    ok = is_available()
+    logger.info(f"local AI install {'complete' if ok else 'incomplete'}")
+    return ok
+
+
+def status() -> dict:
+    """Snapshot of the local-AI image feature — for the UI and the update check."""
+    model = _model_id()
+    return {
+        "feature": "local-ai-image",
+        "enabled": config.app.get("image_provider", "none") == "local",
+        "installed": is_available(),
+        "model": model,
+        "model_present": _model_present(model),
+        "device": _device() if is_available() else None,
+        "free_gb": round(_free_gb(), 1),
+        "min_free_gb": float(config.app.get("image_min_free_gb", 6.0)),
+    }
+
+
+def check_update() -> dict:
+    """For the app update check: is local AI enabled but missing deps/model?"""
+    s = status()
+    s["needs_setup"] = bool(s["enabled"] and (not s["installed"] or not s["model_present"]))
+    if not s["enabled"]:
+        s["recommendation"] = "Local AI images are off (using stock footage)."
+    elif s["free_gb"] < s["min_free_gb"]:
+        s["recommendation"] = (
+            f"Local AI enabled but only {s['free_gb']}GB free "
+            f"(need ~{s['min_free_gb']:.0f}GB). Free disk or use a cloud image key."
+        )
+    elif s["needs_setup"]:
+        s["recommendation"] = "Local AI enabled — run setup to install deps + download the model."
+    else:
+        s["recommendation"] = "Local AI ready."
+    return s
+
+
+def setup() -> dict:
+    """Install deps + pre-download the model (used by the setup/update flow)."""
+    if ensure_installed():
+        try:
+            _get_pipe()  # triggers the one-time model download into the HF cache
+        except Exception as e:
+            logger.warning(f"model preload failed: {e}")
+    return status()
 
 
 def _device():
@@ -69,8 +195,11 @@ def _get_pipe():
 
 
 def generate_image(prompt: str, out_path: str, width: int = 512, height: int = 512) -> str | None:
-    """Generate one image to out_path. Returns the path, or None on any failure."""
-    if not is_available():
+    """Generate one image to out_path. Returns the path, or None on any failure.
+
+    Auto-installs the local-AI deps on first use (falls back to stock if it can't).
+    """
+    if not ensure_installed():
         return None
     pipe = _get_pipe()
     if pipe is None:

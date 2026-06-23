@@ -121,6 +121,29 @@ export interface ConfigData {
   app: AppConfig;
 }
 
+/** Snapshot of the optional local-AI image generator (GET /ai/status). */
+export interface AiStatusData {
+  feature: string;
+  /** image_provider === "local" */
+  enabled: boolean;
+  /** torch + diffusers importable */
+  installed: boolean;
+  model: string;
+  model_present: boolean;
+  /** "mps" | "cuda" | "cpu" | null */
+  device: string | null;
+  free_gb: number;
+  min_free_gb: number;
+}
+
+/** GET /ai/check-update — call alongside the app update check. */
+export interface AiUpdateData extends AiStatusData {
+  /** Enabled but deps/model missing → offer setup. */
+  needs_setup: boolean;
+  /** Human-readable, localizable on the client. */
+  recommendation: string;
+}
+
 export class ApiError extends Error {
   constructor(
     public status: number,
