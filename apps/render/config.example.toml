@@ -288,6 +288,19 @@ endpoint = ""
 
 material_directory = ""
 
+# Quality gate (Phase 0): inspect the rendered mp4 before delivering it and FAIL
+# the task on critical problems (black/blank frames, silent or missing audio,
+# video↔audio duration mismatch) instead of shipping a broken video. Soft issues
+# (slideshow_risk, low_subtitle_coverage) are logged as warnings but still
+# delivered. Set false to disable. Thresholds below are optional overrides.
+quality_gate = true
+# quality_min_mean_db = -50.0      # below this mean volume → treated as silent
+# quality_max_audio_lead_s = 0.5   # how much longer audio may run than video before it's "too short" (critical)
+# quality_max_video_pad_s = 8.0    # trailing video padding past the audio before "too long" (soft)
+# quality_black_ratio = 0.06       # max fraction of the video allowed to be black
+# quality_min_sub_coverage = 0.5   # min subtitle time / video time (soft)
+# quality_min_distinct_clips = 2   # fewer distinct clips on a long video → slideshow_risk (soft)
+
 # Used for state management of the task.
 # Backend precedence: Redis > SQLite > Memory (in-process, lost on restart).
 #

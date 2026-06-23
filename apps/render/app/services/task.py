@@ -8,7 +8,7 @@ from loguru import logger
 from app.config import config
 from app.models import const
 from app.models.schema import VideoConcatMode, VideoParams
-from app.services import llm, material, subtitle, video, voice, upload_post
+from app.services import llm, material, quality, subtitle, video, voice, upload_post
 from app.services import state as sm
 from app.utils import file_security, utils
 
@@ -415,6 +415,31 @@ def start(task_id, params: VideoParams, stop_at: str = "video"):
         sm.state.update_task(task_id, state=const.TASK_STATE_FAILED)
         return
 
+    # 6b. Quality gate — don't deliver broken/"linh tinh" output (Phase 0).
+    # Critical issues (black frames, silent/no audio, duration mismatch) fail the
+    # task with a reason; soft issues (slideshow risk, low subtitle coverage) are
+    # logged but still delivered. Toggle with quality_gate=false in config.toml.
+    quality_report = None
+    if config.app.get("quality_gate", True):
+        quality_report = quality.check_videos(
+            video_paths=final_video_paths,
+            audio_duration=audio_duration,
+            subtitle_path=subtitle_path,
+            materials=downloaded_videos,
+            subtitle_enabled=bool(params.subtitle_enabled),
+        )
+        if not quality_report["passed"]:
+            sm.state.update_task(
+                task_id,
+                state=const.TASK_STATE_FAILED,
+                quality=quality_report,
+                error="quality_gate_failed",
+            )
+            logger.error(
+                f"task {task_id} blocked by quality gate: {quality_report['issues']}"
+            )
+            return
+
     logger.success(
         f"task {task_id} finished, generated {len(final_video_paths)} videos."
     )
@@ -462,6 +487,7 @@ def start(task_id, params: VideoParams, stop_at: str = "video"):
         "audio_duration": audio_duration,
         "subtitle_path": subtitle_path,
         "materials": downloaded_videos,
+        "quality": quality_report,
         "cross_post_results": cross_post_results if cross_post_results else None,
     }
     sm.state.update_task(

@@ -74,7 +74,10 @@ class VideoParams(BaseModel):
     video_script: str = ""  # Script used to generate the video
     video_terms: Optional[str | list] = None  # Keywords used to generate the video
     video_aspect: Optional[VideoAspect] = VideoAspect.portrait.value
-    video_concat_mode: Optional[VideoConcatMode] = VideoConcatMode.random.value
+    # Sequential by default (Phase 0): clips play in script/download order instead
+    # of being shuffled, so the visuals track the narration. Users can still pick
+    # random. Multi-output (video_count>1) still shuffles for variety (see task.py).
+    video_concat_mode: Optional[VideoConcatMode] = VideoConcatMode.sequential.value
     video_transition_mode: Optional[VideoTransitionMode] = None
     video_clip_duration: Optional[int] = 5
     match_materials_to_script: bool = False

@@ -72,7 +72,7 @@ export const DEFAULT_VIDEO_PARAMS: VideoParams = {
   video_script: "",
   video_terms: "",
   video_aspect: "9:16",
-  video_concat_mode: "random",
+  video_concat_mode: "sequential",
   video_transition_mode: null,
   video_clip_duration: 3,
   match_materials_to_script: false,

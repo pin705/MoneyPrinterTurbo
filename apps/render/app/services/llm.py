@@ -844,6 +844,116 @@ Please note that you must use English for generating video search terms; Chinese
 
 
 # =============================================================================
+# Scene plan (Phase 1 — Video Quality)
+#
+# 把脚本切成"场景"：每个场景 = 一句旁白 + 该句专属的画面检索词。这样素材按句
+# 匹配、按顺序拼接，画面才跟得上旁白。无 LLM 或解析失败时退化为"按句切分"，
+# 保证离线/无 key 也能用更好的检索词，而不是一组全局关键词。
+# =============================================================================
+
+_SENTENCE_SPLIT_RE = re.compile(r"(?<=[.!?。！？…])\s+|\n+")
+# crude multilingual stopwords for the keyword fallback (EN + a few VI)
+_STOPWORDS = {
+    "the", "a", "an", "and", "or", "but", "of", "to", "in", "on", "for", "with",
+    "is", "are", "was", "were", "be", "this", "that", "it", "you", "your", "we",
+    "và", "là", "của", "các", "một", "những", "cho", "với", "khi", "đã", "sẽ",
+}
+
+
+def _fallback_scene_plan(script: str) -> List[dict]:
+    """Split a script into one scene per sentence (no LLM needed)."""
+    sentences = [s.strip() for s in _SENTENCE_SPLIT_RE.split(script or "") if s.strip()]
+    scenes = []
+    for s in sentences:
+        words = [w.strip(".,!?;:\"'()") for w in s.split()]
+        kw = [w for w in words if len(w) > 3 and w.lower() not in _STOPWORDS]
+        kw = sorted(set(kw), key=lambda w: -len(w))[:4] or words[:3]
+        scenes.append(
+            {"narration": s, "visual_query": s[:120], "keywords": kw, "on_screen_text": ""}
+        )
+    return scenes
+
+
+def build_scene_plan_prompt(script: str, language: str = "") -> str:
+    lang = (language or "").strip()
+    lang_rule = (
+        f'Write "narration" and "on_screen_text" in this language: {lang}. Keywords always English.'
+        if lang and lang.lower() not in ("auto", "auto detect")
+        else 'Keep "narration" in the script language; keywords always English.'
+    )
+    return f"""
+# Role: Short-Video Director
+Split the script below into SCENES — one scene per sentence/idea, in order.
+
+## Constraints
+1. Respond ONLY with a single valid minified JSON array. No markdown, no commentary.
+2. Each item: "narration" (the sentence, verbatim), "visual_query" (a concrete,
+   describable shot for THAT sentence — not generic), "keywords" (2-4 English
+   stock-footage terms tied to visual_query), "on_screen_text" (short stat/emphasis or "").
+3. Keep scenes in the same order as the script. {lang_rule}
+
+## Output Example
+[{{"narration":"Most people budget wrong.","visual_query":"frustrated person looking at bills at a desk","keywords":["budget","bills","stress"],"on_screen_text":""}}]
+
+## Script
+<<<{script}>>>
+""".strip()
+
+
+def generate_scene_plan(script: str, language: str = "") -> List[dict]:
+    """Return [{"narration","visual_query","keywords","on_screen_text"}] for a script.
+
+    Tries the LLM; on any failure (incl. no API key) falls back to sentence split
+    so the scene-aligned pipeline still works offline.
+    """
+    script = (script or "").strip()
+    if not script:
+        return []
+    prompt = build_scene_plan_prompt(script, language)
+    for i in range(_max_retries):
+        try:
+            response = _generate_response(prompt)
+            if isinstance(response, str) and "Error: " in response:
+                logger.warning(f"scene plan LLM unavailable: {response}")
+                break
+            parsed = None
+            try:
+                parsed = json.loads(_strip_code_fence(response))
+            except Exception:
+                m = re.search(r"\[.*\]", response or "", re.DOTALL)
+                if m:
+                    parsed = json.loads(m.group())
+            if isinstance(parsed, list) and parsed:
+                scenes = []
+                for item in parsed:
+                    if not isinstance(item, dict):
+                        continue
+                    narration = str(item.get("narration", "")).strip()
+                    if not narration:
+                        continue
+                    vq = str(item.get("visual_query", "")).strip() or narration[:120]
+                    kw_raw = item.get("keywords", [])
+                    if isinstance(kw_raw, str):
+                        kw = [k.strip() for k in re.split(r"[,\n]", kw_raw) if k.strip()]
+                    else:
+                        kw = [str(k).strip() for k in (kw_raw or []) if str(k).strip()]
+                    scenes.append({
+                        "narration": narration,
+                        "visual_query": vq,
+                        "keywords": kw[:4],
+                        "on_screen_text": str(item.get("on_screen_text", "")).strip(),
+                    })
+                if scenes:
+                    logger.success(f"scene plan: {len(scenes)} scenes (LLM)")
+                    return scenes
+        except Exception as e:
+            logger.warning(f"failed to parse scene plan: {e}")
+    scenes = _fallback_scene_plan(script)
+    logger.info(f"scene plan: {len(scenes)} scenes (sentence fallback)")
+    return scenes
+
+
+# =============================================================================
 # Content plan (Phase 1 — Content Factory)
 #
 # 把"领域 + 受众"转成一批"互不重复"的短视频创意，每条是不同切入点，
